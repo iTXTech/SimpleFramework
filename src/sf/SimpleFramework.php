@@ -164,10 +164,10 @@ class SimpleFramework{
 				}
 			}
 			$this->checkConsole();
-			if(($this->currentTick % 100) === 0){
+			if(($this->currentTick % 20) === 0){
 				$this->combineTitle();
 			}
-			sleep(0.05);
+			usleep(5);
 		}
 
 		//shutdown!
