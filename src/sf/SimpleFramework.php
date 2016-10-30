@@ -55,15 +55,10 @@ class SimpleFramework{
 	private $titleQueue = [];
 
 	private $dataPath;
-	
-	private $writeTitle = true;
 
 	public function __construct(\ClassLoader $classLoader){
 		if(self::$obj === null){
 			self::$obj = $this;
-		}
-		if(Util::getOS() == "win"){
-			$this->writeTitle = false;
 		}
 		$this->dataPath = \getcwd() . DIRECTORY_SEPARATOR;
 		$this->classLoader = $classLoader;
@@ -169,7 +164,7 @@ class SimpleFramework{
 				}
 			}
 			$this->checkConsole();
-			if(($this->currentTick & 0b1111) === 0){
+			if(($this->currentTick % 100) === 0){
 				$this->combineTitle();
 			}
 			sleep(0.05);
@@ -206,9 +201,7 @@ class SimpleFramework{
 	}
 
 	private function displayTitle(string $title){
-		if($this->writeTitle){
-			echo "\x1b]0;" . $title . "\x07";
-		}
+		echo "\x1b]0;" . $title . "\x07";
 	}
 }
 
