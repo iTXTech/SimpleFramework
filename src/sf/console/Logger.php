@@ -127,15 +127,10 @@ class Logger{
 	protected static function send($message, $prefix, $color){
 		$now = time();
 
-		$thread = \Thread::getCurrentThread();
-		if($thread === null){
-			$threadName = "Main";
-		}else{
-			$threadName = (new \ReflectionClass($thread))->getShortName();
-		}
+		$class = @end(explode('\\', debug_backtrace()[2]['class']));
 
 		//$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
-		$message = TextFormat::toANSI(TextFormat::RESET . $color . $threadName . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
+		$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){

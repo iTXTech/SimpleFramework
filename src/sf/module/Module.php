@@ -20,21 +20,50 @@ namespace sf\module;
 use sf\SimpleFramework;
 
 //Multi-thread is recommended for plugin design.
-interface Module{
-	public function __construct(SimpleFramework $framework);
+abstract class Module{
+	/** @var SimpleFramework */
+	protected $framework;
+	private $loaded = false;
+
+	/** @var ModuleInfo */
+	private $info;
+
+	private $dataFolder;
+
+	public final function __construct(SimpleFramework $framework, ModuleInfo $info){
+		$this->framework = $framework;
+		$this->info = $info;
+		$this->dataFolder = $framework->getModuleDataPath() . $info->getName();
+	}
+
+	public function getDataFolder() : string{
+		return $this->dataFolder;
+	}
+
+	public final function setLoaded(bool $loaded){
+		$this->loaded = $loaded;
+	}
+
+	public final function preLoad() :bool{
+		if($this->info->getAPI() > SimpleFramework::API_LEVEL){
+			throw new \Exception("Plugin requires API Level: " . $this->info->getAPI() . " Current API Level: " . SimpleFramework::API_LEVEL);
+		}
+		return true;
+	}
     
-    public function load();
+    public abstract function load();
     
-    public function unload();
+    public abstract function unload();
     
-    public function isLoaded() : bool;
+    public final function isLoaded() : bool{
+		return $this->loaded;
+	}
     
-    public function doTick(int $currentTick);
-    
-    //No space!
-    public function getName() : string;
-    
-    public function getVersion() : string;
-    
-    public function getDescription() : string;
+    public function doTick(int $currentTick){
+	}
+
+	public final function getInfo() : ModuleInfo{
+		return $this->info;
+	}
+
 }

@@ -23,12 +23,13 @@ use sf\console\Logger;
 use sf\console\Terminal;
 use sf\console\TextFormat;
 use sf\module\Module;
+use sf\module\ModuleInfo;
 use sf\util\Config;
-use sf\util\Util;
 
 class SimpleFramework{
 	const PROG_VERSION = "1.0.0-alpha-20161029";
 	const API_LEVEL = 1;
+	const CODENAME = "Blizzard";
 
 	/** @var SimpleFramework */
 	private static $obj = null;
@@ -55,14 +56,22 @@ class SimpleFramework{
 	private $titleQueue = [];
 
 	private $dataPath;
+	private $modulePath;
+	private $moduleDataPath;
 
 	public function __construct(\ClassLoader $classLoader){
 		if(self::$obj === null){
 			self::$obj = $this;
 		}
 		$this->dataPath = \getcwd() . DIRECTORY_SEPARATOR;
+		$this->modulePath = $this->dataPath . "modules" . DIRECTORY_SEPARATOR;
+		$this->moduleDataPath = $this->dataPath . "data" . DIRECTORY_SEPARATOR;
 		$this->classLoader = $classLoader;
 		$this->start();
+	}
+
+	public function getModuleDataPath() : string{
+		return $this->moduleDataPath;
 	}
 
 	public static function getInstance() : SimpleFramework{
@@ -75,45 +84,59 @@ class SimpleFramework{
 
 	public function loadModule(Module $module){
 		if($module->isLoaded()){
-			Logger::notice("Module " . $module->getName() . " is already loaded");
+			Logger::notice("Module " . $module->getInfo()->getName() . " is already loaded");
 		}else{
-			Logger::info("Loading Module " . $module->getName() . " v" . $module->getVersion());
-			$module->load();
+			Logger::info("Loading Module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
+			if($module->preLoad()){
+				$module->load();
+				$module->setLoaded(true);
+			}
 		}
 	}
 
 	public function unloadModule(Module $module){
 		if($module->isLoaded()){
-			Logger::info("Unloading module " . $module->getName() . " v" . $module->getVersion());
+			Logger::info("Unloading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
 			$module->unload();
+			$module->setLoaded(false);
 		}else{
-			Logger::notice("Module " . $module->getName() . " is not loaded.");
+			Logger::notice("Module " . $module->getInfo()->getName() . " is not loaded.");
 		}
-	}
-
-	public function registerModule($className) : bool{
-		$class = new \ReflectionClass($className);
-		if(is_a($className, Module::class, true) and !$class->isAbstract()){
-			$module = new $className($this);
-			$this->modules[$class->getShortName()] = $module;
-			$this->loadModule($module);
-			return true;
-		}
-
-		return false;
-	}
-
-	public function readModule(string $name, string $main){
-		Logger::info("Reading $name");
-		$path = $name . DIRECTORY_SEPARATOR . "src";
-		$this->classLoader->addPath(\sf\PATH . "modules" . DIRECTORY_SEPARATOR . $path);
-		$this->registerModule($main);
 	}
 
 	private function loadModules(){
-		$modules = $this->config->get("modules", []);
-		foreach($modules as $name => $main){
-			$this->readModule($name, $main);
+		foreach(new \RegexIterator(new \DirectoryIterator($this->modulePath), "/\\.phar$/i") as $file){
+			if($file === "." or $file === ".."){
+				continue;
+			}
+			$file = $this->modulePath . $file;
+			//Phar
+		}
+		foreach(new \RegexIterator(new \DirectoryIterator($this->modulePath), "/[^\\.]/") as $file){
+			if($file === "." or $file === ".."){
+				continue;
+			}
+			$file = $this->modulePath . $file;
+			if(is_dir($file) and file_exists($file . "/info.json") and file_exists($file . "/src/")){
+				if(is_dir($file) and file_exists($file . "/info.json")){
+					$info = @file_get_contents($file . "/info.json");
+					if($info != ""){
+						$info = new ModuleInfo($info);
+						$className = $info->getMain();
+						$this->classLoader->addPath($file . "/src");
+						$class = new \ReflectionClass($className);
+						if(is_a($className, Module::class, true) and !$class->isAbstract()){
+							$module = new $className($this, $info);
+							$this->modules[$class->getShortName()] = $module;
+							$this->loadModule($module);
+						}
+					}else{
+						continue;
+					}
+				}else{
+					continue;
+				}
+			}
 		}
 	}
 
@@ -121,16 +144,10 @@ class SimpleFramework{
 		try{
 			$this->displayTitle("SimpleFramework is starting...");
 			@mkdir("modules");
-			if(!file_exists($this->dataPath . "config.json")){
-				$default = [
-					"modules" => [
-						"SimpleRefresher" => "refresher\\SimpleRefresher"
-					]
-				];
-			}else{
-				$default = [];
-			}
-			$this->config = new Config($this->dataPath . "config.json", Config::JSON, $default);
+			@mkdir("data");
+			$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
+				"auto-load-modules" => true
+			]);
 			$this->config->save();
 			Logger::info(TextFormat::AQUA . "SimpleFramework " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION);
 			Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
@@ -138,7 +155,9 @@ class SimpleFramework{
 			$this->console = new ConsoleReader();
 			Logger::info("Starting Command Processor...");
 			$this->commandProcessor = new CommandProcessor($this);
-			$this->loadModules();
+			if($this->config->get("auto-load-modules", true)){
+				$this->loadModules();
+			}
 			Logger::notice("Done! Type 'help' for help.");
 			$this->tick();
 		}catch(\Throwable $e){

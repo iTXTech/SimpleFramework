@@ -18,6 +18,7 @@
 namespace sf\console;
 
 use sf\SimpleFramework;
+use sf\util\Util;
 
 class CommandProcessor{
 	/** @var Command[] */
@@ -36,6 +37,7 @@ class CommandProcessor{
 		$this->register(new VersionCommand(), "version");
 		$this->register(new StopCommand(), "stop");
 		$this->register(new ModulesCommand(), "modules");
+		$this->register(new ClearCommand(), "clear");
 	}
 
 	public function register(Command $command, string $name){
@@ -217,5 +219,24 @@ class ModulesCommand implements Command{
 			default:
 				return false;
 		}
+	}
+}
+
+class ClearCommand implements Command{
+	public function getName() : string{
+		return "clear";
+	}
+
+	public function getUsage() : string{
+		return "clear";
+	}
+
+	public function getDescription() : string{
+		return "Clears the screen.";
+	}
+
+	public function execute(string $command, array $args) : bool{
+		echo "\x1bc";
+		return true;
 	}
 }
