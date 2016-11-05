@@ -5,7 +5,6 @@
  * The fast, light-weighted, easy-to-extend php framework.
  *
  * Some classes are based on project PocketMine-MP.
- * List: ConsoleReader, Terminal, TextFormat, Logger, Util, Config, ClassLoader
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,6 +12,10 @@
  * (at your option) any later version.
  *
  * @author PeratX
+ */
+
+/*
+ * Only work in Command Line environment
  */
 
 namespace sf;
@@ -27,7 +30,8 @@ use sf\module\ModuleInfo;
 use sf\util\Config;
 
 class SimpleFramework{
-	const PROG_VERSION = "1.0.0-alpha-20161029";
+	const PROG_NAME = "SimpleFrameworkCLI";
+	const PROG_VERSION = "1.0.0-beta";
 	const API_LEVEL = 1;
 	const CODENAME = "Blizzard";
 
@@ -74,12 +78,41 @@ class SimpleFramework{
 		return $this->moduleDataPath;
 	}
 
+	public function getModulePath() : string {
+		return $this->modulePath;
+	}
+
+	public function getName() : string {
+		return self::PROG_NAME;
+	}
+
+	public function getVersion() : string {
+		return self::PROG_VERSION;
+	}
+
+	public function getCodename() : string {
+		return self::CODENAME;
+	}
+
+	public function getAPILevel() : int{
+		return self::API_LEVEL;
+	}
+
 	public static function getInstance() : SimpleFramework{
 		return self::$obj;
 	}
 
 	public function getModules(){
 		return $this->modules;
+	}
+
+	public function getModule(string $moduleName){
+		foreach($this->modules as $module){
+			if($module->getInfo()->getName() == $moduleName){
+				return $module;
+			}
+		}
+		return null;
 	}
 
 	public function loadModule(Module $module){
@@ -109,35 +142,61 @@ class SimpleFramework{
 			if($file === "." or $file === ".."){
 				continue;
 			}
-			$file = $this->modulePath . $file;
-			//Phar
+			$this->tryLoadPackageModule($file);
 		}
 		foreach(new \RegexIterator(new \DirectoryIterator($this->modulePath), "/[^\\.]/") as $file){
 			if($file === "." or $file === ".."){
 				continue;
 			}
-			$file = $this->modulePath . $file;
-			if(is_dir($file) and file_exists($file . "/info.json") and file_exists($file . "/src/")){
-				if(is_dir($file) and file_exists($file . "/info.json")){
-					$info = @file_get_contents($file . "/info.json");
-					if($info != ""){
-						$info = new ModuleInfo($info);
-						$className = $info->getMain();
-						$this->classLoader->addPath($file . "/src");
-						$class = new \ReflectionClass($className);
-						if(is_a($className, Module::class, true) and !$class->isAbstract()){
-							$module = new $className($this, $info);
-							$this->modules[$class->getShortName()] = $module;
-							$this->loadModule($module);
-						}
-					}else{
-						continue;
-					}
-				}else{
-					continue;
+			$this->tryLoadSourceModule($file);
+		}
+	}
+
+	public function tryLoadPackageModule(string $file) : bool{
+		$file = $this->modulePath . $file;
+		if(pathinfo($file, PATHINFO_EXTENSION) != "phar"){
+			return false;
+		}
+		$phar = new \Phar($file);
+		if(isset($phar["info.json"])){
+			$info = $phar["info.json"];
+			if($info instanceof \PharFileInfo){
+				$file = "phar://$file";
+				$info = new ModuleInfo($info->getContent(), ModuleInfo::LOAD_METHOD_PACKAGE);
+				$className = $info->getMain();
+				$this->classLoader->addPath($file . "/src");
+				$class = new \ReflectionClass($className);
+				if(is_a($className, Module::class, true) and !$class->isAbstract()){
+					$module = new $className($this, $info, $file);
+					$this->modules[$class->getShortName()] = $module;
+					$this->loadModule($module);
+					return true;
 				}
 			}
 		}
+		return false;
+	}
+
+	public function tryLoadSourceModule(string $file) : bool{
+		$file = $this->modulePath . $file;
+		if(is_dir($file) and file_exists($file . "/info.json") and file_exists($file . "/src/")){
+			if(is_dir($file) and file_exists($file . "/info.json")){
+				$info = @file_get_contents($file . "/info.json");
+				if($info != ""){
+					$info = new ModuleInfo($info, ModuleInfo::LOAD_METHOD_SOURCE);
+					$className = $info->getMain();
+					$this->classLoader->addPath($file . "/src");
+					$class = new \ReflectionClass($className);
+					if(is_a($className, Module::class, true) and !$class->isAbstract()){
+						$module = new $className($this, $info, $file);
+						$this->modules[$class->getShortName()] = $module;
+						$this->loadModule($module);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public function start(){
@@ -149,7 +208,7 @@ class SimpleFramework{
 				"auto-load-modules" => true
 			]);
 			$this->config->save();
-			Logger::info(TextFormat::AQUA . "SimpleFramework " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION);
+			Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 			Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 			Logger::info("Starting Console Daemon...");
 			$this->console = new ConsoleReader();
@@ -224,9 +283,7 @@ class SimpleFramework{
 	}
 }
 
-
 //Base load
-
 
 if(\Phar::running(true) !== ""){
 	@define('sf\PATH', \Phar::running(true) . "/");

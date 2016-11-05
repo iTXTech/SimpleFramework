@@ -5,7 +5,6 @@
  * The fast, light-weighted, easy-to-extend php framework.
  *
  * Some classes are based on project PocketMine-MP.
- * List: ConsoleReader, Terminal, TextFormat, Logger, Util, Config, ClassLoader
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +27,12 @@ abstract class Module{
 	/** @var ModuleInfo */
 	private $info;
 
+	private $file;
+
 	private $dataFolder;
 
-	public final function __construct(SimpleFramework $framework, ModuleInfo $info){
+	public final function __construct(SimpleFramework $framework, ModuleInfo $info, string $file){
+		$this->file = $file;
 		$this->framework = $framework;
 		$this->info = $info;
 		$this->dataFolder = $framework->getModuleDataPath() . $info->getName();
@@ -45,8 +47,8 @@ abstract class Module{
 	}
 
 	public final function preLoad() :bool{
-		if($this->info->getAPI() > SimpleFramework::API_LEVEL){
-			throw new \Exception("Plugin requires API Level: " . $this->info->getAPI() . " Current API Level: " . SimpleFramework::API_LEVEL);
+		if($this->info->getAPILevel() > SimpleFramework::API_LEVEL){
+			throw new \Exception("Plugin requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . SimpleFramework::API_LEVEL);
 		}
 		return true;
 	}
