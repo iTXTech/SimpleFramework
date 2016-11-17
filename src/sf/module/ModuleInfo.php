@@ -20,6 +20,9 @@ class ModuleInfo{
 	const LOAD_METHOD_PACKAGE = 0;
 	const LOAD_METHOD_SOURCE = 1;
 
+	const LOAD_ORDER_MIN = 0;
+	const LOAD_ORDER_MAX = 10;
+
 	private $name;
 	private $main;
 	private $api;
@@ -27,6 +30,7 @@ class ModuleInfo{
 	private $description = null;
 	private $authors = [];
 	private $loadMethod;
+	private $loadOrder = self::LOAD_ORDER_MIN;
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -56,6 +60,9 @@ class ModuleInfo{
 				$this->authors[] = $author;
 			}
 		}
+		if(isset($info["order"])){
+			$this->loadOrder = min(self::LOAD_ORDER_MAX, max(self::LOAD_ORDER_MIN, (int)$info["order"]));
+		}
 	}
 
 	public final function getLoadMethod() : int{
@@ -84,5 +91,9 @@ class ModuleInfo{
 
 	public final function getMain(){
 		return $this->main;
+	}
+
+	public final function getLoadOrder() : int{
+		return $this->loadOrder;
 	}
 }

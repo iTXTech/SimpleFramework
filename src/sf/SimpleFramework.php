@@ -31,8 +31,8 @@ use sf\util\Config;
 
 class SimpleFramework{
 	const PROG_NAME = "SimpleFrameworkCLI";
-	const PROG_VERSION = "1.0.0-beta";
-	const API_LEVEL = 1;
+	const PROG_VERSION = "1.1.0pre1";
+	const API_LEVEL = 2;
 	const CODENAME = "Blizzard";
 
 	/** @var SimpleFramework */
@@ -138,24 +138,34 @@ class SimpleFramework{
 	}
 
 	private function loadModules(){
+		$modules = [];
+		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
+			$modules[$i] = [];
+		}
 		foreach(new \RegexIterator(new \DirectoryIterator($this->modulePath), "/\\.phar$/i") as $file){
 			if($file === "." or $file === ".."){
 				continue;
 			}
-			$this->tryLoadPackageModule($file);
+			$this->tryLoadPackageModule($file, $modules);
 		}
 		foreach(new \RegexIterator(new \DirectoryIterator($this->modulePath), "/[^\\.]/") as $file){
 			if($file === "." or $file === ".."){
 				continue;
 			}
-			$this->tryLoadSourceModule($file);
+			$this->tryLoadSourceModule($file, $modules);
+		}
+		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
+			foreach($modules[$i] as $module){
+				$this->modules[$module[0]] = $module[1];
+				$this->loadModule($module[1]);
+			}
 		}
 	}
 
-	public function tryLoadPackageModule(string $file) : bool{
+	public function tryLoadPackageModule(string $file, array &$modules){
 		$file = $this->modulePath . $file;
 		if(pathinfo($file, PATHINFO_EXTENSION) != "phar"){
-			return false;
+			return;
 		}
 		$phar = new \Phar($file);
 		if(isset($phar["info.json"])){
@@ -168,16 +178,13 @@ class SimpleFramework{
 				$class = new \ReflectionClass($className);
 				if(is_a($className, Module::class, true) and !$class->isAbstract()){
 					$module = new $className($this, $info, $file);
-					$this->modules[$class->getShortName()] = $module;
-					$this->loadModule($module);
-					return true;
+					$modules[$info->getLoadOrder()][] = [$class->getShortName(), $module];
 				}
 			}
 		}
-		return false;
 	}
 
-	public function tryLoadSourceModule(string $file) : bool{
+	public function tryLoadSourceModule(string $file, array &$modules){
 		$file = $this->modulePath . $file;
 		if(is_dir($file) and file_exists($file . "/info.json") and file_exists($file . "/src/")){
 			if(is_dir($file) and file_exists($file . "/info.json")){
@@ -189,14 +196,11 @@ class SimpleFramework{
 					$class = new \ReflectionClass($className);
 					if(is_a($className, Module::class, true) and !$class->isAbstract()){
 						$module = new $className($this, $info, $file);
-						$this->modules[$class->getShortName()] = $module;
-						$this->loadModule($module);
-						return true;
+						$modules[$info->getLoadOrder()][] = [$class->getShortName(), $module];
 					}
 				}
 			}
 		}
-		return false;
 	}
 
 	public function start(){
