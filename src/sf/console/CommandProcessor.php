@@ -220,8 +220,18 @@ class ModulesCommand implements Command{
 						Logger::info(TextFormat::RED . "File not found.");
 						return true;
 					}
-					if(!SimpleFramework::getInstance()->tryLoadSourceModule($file)){
-						SimpleFramework::getInstance()->tryLoadPackageModule($file);
+					$modules = [];
+					for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
+						$modules[$i] = [];
+					}
+					if(!SimpleFramework::getInstance()->tryLoadSourceModule($file, $modules)){
+						SimpleFramework::getInstance()->tryLoadPackageModule($file, $modules);
+					}
+					for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
+						foreach($modules[$i] as $module){
+							SimpleFramework::getInstance()->modules[$module[0]] = $module[1];
+							SimpleFramework::getInstance()->loadModule($module[1]);
+						}
 					}
 					return true;
 				}else{
@@ -275,7 +285,7 @@ class PackModule implements Command{
 		$info = $module->getInfo();
 
 		if(!($info->getLoadMethod() == ModuleInfo::LOAD_METHOD_SOURCE)){
-			Logger::info(TextFormat::RED . "Plugin " . $info->getName() . " is not in folder structure.");
+			Logger::info(TextFormat::RED . "Module " . $info->getName() . " is not in folder structure.");
 			return true;
 		}
 
@@ -344,6 +354,7 @@ class PackSF implements Command{
 
 	public function execute(string $command, array $args) : bool{
 		$outputDir = SimpleFramework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		mkdir($outputDir);
 		$framework = SimpleFramework::getInstance();
 		$pharPath = $outputDir . $framework->getName() . "_" . $framework->getVersion() . ".phar";
 		if(file_exists($pharPath)){
@@ -406,20 +417,20 @@ class UnpackModule implements Command{
 	public function execute(string $command, array $args) : bool{
 		$moduleName = trim(implode(" ", $args));
 		if($moduleName === "" or !(($module = SimpleFramework::getInstance()->getModule($moduleName)) instanceof Module)){
-			Logger::info(TextFormat::RED . "Invalid plugin name, check the name case.");
+			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
 		$info = $module->getInfo();
 
 		if(!($info->getLoadMethod() == ModuleInfo::LOAD_METHOD_PACKAGE)){
-			Logger::info(TextFormat::RED . "Plugin " . $info->getName() . " is not in Phar structure.");
+			Logger::info(TextFormat::RED . "Module " . $info->getName() . " is not in Phar structure.");
 			return true;
 		}
 
 		$outputDir = SimpleFramework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		$folderPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . DIRECTORY_SEPARATOR;
 		if(file_exists($folderPath)){
-			Logger::info("Plugin files already exist, overwriting...");
+			Logger::info("Module files already exist, overwriting...");
 		}else{
 			@mkdir($folderPath);
 		}

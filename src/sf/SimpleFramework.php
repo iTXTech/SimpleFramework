@@ -45,7 +45,7 @@ class SimpleFramework{
 	private $commandProcessor;
 
 	/** @var Module[] */
-	private $modules = [];
+	public $modules = [];
 
 	/** @var Config */
 	private $config;
@@ -162,10 +162,10 @@ class SimpleFramework{
 		}
 	}
 
-	public function tryLoadPackageModule(string $file, array &$modules){
+	public function tryLoadPackageModule(string $file, array &$modules) : bool{
 		$file = $this->modulePath . $file;
 		if(pathinfo($file, PATHINFO_EXTENSION) != "phar"){
-			return;
+			return false;
 		}
 		$phar = new \Phar($file);
 		if(isset($phar["info.json"])){
@@ -179,12 +179,14 @@ class SimpleFramework{
 				if(is_a($className, Module::class, true) and !$class->isAbstract()){
 					$module = new $className($this, $info, $file);
 					$modules[$info->getLoadOrder()][] = [$class->getShortName(), $module];
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
-	public function tryLoadSourceModule(string $file, array &$modules){
+	public function tryLoadSourceModule(string $file, array &$modules) : bool{
 		$file = $this->modulePath . $file;
 		if(is_dir($file) and file_exists($file . "/info.json") and file_exists($file . "/src/")){
 			if(is_dir($file) and file_exists($file . "/info.json")){
@@ -197,10 +199,12 @@ class SimpleFramework{
 					if(is_a($className, Module::class, true) and !$class->isAbstract()){
 						$module = new $className($this, $info, $file);
 						$modules[$info->getLoadOrder()][] = [$class->getShortName(), $module];
+						return true;
 					}
 				}
 			}
 		}
+		return false;
 	}
 
 	public function start(){
