@@ -362,7 +362,7 @@ class PackSF implements Command{
 
 	public function execute(string $command, array $args) : bool{
 		$outputDir = SimpleFramework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
-		mkdir($outputDir);
+		@mkdir($outputDir);
 		$framework = SimpleFramework::getInstance();
 		$pharPath = $outputDir . $framework->getName() . "_" . $framework->getVersion() . ".phar";
 		if(file_exists($pharPath)){
