@@ -48,6 +48,14 @@ class CommandProcessor{
 		$this->registeredCommands[$name] = $command;
 	}
 
+	public function unregister(string $name) : bool{
+		if(isset($this->registeredCommands[strtolower($name)])){
+			unset($this->registeredCommands[strtolower($name)]);
+			return true;
+		}
+		return false;
+	}
+
 	public function dispatchCommand(string $commandLine){
 		$args = explode(" ", $commandLine);
 		$command = strtolower(array_shift($args));
