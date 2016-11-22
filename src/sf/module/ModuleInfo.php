@@ -21,7 +21,7 @@ class ModuleInfo{
 	const LOAD_METHOD_SOURCE = 1;
 
 	const LOAD_ORDER_MIN = 0;
-	const LOAD_ORDER_MAX = 10;
+	const LOAD_ORDER_MAX = 9;
 
 	private $name;
 	private $main;

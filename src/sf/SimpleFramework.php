@@ -14,10 +14,6 @@
  * @author PeratX
  */
 
-/*
- * Only work in Command Line environment
- */
-
 namespace sf;
 
 use sf\console\CommandProcessor;
@@ -31,7 +27,7 @@ use sf\util\Config;
 
 class SimpleFramework{
 	const PROG_NAME = "SimpleFrameworkCLI";
-	const PROG_VERSION = "1.1.0pre1";
+	const PROG_VERSION = "1.1.0pre2";
 	const API_LEVEL = 2;
 	const CODENAME = "Blizzard";
 
