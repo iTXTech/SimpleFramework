@@ -26,6 +26,10 @@ class Logger{
 	const INFO = "info";
 	const DEBUG = "debug";
 
+	public static $noColor = false;
+	public static $fullDisplay = true;
+	public static $noOutput = false;
+
 	public static function emergency($message, $name = "EMERGENCY"){
 		self::send($message, $name, TextFormat::RED);
 	}
@@ -124,15 +128,19 @@ class Logger{
 	}
 
 	protected static function send($message, $prefix, $color){
-		$now = time();
-
-		$class = @end(explode('\\', debug_backtrace()[2]['class']));
-
-		//$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
-		$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
+		if(self::$noOutput){
+			return;
+		}
+		if(self::$fullDisplay){
+			$now = time();
+			$class = @end(explode('\\', debug_backtrace()[2]['class']));
+			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
+		}else{
+			$message = TextFormat::toANSI($message);
+		}
 		$cleanMessage = TextFormat::clean($message);
 
-		if(!Terminal::hasFormattingCodes()){
+		if(!Terminal::hasFormattingCodes() or self::$noColor){
 			echo $cleanMessage . PHP_EOL;
 		}else{
 			echo $message . PHP_EOL;

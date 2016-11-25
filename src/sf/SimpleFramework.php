@@ -27,7 +27,7 @@ use sf\util\Config;
 
 class SimpleFramework{
 	const PROG_NAME = "SimpleFrameworkCLI";
-	const PROG_VERSION = "1.1.0pre2";
+	const PROG_VERSION = "1.1.0pre3";
 	const API_LEVEL = 2;
 	const CODENAME = "Blizzard";
 
@@ -59,7 +59,9 @@ class SimpleFramework{
 	private $modulePath;
 	private $moduleDataPath;
 
-	public function __construct(\ClassLoader $classLoader){
+	private $commandLineOnly = false;
+
+	public function __construct(\ClassLoader $classLoader, array $argv){
 		if(self::$obj === null){
 			self::$obj = $this;
 		}
@@ -67,7 +69,7 @@ class SimpleFramework{
 		$this->modulePath = $this->dataPath . "modules" . DIRECTORY_SEPARATOR;
 		$this->moduleDataPath = $this->dataPath . "data" . DIRECTORY_SEPARATOR;
 		$this->classLoader = $classLoader;
-		$this->start();
+		$this->start($argv);
 	}
 
 	public function getModuleDataPath() : string{
@@ -115,7 +117,9 @@ class SimpleFramework{
 		if($module->isLoaded()){
 			Logger::notice("Module " . $module->getInfo()->getName() . " is already loaded");
 		}else{
-			Logger::info("Loading Module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
+			if(!$this->commandLineOnly){
+				Logger::info("Loading Module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
+			}
 			if($module->preLoad()){
 				$module->load();
 				$module->setLoaded(true);
@@ -125,7 +129,9 @@ class SimpleFramework{
 
 	public function unloadModule(Module $module){
 		if($module->isLoaded()){
-			Logger::info("Unloading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
+			if(!$this->commandLineOnly){
+				Logger::info("Unloading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
+			}
 			$module->unload();
 			$module->setLoaded(false);
 		}else{
@@ -142,13 +148,13 @@ class SimpleFramework{
 			if($file === "." or $file === ".."){
 				continue;
 			}
-			$this->tryLoadPackageModule($file, $modules);
+			$this->tryLoadPackageModule($this->modulePath . $file, $modules);
 		}
 		foreach(new \RegexIterator(new \DirectoryIterator($this->modulePath), "/[^\\.]/") as $file){
 			if($file === "." or $file === ".."){
 				continue;
 			}
-			$this->tryLoadSourceModule($file, $modules);
+			$this->tryLoadSourceModule($this->modulePath . $file, $modules);
 		}
 		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
 			foreach($modules[$i] as $module){
@@ -158,8 +164,25 @@ class SimpleFramework{
 		}
 	}
 
+	public function tryLoadModule(string $file) : bool{
+		$modules = [];
+		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
+			$modules[$i] = [];
+		}
+		if(!$this->tryLoadSourceModule($file, $modules)){
+			$this->tryLoadPackageModule($file, $modules);
+		}
+		foreach($modules as $order){
+			foreach($order as $module){
+				$this->modules[$module[0]] = $module[1];
+				$this->loadModule($module[1]);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function tryLoadPackageModule(string $file, array &$modules) : bool{
-		$file = $this->modulePath . $file;
 		if(pathinfo($file, PATHINFO_EXTENSION) != "phar"){
 			return false;
 		}
@@ -183,7 +206,6 @@ class SimpleFramework{
 	}
 
 	public function tryLoadSourceModule(string $file, array &$modules) : bool{
-		$file = $this->modulePath . $file;
 		if(is_dir($file) and file_exists($file . "/info.json") and file_exists($file . "/src/")){
 			if(is_dir($file) and file_exists($file . "/info.json")){
 				$info = @file_get_contents($file . "/info.json");
@@ -203,26 +225,101 @@ class SimpleFramework{
 		return false;
 	}
 
-	public function start(){
-		try{
-			$this->displayTitle("SimpleFramework is starting...");
-			@mkdir("modules");
-			@mkdir("data");
-			$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
-				"auto-load-modules" => true
-			]);
-			$this->config->save();
-			Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
-			Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
-			Logger::info("Starting Console Daemon...");
-			$this->console = new ConsoleReader();
-			Logger::info("Starting Command Processor...");
-			$this->commandProcessor = new CommandProcessor($this);
-			if($this->config->get("auto-load-modules", true)){
-				$this->loadModules();
+	private function processCommandLineOptions(array $argv) : bool{
+		/*
+		 * Command Line Options:
+		 * php SimpleFramework.phar (--enable-ansi) (options)
+		 * -s Pure command line mode
+		 * -v Display the version
+		 * -c Color mode
+		 * -l Full logger
+		 * -h Display the help
+		 * -f [FILE] Load a module
+		 * -e [COMMAND] Execute a command
+		 * -a No output
+		 */
+
+		foreach($argv as $c => $arg){
+			switch($arg){
+				case "-s":
+					Logger::$noColor = true;
+					Logger::$fullDisplay = false;
+					$this->commandLineOnly = true;
+					break;
+				case "-v":
+					Logger::info(self::PROG_NAME . ' version "' . self::PROG_VERSION . '"');
+					Logger::info("SimpleFramework API Level " . self::API_LEVEL . " [" . self::CODENAME . "]");
+					break;
+				case "-c":
+					Logger::$noColor = false;
+					break;
+				case "-l":
+					Logger::$fullDisplay = true;
+					break;
+				case "-h":
+					Logger::info("Usage: sfcli");
+					Logger::info("       sfcli [options]");
+					Logger::info("  -a           No command line output");
+					Logger::info("  -c           Display in color mode");
+					Logger::info("  -e [COMMAND] Execute a registered command");
+					Logger::info("  -f [FILE]    Load a module");
+					Logger::info("  -h           Display this message");
+					Logger::info("  -l           Logger with time and prefix");
+					Logger::info("  -s           Execute in pure command line mode");
+					Logger::info("  -v           Display version of this program");
+					break;
+				case "-a":
+					Logger::$noOutput = true;
+					break;
+				case "-f":
+					if(!isset($argv[$c + 1])){
+						Logger::error("Module file not found.");
+						break;
+					}
+					$file = $argv[$c + 1];
+					if(!file_exists($file)){
+						Logger::error("Module file not found.");
+						break;
+					}
+					$this->tryLoadModule($file);
+					break;
+				case "-e":
+					if(!isset($argv[$c + 1])){
+						Logger::error("No input command.");
+						break;
+					}
+					$this->commandProcessor->dispatchCommand($argv[$c + 1]);
+					break;
 			}
-			Logger::notice("Done! Type 'help' for help.");
-			$this->tick();
+		}
+
+		if(in_array("-s", $argv)){
+			return true;
+		}
+		return false;
+	}
+
+	public function start(array $argv){
+		try{
+			$this->commandProcessor = new CommandProcessor($this);
+			if(!$this->processCommandLineOptions($argv)){
+				$this->displayTitle("SimpleFramework is starting...");
+				@mkdir("modules");
+				@mkdir("data");
+				$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
+					"auto-load-modules" => true
+				]);
+				$this->config->save();
+				Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
+				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
+				Logger::info("Starting Console Daemon...");
+				$this->console = new ConsoleReader();
+				if($this->config->get("auto-load-modules", true)){
+					$this->loadModules();
+				}
+				Logger::notice("Done! Type 'help' for help.");
+				$this->tick();
+			}
 		}catch(\Throwable $e){
 			Logger::logException($e);
 		}
@@ -303,4 +400,4 @@ $classLoader->register(true);
 
 Terminal::init();
 
-new SimpleFramework($classLoader);
+new SimpleFramework($classLoader, $argv);

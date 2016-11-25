@@ -228,19 +228,7 @@ class ModulesCommand implements Command{
 						Logger::info(TextFormat::RED . "File not found.");
 						return true;
 					}
-					$modules = [];
-					for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
-						$modules[$i] = [];
-					}
-					if(!SimpleFramework::getInstance()->tryLoadSourceModule($file, $modules)){
-						SimpleFramework::getInstance()->tryLoadPackageModule($file, $modules);
-					}
-					for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
-						foreach($modules[$i] as $module){
-							SimpleFramework::getInstance()->modules[$module[0]] = $module[1];
-							SimpleFramework::getInstance()->loadModule($module[1]);
-						}
-					}
+					SimpleFramework::getInstance()->tryLoadModule(SimpleFramework::getInstance()->getModulePath() . $file);
 					return true;
 				}else{
 					return false;
