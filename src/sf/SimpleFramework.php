@@ -27,7 +27,7 @@ use sf\util\Config;
 
 class SimpleFramework{
 	const PROG_NAME = "SimpleFrameworkCLI";
-	const PROG_VERSION = "1.1.0pre3";
+	const PROG_VERSION = "1.1.0";
 	const API_LEVEL = 2;
 	const CODENAME = "Blizzard";
 
@@ -242,9 +242,11 @@ class SimpleFramework{
 		foreach($argv as $c => $arg){
 			switch($arg){
 				case "-s":
+					$this->commandLineOnly = true;
+					break;
+				case "-w":
 					Logger::$noColor = true;
 					Logger::$fullDisplay = false;
-					$this->commandLineOnly = true;
 					break;
 				case "-v":
 					Logger::info(self::PROG_NAME . ' version "' . self::PROG_VERSION . '"');
@@ -267,6 +269,7 @@ class SimpleFramework{
 					Logger::info("  -l           Logger with time and prefix");
 					Logger::info("  -s           Execute in pure command line mode");
 					Logger::info("  -v           Display version of this program");
+					Logger::info("  -w           No color and no prefix");
 					break;
 				case "-a":
 					Logger::$noOutput = true;
