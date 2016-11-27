@@ -134,6 +134,7 @@ class Logger{
 		if(self::$fullDisplay){
 			$now = time();
 			$class = @end(explode('\\', debug_backtrace()[2]['class']));
+			$class = $class == "" ? "Console" : $class;
 			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
 		}else{
 			$message = TextFormat::toANSI($message);

@@ -18,7 +18,7 @@ namespace sf\console;
 
 use sf\module\Module;
 use sf\module\ModuleInfo;
-use sf\SimpleFramework;
+use sf\Framework;
 
 class CommandProcessor{
 	/** @var Command[] */
@@ -95,7 +95,7 @@ class HelpCommand implements Command{
 	}
 
 	public function execute(string $command, array $args) : bool{
-		$commands = SimpleFramework::getInstance()->getCommandProcessor()->getCommands();
+		$commands = Framework::getInstance()->getCommandProcessor()->getCommands();
 		if(count($args) > 0){
 			$command = strtolower($args[0]);
 			if(isset($commands[$command])){
@@ -132,7 +132,7 @@ class VersionCommand implements Command{
 	public function execute(string $command, array $args) : bool{
 		if(count($args) > 0){
 			$module = $args[0];
-			$modules = SimpleFramework::getInstance()->getModules();
+			$modules = Framework::getInstance()->getModules();
 			if(isset($modules[$module])){
 				$module = $modules[$module];
 				Logger::info(TextFormat::YELLOW . "--------- " . TextFormat::WHITE . "Version: " . $module->getInfo()->getName() . TextFormat::YELLOW . " ---------");
@@ -142,7 +142,7 @@ class VersionCommand implements Command{
 				Logger::error(TextFormat::RED . "Module " . $module . " is not installed.");
 			}
 		}else{
-			Logger::info(TextFormat::AQUA . "SimpleFramework " . TextFormat::LIGHT_PURPLE . SimpleFramework::PROG_VERSION . TextFormat::WHITE . " Implementing API level: " . TextFormat::GREEN . SimpleFramework::API_LEVEL);
+			Logger::info(TextFormat::AQUA . "SimpleFramework " . TextFormat::LIGHT_PURPLE . Framework::PROG_VERSION . TextFormat::WHITE . " Implementing API level: " . TextFormat::GREEN . Framework::API_LEVEL);
 		}
 		return true;
 	}
@@ -162,7 +162,7 @@ class StopCommand implements Command{
 	}
 
 	public function execute(string $command, array $args) : bool{
-		SimpleFramework::getInstance()->shutdown();
+		Framework::getInstance()->shutdown();
 		return true;
 	}
 }
@@ -184,7 +184,7 @@ class ModulesCommand implements Command{
 		if(count($args) < 1){
 			return false;
 		}
-		$modules = SimpleFramework::getInstance()->getModules();
+		$modules = Framework::getInstance()->getModules();
 		switch(strtolower($args[0])){
 			case "list":
 				$message = "Modules (" . count($modules) . "): ";
@@ -200,7 +200,7 @@ class ModulesCommand implements Command{
 					$name = $args[1];
 					if(isset($modules[$name])){
 						$module = $modules[$name];
-						SimpleFramework::getInstance()->loadModule($module);
+						Framework::getInstance()->loadModule($module);
 					}else{
 						Logger::info(TextFormat::RED . "Module $name is not installed.");
 					}
@@ -213,7 +213,7 @@ class ModulesCommand implements Command{
 					$name = $args[1];
 					if(isset($modules[$name])){
 						$module = $modules[$name];
-						SimpleFramework::getInstance()->unloadModule($module);
+						Framework::getInstance()->unloadModule($module);
 					}else{
 						Logger::info(TextFormat::RED . "Module $name is not installed.");
 					}
@@ -224,11 +224,11 @@ class ModulesCommand implements Command{
 			case "read":
 				if(count($args) > 1){
 					$file = $args[1];
-					if(!file_exists(SimpleFramework::getInstance()->getModulePath() . $file)){
+					if(!file_exists(Framework::getInstance()->getModulePath() . $file)){
 						Logger::info(TextFormat::RED . "File not found.");
 						return true;
 					}
-					SimpleFramework::getInstance()->tryLoadModule(SimpleFramework::getInstance()->getModulePath() . $file);
+					Framework::getInstance()->tryLoadModule(Framework::getInstance()->getModulePath() . $file);
 					return true;
 				}else{
 					return false;
@@ -274,7 +274,7 @@ class PackModule implements Command{
 	public function execute(string $command, array $args) : bool{
 		$moduleName = trim(str_replace(["no-gz", "no-echo"], "", implode(" ", $args)));
 
-		if($moduleName === "" or !(($module = SimpleFramework::getInstance()->getModule($moduleName)) instanceof Module)){
+		if($moduleName === "" or !(($module = Framework::getInstance()->getModule($moduleName)) instanceof Module)){
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
@@ -285,7 +285,7 @@ class PackModule implements Command{
 			return true;
 		}
 
-		$outputDir = SimpleFramework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		$outputDir = Framework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		@mkdir($outputDir);
 		$pharPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . ".phar";
 		if(file_exists($pharPath)){
@@ -302,7 +302,7 @@ class PackModule implements Command{
 			"authors" => $info->getAuthors(),
 			"creationDate" => time()
 		]);
-		$phar->setStub('<?php echo "' . SimpleFramework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\nThis file has been generated using PackModule Command at ' . date("r") . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
+		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\nThis file has been generated using PackModule Command at ' . date("r") . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
 		$phar->setSignatureAlgorithm(\Phar::SHA1);
 		$reflection = new \ReflectionClass("sf\\module\\Module");
 		$file = $reflection->getProperty("file");
@@ -349,9 +349,9 @@ class PackSF implements Command{
 	}
 
 	public function execute(string $command, array $args) : bool{
-		$outputDir = SimpleFramework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		$outputDir = Framework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		@mkdir($outputDir);
-		$framework = SimpleFramework::getInstance();
+		$framework = Framework::getInstance();
 		$pharPath = $outputDir . $framework->getName() . "_" . $framework->getVersion() . ".phar";
 		if(file_exists($pharPath)){
 			Logger::info("Phar file already exists, overwriting...");
@@ -412,7 +412,7 @@ class UnpackModule implements Command{
 
 	public function execute(string $command, array $args) : bool{
 		$moduleName = trim(implode(" ", $args));
-		if($moduleName === "" or !(($module = SimpleFramework::getInstance()->getModule($moduleName)) instanceof Module)){
+		if($moduleName === "" or !(($module = Framework::getInstance()->getModule($moduleName)) instanceof Module)){
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
@@ -423,7 +423,7 @@ class UnpackModule implements Command{
 			return true;
 		}
 
-		$outputDir = SimpleFramework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		$outputDir = Framework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		$folderPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . DIRECTORY_SEPARATOR;
 		if(file_exists($folderPath)){
 			Logger::info("Module files already exist, overwriting...");

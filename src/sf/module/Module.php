@@ -16,11 +16,11 @@
 
 namespace sf\module;
 
-use sf\SimpleFramework;
+use sf\Framework;
 
 //Multi-thread is recommended for plugin design.
 abstract class Module{
-	/** @var SimpleFramework */
+	/** @var Framework */
 	protected $framework;
 	private $loaded = false;
 
@@ -31,7 +31,7 @@ abstract class Module{
 
 	private $dataFolder;
 
-	public final function __construct(SimpleFramework $framework, ModuleInfo $info, string $file){
+	public final function __construct(Framework $framework, ModuleInfo $info, string $file){
 		$this->file = $file;
 		$this->framework = $framework;
 		$this->info = $info;
@@ -47,8 +47,8 @@ abstract class Module{
 	}
 
 	public final function preLoad() :bool{
-		if($this->info->getAPILevel() > SimpleFramework::API_LEVEL){
-			throw new \Exception("Plugin requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . SimpleFramework::API_LEVEL);
+		if($this->info->getAPILevel() > Framework::API_LEVEL){
+			throw new \Exception("Plugin requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
 		}
 		return true;
 	}
