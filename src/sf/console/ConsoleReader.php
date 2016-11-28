@@ -16,9 +16,10 @@
 
 namespace sf\console;
 
+use sf\Thread;
 use sf\util\Util;
 
-class ConsoleReader extends \Thread{
+class ConsoleReader extends Thread{
 	private $readline;
 	/** @var \Threaded */
 	protected $buffer;
@@ -39,6 +40,9 @@ class ConsoleReader extends \Thread{
 
 	public function shutdown(){
 		$this->shutdown = true;
+	}
+
+	public function quit(){
 	}
 
 	private function readLine(){
@@ -85,5 +89,9 @@ class ConsoleReader extends \Thread{
 				$this->readLine();
 			}
 		}
+	}
+
+	public function getThreadName(){
+		return "Console";
 	}
 }

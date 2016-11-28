@@ -25,6 +25,9 @@ namespace sf {
 		@define('sf\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
+	@define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? 0x00 : 0x01));//BIG_ENDIAN or LITTLE_ENDIAN
+	@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
+
 	require_once(\sf\PATH . "src/sf/util/ClassLoader.php");
 
 	$classLoader = new \ClassLoader();
@@ -35,6 +38,7 @@ namespace sf {
 	ThreadManager::init();
 	new Framework($classLoader, $argv);
 
+	//TODO: log file
 	Logger::info("Stopping other threads");
 
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
