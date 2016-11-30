@@ -233,50 +233,32 @@ class Framework{
 	}
 
 	private function processCommandLineOptions(array $argv) : bool{
-		/*
-		 * Command Line Options:
-		 * php SimpleFramework.phar (--enable-ansi) (options)
-		 * -s Pure command line mode
-		 * -v Display the version
-		 * -c Color mode
-		 * -l Full logger
-		 * -h Display the help
-		 * -f [FILE] Load a module
-		 * -e [COMMAND] Execute a command
-		 * -a No output
-		 */
-
 		foreach($argv as $c => $arg){
 			switch($arg){
 				case "-s":
 					$this->commandLineOnly = true;
-					break;
-				case "-w":
-					Logger::$noColor = true;
-					Logger::$fullDisplay = false;
 					break;
 				case "-v":
 					Logger::info(self::PROG_NAME . ' version "' . self::PROG_VERSION . '"');
 					Logger::info("SimpleFramework API Level " . self::API_LEVEL . " [" . self::CODENAME . "]");
 					break;
 				case "-c":
-					Logger::$noColor = false;
+					Logger::$noColor = true;
 					break;
 				case "-l":
-					Logger::$fullDisplay = true;
+					Logger::$fullDisplay = false;
 					break;
 				case "-h":
 					Logger::info("Usage: sfcli");
 					Logger::info("       sfcli [options]");
 					Logger::info("  -a           No command line output");
-					Logger::info("  -c           Display in color mode");
+					Logger::info("  -c           Display in no color mode");
 					Logger::info("  -e [COMMAND] Execute a registered command");
 					Logger::info("  -f [FILE]    Load a module");
 					Logger::info("  -h           Display this message");
-					Logger::info("  -l           Logger with time and prefix");
-					Logger::info("  -s           Execute in pure command line mode");
+					Logger::info("  -l           Logger without time and prefix");
+					Logger::info("  -s           Execute in pure command line mode, with -n already");
 					Logger::info("  -v           Display version of this program");
-					Logger::info("  -w           No color and no prefix");
 					break;
 				case "-a":
 					Logger::$noOutput = true;
