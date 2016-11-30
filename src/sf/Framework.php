@@ -107,6 +107,10 @@ class Framework{
 		return self::$obj;
 	}
 
+	public function getScheduler() : ServerScheduler{
+		return $this->scheduler;
+	}
+
 	public function getModules(){
 		return $this->modules;
 	}
@@ -298,9 +302,11 @@ class Framework{
 				@mkdir("modules");
 				@mkdir("data");
 				$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
-					"auto-load-modules" => true
+					"auto-load-modules" => true,
+					"log-file" => ""
 				]);
 				$this->config->save();
+				Logger::setLogFile($this->config->get("log-file", ""));
 				Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 				Logger::info("Starting Console Daemon...");
@@ -352,6 +358,7 @@ class Framework{
 				$this->unloadModule($module);
 			}
 		}
+		$this->config->save();
 		$this->scheduler->cancelAllTasks();
 		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
 		$this->console->shutdown();

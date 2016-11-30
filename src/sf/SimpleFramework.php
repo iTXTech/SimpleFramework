@@ -34,11 +34,12 @@ namespace sf {
 	$classLoader->addPath(\sf\PATH . "src");
 	$classLoader->register(true);
 
+	date_default_timezone_set('Asia/Shanghai');
+
 	Terminal::init();
 	ThreadManager::init();
 	new Framework($classLoader, $argv);
 
-	//TODO: log file
 	Logger::info("Stopping other threads");
 
 	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
@@ -46,5 +47,5 @@ namespace sf {
 		$thread->quit();
 	}
 
-	Logger::info("SimpleFramework is stopped.");
+	echo "SimpleFramework is stopped." . PHP_EOL;
 }

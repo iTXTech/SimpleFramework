@@ -30,6 +30,14 @@ class Logger{
 	public static $fullDisplay = true;
 	public static $noOutput = false;
 
+	private static $logfile = null;
+
+
+	public static function setLogFile(string $logfile){
+		touch($logfile);
+		self::$logfile = $logfile;
+	}
+
 	public static function emergency($message, $name = "EMERGENCY"){
 		self::send($message, $name, TextFormat::RED);
 	}
@@ -128,23 +136,27 @@ class Logger{
 	}
 
 	protected static function send($message, $prefix, $color){
-		if(self::$noOutput){
-			return;
-		}
 		if(self::$fullDisplay){
 			$now = time();
 			$class = @end(explode('\\', debug_backtrace()[2]['class']));
 			$class = $class == "" ? "Console" : $class;
-			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
+			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("G:i:s", $now) . "] " . TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
 		}else{
 			$message = TextFormat::toANSI($message);
 		}
 		$cleanMessage = TextFormat::clean($message);
 
+		if(self::$noOutput){
+			return;
+		}
 		if(!Terminal::hasFormattingCodes() or self::$noColor){
 			echo $cleanMessage . PHP_EOL;
 		}else{
 			echo $message . PHP_EOL;
+		}
+
+		if(self::$logfile != null){
+			file_put_contents(self::$logfile, $cleanMessage . PHP_EOL, FILE_APPEND);
 		}
 	}
 }
