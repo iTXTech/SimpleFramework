@@ -29,6 +29,7 @@ class ModuleInfo{
 	private $version;
 	private $description = null;
 	private $authors = [];
+	private $website = null;
 	private $loadMethod;
 	private $loadOrder = self::LOAD_ORDER_MIN;
 
@@ -63,37 +64,44 @@ class ModuleInfo{
 		if(isset($info["order"])){
 			$this->loadOrder = min(self::LOAD_ORDER_MAX, max(self::LOAD_ORDER_MIN, (int)$info["order"]));
 		}
+		if(isset($info["website"])){
+			$this->website = $info["website"];
+		}
 	}
 
-	public final function getLoadMethod() : int{
+	public function getLoadMethod() : int{
 		return $this->loadMethod;
 	}
 
-	public final function getName() : string{
+	public function getName() : string{
 		return $this->name;
 	}
 
-	public final function getVersion() : string{
+	public function getVersion() : string{
 		return $this->version;
 	}
 
-	public final function getDescription() : string{
+	public function getDescription() : string{
 		return $this->description;
 	}
 
-	public final function getAuthors() : array{
+	public function getAuthors() : array{
 		return $this->authors;
 	}
 
-	public final function getAPILevel() : int{
+	public function getAPILevel() : int{
 		return $this->api;
 	}
 
-	public final function getMain(){
+	public function getMain(){
 		return $this->main;
 	}
 
-	public final function getLoadOrder() : int{
+	public function getLoadOrder() : int{
 		return $this->loadOrder;
+	}
+
+	public function getWebsite() : string {
+		return $this->website;
 	}
 }

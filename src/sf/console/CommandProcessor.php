@@ -137,7 +137,12 @@ class VersionCommand implements Command{
 				$module = $modules[$module];
 				Logger::info(TextFormat::YELLOW . "--------- " . TextFormat::WHITE . "Version: " . $module->getInfo()->getName() . TextFormat::YELLOW . " ---------");
 				Logger::info(TextFormat::GOLD . "Version: " . TextFormat::WHITE . $module->getInfo()->getVersion());
-				Logger::info(TextFormat::GOLD . "Description: " . TextFormat::WHITE . $module->getInfo()->getDescription());
+				if(($des = $module->getInfo()->getDescription()) != null){
+					Logger::info(TextFormat::GOLD . "Description: " . TextFormat::WHITE . $des);
+				}
+				if(($website = $module->getInfo()->getWebsite()) != null){
+					Logger::info(TextFormat::GOLD . "Website: " . TextFormat::WHITE . $website);
+				}
 			}else{
 				Logger::error(TextFormat::RED . "Module " . $module . " is not installed.");
 			}
