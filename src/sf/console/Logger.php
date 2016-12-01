@@ -30,11 +30,13 @@ class Logger{
 	public static $fullDisplay = true;
 	public static $noOutput = false;
 
-	private static $logfile = null;
+	private static $logfile = "";
 
 
 	public static function setLogFile(string $logfile){
-		touch($logfile);
+		if($logfile != ""){
+			touch($logfile);
+		}
 		self::$logfile = $logfile;
 	}
 
@@ -155,7 +157,7 @@ class Logger{
 			echo $message . PHP_EOL;
 		}
 
-		if(self::$logfile != null){
+		if(self::$logfile != ""){
 			file_put_contents(self::$logfile, $cleanMessage . PHP_EOL, FILE_APPEND);
 		}
 	}
