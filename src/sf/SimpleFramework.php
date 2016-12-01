@@ -19,14 +19,24 @@ namespace sf {
 	use sf\console\Logger;
 	use sf\console\Terminal;
 
+	if(version_compare("7.0", PHP_VERSION) > 0){
+		echo "You must use PHP >= 7.0" . PHP_EOL;
+		exit(1);
+	}
+	if(!extension_loaded("pthreads")){
+		echo "Unable to find the pthreads extension" . PHP_EOL;
+		exit(1);
+	}
+	if(!extension_loaded("curl")){
+		echo "Unable to find the cURL extension." . PHP_EOL;
+		exit(1);
+	}
+
 	if(\Phar::running(true) !== ""){
 		@define('sf\PATH', \Phar::running(true) . "/");
 	}else{
 		@define('sf\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
-
-	@define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? 0x00 : 0x01));//BIG_ENDIAN or LITTLE_ENDIAN
-	@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 
 	require_once(\sf\PATH . "src/sf/util/ClassLoader.php");
 

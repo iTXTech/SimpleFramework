@@ -27,7 +27,7 @@ use sf\util\Config;
 
 class Framework{
 	const PROG_NAME = "SimpleFrameworkCLI";
-	const PROG_VERSION = "1.1.1";
+	const PROG_VERSION = "1.1.2";
 	const API_LEVEL = 2;
 	const CODENAME = "Blizzard";
 
