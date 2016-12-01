@@ -249,7 +249,7 @@ class Framework{
 				case "-c":
 					Logger::$noColor = true;
 					break;
-				case "-l":
+				case "-w":
 					Logger::$fullDisplay = false;
 					break;
 				case "-h":
@@ -260,9 +260,10 @@ class Framework{
 					Logger::info("  -e [COMMAND] Execute a registered command");
 					Logger::info("  -f [FILE]    Load a module");
 					Logger::info("  -h           Display this message");
-					Logger::info("  -l           Logger without time and prefix");
-					Logger::info("  -s           Execute in pure command line mode, with -n already");
+					Logger::info("  -l [FILE]    Log to a specified file, only work with -s");
+					Logger::info("  -s           Execute in pure command line mode");
 					Logger::info("  -v           Display version of this program");
+					Logger::info("  -w           Logger without time and prefix");
 					break;
 				case "-a":
 					Logger::$noOutput = true;
@@ -278,6 +279,13 @@ class Framework{
 						break;
 					}
 					$this->tryLoadModule($file);
+					break;
+				case "-l":
+					if(!isset($argv[$c + 1])){
+						Logger::error("No input file.");
+						break;
+					}
+					Logger::setLogFile($argv[$c + 1]);
 					break;
 				case "-e":
 					if(!isset($argv[$c + 1])){
