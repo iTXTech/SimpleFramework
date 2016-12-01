@@ -49,13 +49,9 @@ class ModuleInfo{
 			throw new \Exception("Invalid plugin main class.");
 		}
 
-		if(isset($info["description"])){
-			$this->description = $info["description"];
-		}
+		$this->description = $info["description"] ?? null;
 		$this->authors = [];
-		if(isset($info["author"])){
-			$this->authors[] = $info["author"];
-		}
+		$this->authors[] = $info["author"] ?? [];
 		if(isset($info["authors"])){
 			foreach($info["authors"] as $author){
 				$this->authors[] = $author;
@@ -64,9 +60,9 @@ class ModuleInfo{
 		if(isset($info["order"])){
 			$this->loadOrder = min(self::LOAD_ORDER_MAX, max(self::LOAD_ORDER_MIN, (int)$info["order"]));
 		}
-		if(isset($info["website"])){
-			$this->website = $info["website"];
-		}
+		$this->website = $info["website"] ?? null;
+
+		//TODO: dependency
 	}
 
 	public function getLoadMethod() : int{
