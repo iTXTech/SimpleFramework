@@ -16,6 +16,7 @@
 
 namespace sf\module;
 
+use sf\console\Logger;
 use sf\Framework;
 
 //Multi-thread is recommended for plugin design.
@@ -46,9 +47,25 @@ abstract class Module{
 		$this->loaded = $loaded;
 	}
 
-	public final function preLoad() :bool{
+	public final function preLoad() : bool{
 		if($this->info->getAPILevel() > Framework::API_LEVEL){
 			throw new \Exception("Plugin requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
+		}
+		return $this->checkDependency();
+	}
+
+	protected function checkDependency(){
+		$dependencies = $this->info->getDependency();
+		foreach($dependencies as $dependency){
+			$name = $dependency["name"];
+			$version = $dependency["version"];
+			if(($module = $this->framework->getModule($name)) instanceof Module){
+				if($module->getInfo()->getVersion() == $version){
+					continue;
+				}
+			}
+			Logger::error("Module " . '"' . $this->getInfo()->getName() . '"' . " requires dependency module " . '"' . $name . '"' . " version " . $version);
+			return false;
 		}
 		return true;
 	}

@@ -32,6 +32,7 @@ class ModuleInfo{
 	private $website = null;
 	private $loadMethod;
 	private $loadOrder = self::LOAD_ORDER_MIN;
+	private $dependency = [];
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -62,7 +63,11 @@ class ModuleInfo{
 		}
 		$this->website = $info["website"] ?? null;
 
-		//TODO: dependency
+		$this->dependency = $info["dependency"] ?? [];
+	}
+
+	public function getDependency() : array {
+		return $this->dependency;
 	}
 
 	public function getLoadMethod() : int{
