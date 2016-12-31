@@ -303,7 +303,7 @@ class Framework{
 		return false;
 	}
 
-	public function start(array $argv){
+	private function start(array $argv){
 		try{
 			if(!$this->processCommandLineOptions($argv)){
 				$this->displayTitle("SimpleFramework is starting...");
@@ -343,7 +343,7 @@ class Framework{
 	}
 
 	//main thread tick, not recommend for modules
-	public function tick(){
+	private function tick(){
 		while(!$this->shutdown){
 			$this->currentTick++;
 			foreach($this->modules as $module){
@@ -373,7 +373,7 @@ class Framework{
 		$this->console->notify();
 	}
 
-	public function checkConsole(){
+	private function checkConsole(){
 		while(($line = $this->console->getLine()) != null){
 			$this->commandProcessor->dispatchCommand($line);
 		}
