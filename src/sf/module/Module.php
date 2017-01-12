@@ -35,7 +35,7 @@ abstract class Module{
 		$this->file = $file;
 		$this->framework = $framework;
 		$this->info = $info;
-		$this->dataFolder = $framework->getModuleDataPath() . $info->getName();
+		$this->dataFolder = $framework->getModuleDataPath() . $info->getName() . DIRECTORY_SEPARATOR;
 	}
 
 	public function getDataFolder() : string{
