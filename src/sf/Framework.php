@@ -27,7 +27,7 @@ use sf\util\Config;
 
 class Framework{
 	const PROG_NAME = "SimpleFrameworkCLI";
-	const PROG_VERSION = "1.1.1";
+	const PROG_VERSION = "1.1.2";
 	const API_LEVEL = 2;
 	const CODENAME = "Blizzard";
 
@@ -105,6 +105,10 @@ class Framework{
 
 	public static function getInstance() : Framework{
 		return self::$obj;
+	}
+
+	public function getScheduler() : ServerScheduler{
+		return $this->scheduler;
 	}
 
 	public function getModules(){
@@ -245,7 +249,7 @@ class Framework{
 				case "-c":
 					Logger::$noColor = true;
 					break;
-				case "-l":
+				case "-w":
 					Logger::$fullDisplay = false;
 					break;
 				case "-h":
@@ -256,9 +260,10 @@ class Framework{
 					Logger::info("  -e [COMMAND] Execute a registered command");
 					Logger::info("  -f [FILE]    Load a module");
 					Logger::info("  -h           Display this message");
-					Logger::info("  -l           Logger without time and prefix");
-					Logger::info("  -s           Execute in pure command line mode, with -n already");
+					Logger::info("  -l [FILE]    Log to a specified file, only work with -s");
+					Logger::info("  -s           Execute in pure command line mode");
 					Logger::info("  -v           Display version of this program");
+					Logger::info("  -w           Logger without time and prefix");
 					break;
 				case "-a":
 					Logger::$noOutput = true;
@@ -274,6 +279,13 @@ class Framework{
 						break;
 					}
 					$this->tryLoadModule($file);
+					break;
+				case "-l":
+					if(!isset($argv[$c + 1])){
+						Logger::error("No input file.");
+						break;
+					}
+					Logger::setLogFile($argv[$c + 1]);
 					break;
 				case "-e":
 					if(!isset($argv[$c + 1])){
@@ -291,16 +303,18 @@ class Framework{
 		return false;
 	}
 
-	public function start(array $argv){
+	private function start(array $argv){
 		try{
 			if(!$this->processCommandLineOptions($argv)){
 				$this->displayTitle("SimpleFramework is starting...");
 				@mkdir("modules");
 				@mkdir("data");
 				$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
-					"auto-load-modules" => true
+					"auto-load-modules" => true,
+					"log-file" => ""
 				]);
 				$this->config->save();
+				Logger::setLogFile($this->config->get("log-file", ""));
 				Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 				Logger::info("Starting Console Daemon...");
@@ -329,7 +343,7 @@ class Framework{
 	}
 
 	//main thread tick, not recommend for modules
-	public function tick(){
+	private function tick(){
 		while(!$this->shutdown){
 			$this->currentTick++;
 			foreach($this->modules as $module){
@@ -352,13 +366,14 @@ class Framework{
 				$this->unloadModule($module);
 			}
 		}
+		$this->config->save();
 		$this->scheduler->cancelAllTasks();
 		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
 		$this->console->shutdown();
 		$this->console->notify();
 	}
 
-	public function checkConsole(){
+	private function checkConsole(){
 		while(($line = $this->console->getLine()) != null){
 			$this->commandProcessor->dispatchCommand($line);
 		}
