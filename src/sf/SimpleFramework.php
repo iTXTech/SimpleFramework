@@ -19,6 +19,8 @@ namespace sf {
 	use sf\console\Logger;
 	use sf\console\Terminal;
 
+	ini_set("memory_limit", -1);
+
 	if(version_compare("7.0", PHP_VERSION) > 0){
 		echo "You must use PHP >= 7.0" . PHP_EOL;
 		exit(1);
