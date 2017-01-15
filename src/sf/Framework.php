@@ -311,6 +311,7 @@ class Framework{
 				@mkdir("data");
 				$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
 					"auto-load-modules" => true,
+					"async-workers" => 2,
 					"log-file" => ""
 				]);
 				$this->config->save();
@@ -322,6 +323,7 @@ class Framework{
 				Logger::info("Starting Command Processor...");
 				$this->commandProcessor = new CommandProcessor($this);
 				Logger::info("Starting multi-threading scheduler...");
+				ServerScheduler::$WORKERS = $this->config->get("async-workers", 2);
 				$this->scheduler = new ServerScheduler();
 				if($this->config->get("auto-load-modules", true)){
 					$this->loadModules();
