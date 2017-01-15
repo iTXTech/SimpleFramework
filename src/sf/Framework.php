@@ -390,11 +390,11 @@ class Framework{
 		foreach($this->titleQueue as $prop => $contents){
 			$message .= " | " . $prop . " " . $contents;
 		}
-		$this->displayTitle("SimpleFramework" . $message);
+		self::displayTitle("SimpleFramework" . $message);
 		$this->titleQueue = [];
 	}
 
-	private function displayTitle(string $title){
+	public static function displayTitle(string $title){
 		echo "\x1b]0;" . $title . "\x07";
 	}
 }
