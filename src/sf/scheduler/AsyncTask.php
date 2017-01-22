@@ -52,6 +52,7 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 	}
 
 	public function run(){
+		date_default_timezone_set('Asia/Shanghai');
 		$this->result = null;
 		$this->isGarbage = false;
 
