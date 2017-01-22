@@ -93,4 +93,50 @@ abstract class Module{
 
 		return null;
 	}
+
+	/**
+	 * @param string $filename
+	 * @param bool   $replace
+	 *
+	 * @return bool
+	 */
+	public function saveResource($filename, $replace = false){
+		if(trim($filename) === ""){
+			return false;
+		}
+
+		if(($resource = $this->getResource($filename)) === null){
+			return false;
+		}
+
+		$out = $this->dataFolder . $filename;
+		if(!file_exists(dirname($out))){
+			mkdir(dirname($out), 0755, true);
+		}
+
+		if(file_exists($out) and $replace !== true){
+			return false;
+		}
+
+		$ret = stream_copy_to_stream($resource, $fp = fopen($out, "wb")) > 0;
+		fclose($fp);
+		fclose($resource);
+		return $ret;
+	}
+
+	/**
+	 * Returns all the resources packaged with the plugin
+	 *
+	 * @return string[]
+	 */
+	public function getResources(){
+		$resources = [];
+		if(is_dir($this->file . "resources/")){
+			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file . "resources/")) as $resource){
+				$resources[] = $resource;
+			}
+		}
+
+		return $resources;
+	}
 }
