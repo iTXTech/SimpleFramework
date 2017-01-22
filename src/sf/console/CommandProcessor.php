@@ -39,9 +39,9 @@ class CommandProcessor{
 		$this->register(new ModulesCommand(), "modules");
 		$this->register(new ClearCommand(), "clear");
 
-		$this->register(new PackModule(), "pm");
-		$this->register(new PackSF(), "psf");
-		$this->register(new UnpackModule(), "um");
+		$this->register(new PackModuleCommand(), "pm");
+		$this->register(new PackSFCommand(), "psf");
+		$this->register(new UnpackModuleCommand(), "um");
 	}
 
 	public function register(Command $command, string $name){
@@ -263,7 +263,7 @@ class ClearCommand implements Command{
 	}
 }
 
-class PackModule implements Command{
+class PackModuleCommand implements Command{
 	public function getName() : string{
 		return "pm";
 	}
@@ -340,7 +340,7 @@ class PackModule implements Command{
 	}
 }
 
-class PackSF implements Command{
+class PackSFCommand implements Command{
 	public function getName() : string{
 		return "psf";
 	}
@@ -402,7 +402,7 @@ class PackSF implements Command{
 	}
 }
 
-class UnpackModule implements Command{
+class UnpackModuleCommand implements Command{
 	public function getName() : string{
 		return "um";
 	}

@@ -294,6 +294,7 @@ class Framework{
 						Logger::error("No input command.");
 						break;
 					}
+					$this->commandProcessor = new CommandProcessor($this);
 					$this->commandProcessor->dispatchCommand($argv[$c + 1]);
 					break;
 				case "-t":
@@ -327,7 +328,9 @@ class Framework{
 				Logger::info("Starting Console Daemon...");
 				$this->console = new ConsoleReader();
 				Logger::info("Starting Command Processor...");
-				$this->commandProcessor = new CommandProcessor($this);
+				if(!$this->commandProcessor instanceof CommandProcessor){
+					$this->commandProcessor = new CommandProcessor($this);
+				}
 				Logger::info("Starting multi-threading scheduler...");
 				ServerScheduler::$WORKERS = $this->config->get("async-workers", 2);
 				$this->scheduler = new ServerScheduler();
