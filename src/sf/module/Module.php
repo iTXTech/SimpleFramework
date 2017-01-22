@@ -85,4 +85,12 @@ abstract class Module{
 		return $this->info;
 	}
 
+	public function getResource($filename){
+		$filename = rtrim(str_replace("\\", "/", $filename), "/");
+		if(file_exists($this->file . "resources/" . $filename)){
+			return fopen($this->file . "resources/" . $filename, "rb");
+		}
+
+		return null;
+	}
 }
