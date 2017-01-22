@@ -63,6 +63,7 @@ class Framework{
 	private $moduleDataPath;
 
 	private $commandLineOnly = false;
+	private $displayTitle = true;
 
 	public function __construct(\ClassLoader $classLoader, array $argv){
 		if(self::$obj === null){
@@ -244,7 +245,7 @@ class Framework{
 					break;
 				case "-v":
 					Logger::info(self::PROG_NAME . ' version "' . self::PROG_VERSION . '"');
-					Logger::info("SimpleFramework API Level " . self::API_LEVEL . " [" . self::CODENAME . "]");
+					Logger::info("SFCLI API Level " . self::API_LEVEL . " [" . self::CODENAME . "]");
 					break;
 				case "-c":
 					Logger::$noColor = true;
@@ -255,15 +256,16 @@ class Framework{
 				case "-h":
 					Logger::info("Usage: sfcli");
 					Logger::info("       sfcli [options]");
-					Logger::info("  -a           No command line output");
-					Logger::info("  -c           Display in no color mode");
-					Logger::info("  -e [COMMAND] Execute a registered command");
-					Logger::info("  -f [FILE]    Load a module");
-					Logger::info("  -h           Display this message");
-					Logger::info("  -l [FILE]    Log to a specified file, only work with -s");
-					Logger::info("  -s           Execute in pure command line mode");
-					Logger::info("  -v           Display version of this program");
-					Logger::info("  -w           Logger without time and prefix");
+					Logger::info("  -a           No command line output.");
+					Logger::info("  -c           Display in no color mode.");
+					Logger::info("  -e [COMMAND] Execute a registered command.");
+					Logger::info("  -f [FILE]    Load a module.");
+					Logger::info("  -h           Display this message.");
+					Logger::info("  -l [FILE]    Log to a specified file, only work with -s .");
+					Logger::info("  -s           Execute in pure command line mode.");
+					Logger::info("  -t           Do not display title.");
+					Logger::info("  -v           Display version of this program.");
+					Logger::info("  -w           Logger without time and prefix.");
 					break;
 				case "-a":
 					Logger::$noOutput = true;
@@ -294,6 +296,9 @@ class Framework{
 					}
 					$this->commandProcessor->dispatchCommand($argv[$c + 1]);
 					break;
+				case "-t":
+					$this->displayTitle = false;
+					break;
 			}
 		}
 
@@ -312,7 +317,8 @@ class Framework{
 				$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
 					"auto-load-modules" => true,
 					"async-workers" => 2,
-					"log-file" => ""
+					"log-file" => "",
+					"display-title" => true
 				]);
 				$this->config->save();
 				Logger::setLogFile($this->config->get("log-file", ""));
@@ -328,6 +334,7 @@ class Framework{
 				if($this->config->get("auto-load-modules", true)){
 					$this->loadModules();
 				}
+				$this->displayTitle = $this->config->get("display-title", true);
 				Logger::notice("Done! Type 'help' for help.");
 				$this->tick();
 			}
@@ -386,11 +393,13 @@ class Framework{
 	}
 
 	private function combineTitle(){
-		$message = "";
-		foreach($this->titleQueue as $prop => $contents){
-			$message .= " | " . $prop . " " . $contents;
+		if($this->displayTitle){
+			$message = "";
+			foreach($this->titleQueue as $prop => $contents){
+				$message .= " | " . $prop . " " . $contents;
+			}
+			self::displayTitle("SimpleFramework" . $message);
 		}
-		self::displayTitle("SimpleFramework" . $message);
 		$this->titleQueue = [];
 	}
 
