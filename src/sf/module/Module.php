@@ -33,7 +33,7 @@ abstract class Module{
 	private $dataFolder;
 
 	public final function __construct(Framework $framework, ModuleInfo $info, string $file){
-		$this->file = $file;
+		$this->file = $file . DIRECTORY_SEPARATOR;
 		$this->framework = $framework;
 		$this->info = $info;
 		$this->dataFolder = $framework->getModuleDataPath() . $info->getName() . DIRECTORY_SEPARATOR;
