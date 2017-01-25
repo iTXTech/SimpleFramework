@@ -1,7 +1,7 @@
-SimpleFrameworkCLI
+SimpleFramework(CLI)
 ===================
 
-__The fast, light-weighted, easy-to-extend php framework__
+__The fast, light-weighted, easy-to-extend php command line framework__
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ __The fast, light-weighted, easy-to-extend php framework__
 
 Introduction
 -------------
-SimpleFrameworkCLI is a php framework designed for small command line php programs (we call it a module).<br>
+SimpleFramework(CLI) is a php framework designed for small command line php programs (a module).<br>
 Here are some features:
 
 * Logger system
@@ -35,4 +35,5 @@ __[Releases](https://github.com/PeratX/SimpleFramework/releases)__
 
 Modules
 -------------
-__[SFModules](https://github.com/PeratX/SFModules)__
+* __[SimpleGUI](https://github.com/PeratX/SimpleGUI)__ - The GUI SDK based on [php-gui](https://github.com/gabrielrcouto/php-gui) for SimpleFramework(CLI).
+* __[PhQAgent - NG](https://github.com/PhQAgent/PhQAgent/tree/ng)__ - WebQQ API for PHP.
