@@ -139,4 +139,8 @@ abstract class Module{
 
 		return $resources;
 	}
+
+	public function getFile() : string{
+		return $this->file;
+	}
 }
