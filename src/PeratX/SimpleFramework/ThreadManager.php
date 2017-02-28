@@ -14,7 +14,7 @@
  * @author PeratX
  */
 
-namespace sf;
+namespace PeratX\SimpleFramework;
 
 class ThreadManager extends \Volatile{
 

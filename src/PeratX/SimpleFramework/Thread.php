@@ -14,16 +14,15 @@
  * @author PeratX
  */
 
-namespace sf;
+namespace PeratX\SimpleFramework;
 
 /**
  * This class must be extended by all custom threading classes
  */
-abstract class Worker extends \Worker{
+abstract class Thread extends \Thread{
 
 	/** @var \ClassLoader */
 	protected $classLoader;
-	
 	protected $isKilled = false;
 
 	public function getClassLoader(){
@@ -66,12 +65,8 @@ abstract class Worker extends \Worker{
 		$this->isKilled = true;
 
 		$this->notify();
-		
-		if($this->isRunning()){
-			$this->shutdown();
-			$this->notify();
-			$this->unstack();
-		}elseif(!$this->isJoined()){
+
+		if(!$this->isJoined()){
 			if(!$this->isTerminated()){
 				$this->join();
 			}

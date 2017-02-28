@@ -14,10 +14,10 @@
  * @author PeratX
  */
 
-namespace sf\scheduler;
+namespace PeratX\SimpleFramework\Scheduler;
 
-use sf\console\Logger;
-use sf\Worker;
+use PeratX\SimpleFramework\Console\Logger;
+use PeratX\SimpleFramework\Worker;
 
 class AsyncWorker extends Worker{
 

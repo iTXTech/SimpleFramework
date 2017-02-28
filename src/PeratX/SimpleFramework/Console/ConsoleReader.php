@@ -14,10 +14,10 @@
  * @author PeratX
  */
 
-namespace sf\console;
+namespace PeratX\SimpleFramework\Console;
 
-use sf\Thread;
-use sf\util\Util;
+use PeratX\SimpleFramework\Thread;
+use PeratX\SimpleFramework\Util\Util;
 
 class ConsoleReader extends Thread{
 	private $readline;

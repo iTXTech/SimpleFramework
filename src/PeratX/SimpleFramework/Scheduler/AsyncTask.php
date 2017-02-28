@@ -14,8 +14,8 @@
  * @author PeratX
  */
 
-namespace sf\scheduler;
-use sf\Framework;
+namespace PeratX\SimpleFramework\Scheduler;
+use PeratX\SimpleFramework\Framework;
 
 /**
  * Class used to run async tasks in other threads.

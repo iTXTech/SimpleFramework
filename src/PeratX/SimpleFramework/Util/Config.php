@@ -14,9 +14,9 @@
  * @author PeratX
  */
 
-namespace sf\util;
+namespace PeratX\SimpleFramework\Util;
 
-use sf\console\Logger;
+use PeratX\SimpleFramework\Console\Logger;
 
 /**
  * Class Config

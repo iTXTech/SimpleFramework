@@ -14,10 +14,10 @@
  * @author PeratX
  */
 
-namespace sf\module;
+namespace PeratX\SimpleFramework\Module;
 
-use sf\console\Logger;
-use sf\Framework;
+use PeratX\SimpleFramework\Console\Logger;
+use PeratX\SimpleFramework\Framework;
 
 //Multi-thread is recommended for plugin design.
 abstract class Module{

@@ -14,7 +14,7 @@
  * @author PeratX
  */
 
-namespace sf\module;
+namespace PeratX\SimpleFramework\Module;
 
 class ModuleInfo{
 	const LOAD_METHOD_PACKAGE = 0;

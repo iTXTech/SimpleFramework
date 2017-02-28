@@ -14,10 +14,10 @@
  * @author PeratX
  */
 
-namespace sf {
+namespace PeratX\SimpleFramework {
 
-	use sf\console\Logger;
-	use sf\console\Terminal;
+	use PeratX\SimpleFramework\Console\Logger;
+	use PeratX\SimpleFramework\Console\Terminal;
 
 	ini_set("memory_limit", -1);
 
@@ -40,7 +40,7 @@ namespace sf {
 		@define('sf\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
-	require_once(\sf\PATH . "src/sf/util/ClassLoader.php");
+	require_once(\sf\PATH . "src/PeratX/SimpleFramework/Util/ClassLoader.php");
 
 	$classLoader = new \ClassLoader();
 	$classLoader->addPath(\sf\PATH . "src");

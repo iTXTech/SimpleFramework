@@ -14,11 +14,11 @@
  * @author PeratX
  */
 
-namespace sf\console;
+namespace PeratX\SimpleFramework\Console;
 
-use sf\module\Module;
-use sf\module\ModuleInfo;
-use sf\Framework;
+use PeratX\SimpleFramework\Module\Module;
+use PeratX\SimpleFramework\Module\ModuleInfo;
+use PeratX\SimpleFramework\Framework;
 
 class CommandProcessor{
 	/** @var Command[] */
@@ -309,7 +309,7 @@ class PackModuleCommand implements Command{
 		]);
 		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\nThis file has been generated using PackModule Command at ' . date("r") . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
 		$phar->setSignatureAlgorithm(\Phar::SHA1);
-		$reflection = new \ReflectionClass("sf\\module\\Module");
+		$reflection = new \ReflectionClass("sf\\Module\\Module");
 		$file = $reflection->getProperty("file");
 		$file->setAccessible(true);
 		$filePath = rtrim(str_replace("\\", "/", $file->getValue($module)), "/") . "/";
@@ -436,7 +436,7 @@ class UnpackModuleCommand implements Command{
 			@mkdir($folderPath);
 		}
 
-		$reflection = new \ReflectionClass("sf\\module\\Module");
+		$reflection = new \ReflectionClass("sf\\Module\\Module");
 		$file = $reflection->getProperty("file");
 		$file->setAccessible(true);
 		$pharPath = str_replace("\\", "/", rtrim($file->getValue($module), "\\/"));

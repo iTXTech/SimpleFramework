@@ -14,9 +14,9 @@
  * @author PeratX
  */
 
-namespace sf\console;
+namespace PeratX\SimpleFramework\Console;
 
-use sf\util\Util;
+use PeratX\SimpleFramework\Util\Util;
 
 abstract class Terminal{
 	public static $FORMAT_BOLD = "";

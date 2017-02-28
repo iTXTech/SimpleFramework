@@ -14,7 +14,7 @@
  * @author PeratX
  */
 
-namespace sf\console;
+namespace PeratX\SimpleFramework\Console;
 
 class Logger{
 	const EMERGENCY = "emergency";

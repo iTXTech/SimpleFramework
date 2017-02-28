@@ -17,11 +17,11 @@
 /**
  * Task scheduling related classes
  */
-namespace sf\scheduler;
+namespace PeratX\SimpleFramework\Scheduler;
 
-use sf\console\Logger;
-use sf\Framework;
-use sf\util\ReversePriorityQueue;
+use PeratX\SimpleFramework\Console\Logger;
+use PeratX\SimpleFramework\Framework;
+use PeratX\SimpleFramework\Util\ReversePriorityQueue;
 
 class ServerScheduler{
 	public static $WORKERS = 2;

@@ -14,7 +14,7 @@
  * @author PeratX
  */
 
-namespace sf\util;
+namespace PeratX\SimpleFramework\Util;
 
 class ReversePriorityQueue extends \SplPriorityQueue{
 

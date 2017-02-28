@@ -14,7 +14,7 @@
  * @author PeratX
  */
 
-namespace sf\console;
+namespace PeratX\SimpleFramework\Console;
 
 /**
  * Class used to handle Minecraft chat format, and convert it to other formats like ANSI or HTML

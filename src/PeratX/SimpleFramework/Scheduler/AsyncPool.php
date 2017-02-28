@@ -14,10 +14,10 @@
  * @author PeratX
  */
 
-namespace sf\scheduler;
+namespace PeratX\SimpleFramework\Scheduler;
 
-use sf\console\Logger;
-use sf\Framework;
+use PeratX\SimpleFramework\Console\Logger;
+use PeratX\SimpleFramework\Framework;
 
 class AsyncPool{
 

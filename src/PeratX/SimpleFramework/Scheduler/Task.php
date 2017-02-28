@@ -14,7 +14,7 @@
  * @author PeratX
  */
 
-namespace sf\scheduler;
+namespace PeratX\SimpleFramework\Scheduler;
 
 abstract class Task{
 

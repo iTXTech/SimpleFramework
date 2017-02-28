@@ -14,22 +14,22 @@
  * @author PeratX
  */
 
-namespace sf;
+namespace PeratX\SimpleFramework;
 
-use sf\console\CommandProcessor;
-use sf\console\ConsoleReader;
-use sf\console\Logger;
-use sf\console\TextFormat;
-use sf\module\Module;
-use sf\module\ModuleInfo;
-use sf\scheduler\ServerScheduler;
-use sf\util\Config;
+use PeratX\SimpleFramework\Console\CommandProcessor;
+use PeratX\SimpleFramework\Console\ConsoleReader;
+use PeratX\SimpleFramework\Console\Logger;
+use PeratX\SimpleFramework\Console\TextFormat;
+use PeratX\SimpleFramework\Module\Module;
+use PeratX\SimpleFramework\Module\ModuleInfo;
+use PeratX\SimpleFramework\Scheduler\ServerScheduler;
+use PeratX\SimpleFramework\Util\Config;
 
 class Framework{
-	const PROG_NAME = "SimpleFrameworkCLI";
-	const PROG_VERSION = "1.2.0";
-	const API_LEVEL = 3;
-	const CODENAME = "Blizzard";
+	const PROG_NAME = "SimpleFramework";
+	const PROG_VERSION = "2.0.0";
+	const API_LEVEL = 4;
+	const CODENAME = "Ryzen";
 
 	/** @var Framework */
 	private static $obj = null;
