@@ -58,13 +58,28 @@ abstract class Module{
 		$dependencies = $this->info->getDependency();
 		foreach($dependencies as $dependency){
 			$name = $dependency["name"];
-			$version = $dependency["version"];
+			$version = explode(".", $dependency["version"]);
+			$error = false;
+			if(count($version) != 3){
+				$error = true;
+			}
 			if(($module = $this->framework->getModule($name)) instanceof Module){
-				if($module->getInfo()->getVersion() == $version){
-					continue;
+				$targetVersion = explode(".", $module->getInfo()->getVersion());
+				if(count($targetVersion) != 3){
+					$error = true;
+				}
+
+				if($version[0] != $targetVersion[0]){
+					$error = true;
+				}elseif($version[1] > $targetVersion[1]){
+					$error = true;
+				}elseif($version[1] == $targetVersion[1] and $version[2] > $targetVersion[2]){
+					$error = true;
 				}
 			}
-			Logger::error("Module " . '"' . $this->getInfo()->getName() . '"' . " requires dependency module " . '"' . $name . '"' . " version " . $version);
+			if($error == true){
+				Logger::error("Module " . '"' . $this->getInfo()->getName() . '"' . " requires dependency module " . '"' . $name . '"' . " version " . $dependency["version"]);
+			}
 			return false;
 		}
 		return true;
