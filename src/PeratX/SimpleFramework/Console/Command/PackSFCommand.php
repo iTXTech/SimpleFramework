@@ -48,7 +48,7 @@ class PackSFCommand implements Command{
 			"api" => $framework->getAPILevel(),
 			"creationDate" => time()
 		]);
-		$phar->setStub('<?php define("sf\\\\PATH", "phar://". __FILE__ ."/"); require_once("phar://". __FILE__ ."/src/sf/SimpleFramework.php");  __HALT_COMPILER();');
+		$phar->setStub('<?php define("sf\\\\PATH", "phar://". __FILE__ ."/"); require_once("phar://". __FILE__ ."/src/PeratX/SimpleFramework/SimpleFramework.php");  __HALT_COMPILER();');
 		$phar->setSignatureAlgorithm(\Phar::SHA1);
 		$phar->startBuffering();
 

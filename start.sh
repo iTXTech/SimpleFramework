@@ -1,2 +1,2 @@
 #/bin/sh
-php src/sf/SimpleFramework.php
+php src\PeratX\SimpleFramework\SimpleFramework.php
