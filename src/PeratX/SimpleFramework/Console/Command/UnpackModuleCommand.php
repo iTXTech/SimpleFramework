@@ -56,7 +56,7 @@ class UnpackModuleCommand implements Command{
 			@mkdir($folderPath);
 		}
 
-		$reflection = new \ReflectionClass("sf\\Module\\Module");
+		$reflection = new \ReflectionClass("PeratX\\SimpleFramework\\Module\\Module");
 		$file = $reflection->getProperty("file");
 		$file->setAccessible(true);
 		$pharPath = str_replace("\\", "/", rtrim($file->getValue($module), "\\/"));

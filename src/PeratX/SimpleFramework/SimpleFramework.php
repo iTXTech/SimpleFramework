@@ -21,6 +21,7 @@ namespace PeratX\SimpleFramework {
 
 	ini_set("memory_limit", -1);
 
+	//TODO: 7.1
 	if(version_compare("7.0", PHP_VERSION) > 0){
 		echo "You must use PHP >= 7.0" . PHP_EOL;
 		exit(1);
@@ -35,15 +36,15 @@ namespace PeratX\SimpleFramework {
 	}
 
 	if(\Phar::running(true) !== ""){
-		@define('sf\PATH', \Phar::running(true) . "/");
+		@define('PeratX\SimpleFramework\PATH', \Phar::running(true) . "/");
 	}else{
-		@define('sf\PATH', \getcwd() . DIRECTORY_SEPARATOR);
+		@define('PeratX\SimpleFramework\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
-	require_once(\sf\PATH . "src/PeratX/SimpleFramework/Util/ClassLoader.php");
+	require_once(\PeratX\SimpleFramework\PATH . "src/PeratX/SimpleFramework/Util/ClassLoader.php");
 
 	$classLoader = new \ClassLoader();
-	$classLoader->addPath(\sf\PATH . "src");
+	$classLoader->addPath(\PeratX\SimpleFramework\PATH . "src");
 	$classLoader->register(true);
 
 	date_default_timezone_set('Asia/Shanghai');

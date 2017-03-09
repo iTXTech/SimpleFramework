@@ -38,7 +38,7 @@ abstract class Thread extends \Thread{
 
 	public function registerClassLoader(){
 		if(!interface_exists("ClassLoader", false)){
-			require_once(\sf\PATH . "src/sf/util/ClassLoader.php");
+			require_once(\PeratX\SimpleFramework\PATH . "src/sf/util/ClassLoader.php");
 		}
 		if($this->classLoader !== null){
 			$this->classLoader->register(true);

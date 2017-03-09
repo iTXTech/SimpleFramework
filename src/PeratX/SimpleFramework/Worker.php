@@ -39,7 +39,7 @@ abstract class Worker extends \Worker{
 
 	public function registerClassLoader(){
 		if(!interface_exists("ClassLoader", false)){
-			require_once(\sf\PATH . "src/PeratX/SimpleFramework/util/ClassLoader.php");
+			require_once(\PeratX\SimpleFramework\PATH . "src/PeratX/SimpleFramework/util/ClassLoader.php");
 		}
 		if($this->classLoader !== null){
 			$this->classLoader->register(true);

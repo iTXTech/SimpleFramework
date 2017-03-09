@@ -46,7 +46,7 @@ class ModuleInfo{
 		$this->main = $info["main"];
 		$this->api = $info["api"];
 
-		if(stripos($this->main, "sf\\") === 0){
+		if(stripos($this->main, "PeratX\SimpleFramework\\") === 0){
 			throw new \Exception("Invalid plugin main class.");
 		}
 
