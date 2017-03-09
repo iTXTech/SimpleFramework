@@ -47,17 +47,25 @@ abstract class Module{
 		$this->loaded = $loaded;
 	}
 
-	public final function preLoad() : bool{
+	public final function getFramework() : Framework{
+		return $this->framework;
+	}
+
+	public function preLoad() : bool{
 		if($this->info->getAPILevel() > Framework::API_LEVEL){
 			throw new \Exception("Plugin requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
 		}
-		return $this->checkDependency();
+		return (($resolver = $this->framework->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ? $resolver->resolveDependency($this) : $this->checkDependency();
 	}
 
 	protected function checkDependency(){
 		$dependencies = $this->info->getDependency();
 		foreach($dependencies as $dependency){
 			$name = $dependency["name"];
+			if(strstr($name, "/")){
+				$name = explode("/", $name, 2);
+				$name = end($name);
+			}
 			$version = explode(".", $dependency["version"]);
 			$error = false;
 			if(count($version) != 3){
@@ -76,11 +84,13 @@ abstract class Module{
 				}elseif($version[1] == $targetVersion[1] and $version[2] > $targetVersion[2]){
 					$error = true;
 				}
+			}else{
+				$error = true;
 			}
 			if($error == true){
 				Logger::error("Module " . '"' . $this->getInfo()->getName() . '"' . " requires dependency module " . '"' . $name . '"' . " version " . $dependency["version"]);
+				return false;
 			}
-			return false;
 		}
 		return true;
 	}

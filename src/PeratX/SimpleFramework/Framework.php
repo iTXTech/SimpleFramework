@@ -21,6 +21,7 @@ use PeratX\SimpleFramework\Console\ConsoleReader;
 use PeratX\SimpleFramework\Console\Logger;
 use PeratX\SimpleFramework\Console\TextFormat;
 use PeratX\SimpleFramework\Module\Module;
+use PeratX\SimpleFramework\Module\ModuleDependencyResolver;
 use PeratX\SimpleFramework\Module\ModuleInfo;
 use PeratX\SimpleFramework\Scheduler\ServerScheduler;
 use PeratX\SimpleFramework\Util\Config;
@@ -51,6 +52,9 @@ class Framework{
 
 	/** @var ServerScheduler */
 	private $scheduler;
+
+	/** @var ModuleDependencyResolver */
+	private $moduleDependencyResolver;
 
 	private $shutdown = false;
 
@@ -135,6 +139,8 @@ class Framework{
 			if($module->preLoad()){
 				$module->load();
 				$module->setLoaded(true);
+			}else{
+				Logger::info(TextFormat::RED . "Module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion() . " load failed.");
 			}
 		}
 	}
@@ -235,6 +241,14 @@ class Framework{
 			}
 		}
 		return false;
+	}
+
+	public function registerModuleDependencyResolver(ModuleDependencyResolver $resolver){
+		$this->moduleDependencyResolver = $resolver;
+	}
+
+	public function getModuleDependencyResolver(){
+		return $this->moduleDependencyResolver;
 	}
 
 	private function processCommandLineOptions(array $argv) : bool{

@@ -20,8 +20,9 @@ class ModuleInfo{
 	const LOAD_METHOD_PACKAGE = 0;
 	const LOAD_METHOD_SOURCE = 1;
 
-	const LOAD_ORDER_MIN = 0;
+	const LOAD_ORDER_MIN = -1;
 	const LOAD_ORDER_MAX = 9;
+	const LOAD_ORDER_DEFAULT = 0;
 
 	private $name;
 	private $main;
@@ -31,7 +32,7 @@ class ModuleInfo{
 	private $authors = [];
 	private $website = null;
 	private $loadMethod;
-	private $loadOrder = self::LOAD_ORDER_MIN;
+	private $loadOrder = self::LOAD_ORDER_DEFAULT;
 	private $dependency = [];
 
 	public function __construct(string $info, int $loadMethod){
@@ -46,7 +47,7 @@ class ModuleInfo{
 		$this->main = $info["main"];
 		$this->api = $info["api"];
 
-		if(stripos($this->main, "PeratX\SimpleFramework\\") === 0){
+		if(stripos($this->main, "PeratX\\SimpleFramework\\") === 0){
 			throw new \Exception("Invalid plugin main class.");
 		}
 
