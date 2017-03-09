@@ -27,13 +27,21 @@ Here are some features:
 * Easy to extend by modules
 * Friendly to developers
 
-This program is a new project. I welcome contributions.
+Contributions are welcomed.
 
-Get SimpleFrameworkCLI
+Manual
+-------------
+__[Wiki](https://github.com/PeratX/SimpleFramework/wiki)__
+
+Get SimpleFramework
 -------------
 __[Releases](https://github.com/PeratX/SimpleFramework/releases)__
 
 Modules
 -------------
+* __[WraithSpire](https://github.com/PeratX/WraithSpire)__ - The Module Dependency Resolver designed for SimpleFramework, like composer.
 * __[SimpleGUI](https://github.com/PeratX/SimpleGUI)__ - The GUI SDK based on [php-gui](https://github.com/gabrielrcouto/php-gui) for SimpleFramework(CLI).
-* __[PhQAgent - NG](https://github.com/PhQAgent/PhQAgent/tree/ng)__ - WebQQ API for PHP.
+* __[TesseractBridge](https://github.com/PeratX/TesseractBridge)__ - The bridge between Tesseract-OCR and SimpleFramework.
+* __[SFQRCode](https://github.com/PeratX/SFQRCode)__ - PHPQRCode port to SimpleFramework.
+* __[SimpleHtmlDom](https://github.com/PeratX/SimpleHtmlDom)__ - Simple HTML DOM Parser port to SimpleFramework, optimized for pages which cannot be correctly parsed by DOMDocument.
+* __[PhQAgent - NextGeneration](https://github.com/PhQAgent/PhQAgent/tree/ng)__ - WebQQ API for PHP.
