@@ -24,6 +24,7 @@ use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\Module;
 use iTXTech\SimpleFramework\Module\ModuleDependencyResolver;
 use iTXTech\SimpleFramework\Module\ModuleInfo;
+use iTXTech\SimpleFramework\Module\WraithSpireMDR;
 use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
 use iTXTech\SimpleFramework\Util\Config;
 
@@ -334,26 +335,46 @@ class Framework{
 					"auto-load-modules" => true,
 					"async-workers" => 2,
 					"log-file" => "",
-					"display-title" => true
+					"display-title" => true,
+					"module-dependency-resolver" => [
+						"enabled" => true,
+						"remote-database" => "https://raw.githubusercontent.com/iTXTech/WraithSpireDatabase/master/",
+						"modules" => []
+					]
 				]);
 				$this->config->save();
+
 				Logger::setLogFile($this->config->get("log-file", ""));
+
 				Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
+
 				Logger::info("Starting Console Daemon...");
 				$this->console = new ConsoleReader();
+
 				Logger::info("Starting Command Processor...");
 				if(!$this->commandProcessor instanceof CommandProcessor){
 					$this->commandProcessor = new CommandProcessor($this);
 				}
+
 				Logger::info("Starting multi-threading scheduler...");
 				ServerScheduler::$WORKERS = $this->config->get("async-workers", 2);
 				$this->scheduler = new ServerScheduler();
+
+				$mdr = $this->config->get("module-dependency-resolver");
+				if($mdr["enabled"]){
+					Logger::info("Starting WraithSpire module dependency resolver,,,");
+					$this->registerModuleDependencyResolver(new WraithSpireMDR($this, $mdr["remote-database"], $mdr["modules"]));
+				}
+
 				if($this->config->get("auto-load-modules", true)){
 					$this->loadModules();
 				}
+
 				$this->displayTitle = $this->config->get("display-title", true);
+
 				Logger::notice("Done! Type 'help' for help.");
+
 				$this->tick();
 			}
 		}catch(\Throwable $e){
