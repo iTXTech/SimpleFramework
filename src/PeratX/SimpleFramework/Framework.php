@@ -28,9 +28,9 @@ use PeratX\SimpleFramework\Util\Config;
 
 class Framework{
 	const PROG_NAME = "SimpleFramework";
-	const PROG_VERSION = "2.0.0";
+	const PROG_VERSION = "2.0.0-alpha";
 	const API_LEVEL = 4;
-	const CODENAME = "Ryzen";
+	const CODENAME = "RYZEN";
 
 	/** @var Framework */
 	private static $obj = null;
@@ -134,7 +134,7 @@ class Framework{
 			Logger::notice("Module " . $module->getInfo()->getName() . " is already loaded");
 		}else{
 			if(!$this->commandLineOnly){
-				Logger::info("Loading Module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
+				Logger::info("Loading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
 			}
 			if($module->preLoad()){
 				$module->load();

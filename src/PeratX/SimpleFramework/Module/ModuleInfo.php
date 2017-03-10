@@ -40,16 +40,12 @@ class ModuleInfo{
 		$info = json_decode($info, true);
 		$this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $info["name"]);
 		if($this->name === ""){
-			throw new \Exception("Invalid plugin name");
+			throw new \Exception("Invalid module name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
 		$this->version = $info["version"];
 		$this->main = $info["main"];
 		$this->api = $info["api"];
-
-		if(stripos($this->main, "PeratX\\SimpleFramework\\") === 0){
-			throw new \Exception("Invalid plugin main class.");
-		}
 
 		$this->description = $info["description"] ?? null;
 		$this->authors = [];
@@ -60,38 +56,38 @@ class ModuleInfo{
 			}
 		}
 		if(isset($info["order"])){
-			$this->loadOrder = min(self::LOAD_ORDER_MAX, max(self::LOAD_ORDER_MIN, (int)$info["order"]));
+			$this->loadOrder = min(self::LOAD_ORDER_MAX, max(self::LOAD_ORDER_MIN, (int) $info["order"]));
 		}
 		$this->website = $info["website"] ?? null;
 
 		$this->dependency = $info["dependency"] ?? [];
 	}
 
-	public function getDependency() : array {
+	public function getDependency(): array{
 		return $this->dependency;
 	}
 
-	public function getLoadMethod() : int{
+	public function getLoadMethod(): int{
 		return $this->loadMethod;
 	}
 
-	public function getName() : string{
+	public function getName(): string{
 		return $this->name;
 	}
 
-	public function getVersion() : string{
+	public function getVersion(): string{
 		return $this->version;
 	}
 
-	public function getDescription() : string{
+	public function getDescription(): string{
 		return $this->description;
 	}
 
-	public function getAuthors() : array{
+	public function getAuthors(): array{
 		return $this->authors;
 	}
 
-	public function getAPILevel() : int{
+	public function getAPILevel(): int{
 		return $this->api;
 	}
 
@@ -99,11 +95,11 @@ class ModuleInfo{
 		return $this->main;
 	}
 
-	public function getLoadOrder() : int{
+	public function getLoadOrder(): int{
 		return $this->loadOrder;
 	}
 
-	public function getWebsite() : string {
+	public function getWebsite(): string{
 		return $this->website;
 	}
 }

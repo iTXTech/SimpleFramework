@@ -19,7 +19,7 @@ namespace PeratX\SimpleFramework\Module;
 use PeratX\SimpleFramework\Console\Logger;
 use PeratX\SimpleFramework\Framework;
 
-//Multi-thread is recommended for plugin design.
+//Multi-thread is recommended for module design.
 abstract class Module{
 	/** @var Framework */
 	protected $framework;
@@ -39,7 +39,7 @@ abstract class Module{
 		$this->dataFolder = $framework->getModuleDataPath() . $info->getName() . DIRECTORY_SEPARATOR;
 	}
 
-	public function getDataFolder() : string{
+	public function getDataFolder(): string{
 		return $this->dataFolder;
 	}
 
@@ -47,13 +47,13 @@ abstract class Module{
 		$this->loaded = $loaded;
 	}
 
-	public final function getFramework() : Framework{
+	public final function getFramework(): Framework{
 		return $this->framework;
 	}
 
-	public function preLoad() : bool{
+	public function preLoad(): bool{
 		if($this->info->getAPILevel() > Framework::API_LEVEL){
-			throw new \Exception("Plugin requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
+			throw new \Exception("Module requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
 		}
 		return (($resolver = $this->framework->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ? $resolver->resolveDependency($this) : $this->checkDependency();
 	}
@@ -88,26 +88,30 @@ abstract class Module{
 				$error = true;
 			}
 			if($error == true){
-				Logger::error("Module " . '"' . $this->getInfo()->getName() . '"' . " requires dependency module " . '"' . $name . '"' . " version " . $dependency["version"]);
+				Logger::error("Module " . '"' . $this->getName() . '"' . " requires dependency module " . '"' . $name . '"' . " version " . $dependency["version"]);
 				return false;
 			}
 		}
 		return true;
 	}
-    
-    public abstract function load();
-    
-    public abstract function unload();
-    
-    public final function isLoaded() : bool{
+
+	public abstract function load();
+
+	public abstract function unload();
+
+	public final function isLoaded(): bool{
 		return $this->loaded;
 	}
-    
-    public function doTick(int $currentTick){
+
+	public function doTick(int $currentTick){
 	}
 
-	public final function getInfo() : ModuleInfo{
+	public final function getInfo(): ModuleInfo{
 		return $this->info;
+	}
+
+	public final function getName(): string{
+		return $this->info->getName();
 	}
 
 	public function getResource($filename){
@@ -165,7 +169,7 @@ abstract class Module{
 		return $resources;
 	}
 
-	public function getFile() : string{
+	public function getFile(): string{
 		return $this->file;
 	}
 }

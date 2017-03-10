@@ -17,5 +17,9 @@
 namespace PeratX\SimpleFramework\Module;
 
 interface ModuleDependencyResolver{
-	public function resolveDependency(Module $module);
+	/**
+	 * @param Module $module
+	 * @return bool
+	 */
+	public function resolveDependency(Module $module): bool;
 }
