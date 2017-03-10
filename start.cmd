@@ -12,7 +12,7 @@ if exist bin\php\php.exe (
 if exist SimpleFramework.phar (
 	set FRAMEWORK_FILE=SimpleFramework.phar
 ) else (
-	set FRAMEWORK_FILE=src\PeratX\SimpleFramework\SimpleFramework.php
+	set FRAMEWORK_FILE=src\iTXTech\SimpleFramework\SimpleFramework.php
 )
 
 if exist bin\mintty.exe (

@@ -1,4 +1,4 @@
-SimpleFramework(CLI)
+SimpleFramework
 ===================
 
 __The fast, light-weighted, easy-to-extend php command line framework__
@@ -18,28 +18,25 @@ __The fast, light-weighted, easy-to-extend php command line framework__
 
 Introduction
 -------------
-SimpleFramework(CLI) is a php framework designed for small command line php programs (a module).<br>
+SimpleFramework is a php framework designed for small command line php programs (a module).<br>
 Here are some features:
 
-* Logger system
-* Module system
-* Command system
-* Easy to extend by modules
-* Friendly to developers
+* Module dependency auto resolver
+* Logger and Scheduler system
+* Multi threading AsyncTask and Thread support
 
 Contributions are welcomed.
 
 Manual
 -------------
-__[Wiki](https://github.com/PeratX/SimpleFramework/wiki)__
+__[Wiki](https://github.com/iTXTech/SimpleFramework/wiki)__
 
 Get SimpleFramework
 -------------
-__[Releases](https://github.com/PeratX/SimpleFramework/releases)__
+__[Releases](https://github.com/iTXTech/SimpleFramework/releases)__
 
 Modules
 -------------
-* __[WraithSpire](https://github.com/PeratX/WraithSpire)__ - The Module Dependency Resolver designed for SimpleFramework, like composer.
 * __[SimpleGUI](https://github.com/PeratX/SimpleGUI)__ - The GUI SDK based on [php-gui](https://github.com/gabrielrcouto/php-gui) for SimpleFramework(CLI).
 * __[TesseractBridge](https://github.com/PeratX/TesseractBridge)__ - The bridge between Tesseract-OCR and SimpleFramework.
 * __[SFQRCode](https://github.com/PeratX/SFQRCode)__ - PHPQRCode port to SimpleFramework.
