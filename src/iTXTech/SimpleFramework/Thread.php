@@ -39,7 +39,7 @@ abstract class Thread extends \Thread{
 
 	public function registerClassLoader(){
 		if(!interface_exists("ClassLoader", false)){
-			require_once(\iTXTech\SimpleFramework\PATH . "src/sf/util/ClassLoader.php");
+			require_once(\iTXTech\SimpleFramework\PATH . "src/PeratX/SimpleFramework/Util/ClassLoader.php");
 		}
 		if($this->classLoader !== null){
 			$this->classLoader->register(true);

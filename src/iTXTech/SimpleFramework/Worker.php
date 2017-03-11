@@ -40,7 +40,7 @@ abstract class Worker extends \Worker{
 
 	public function registerClassLoader(){
 		if(!interface_exists("ClassLoader", false)){
-			require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/util/ClassLoader.php");
+			require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
 		}
 		if($this->classLoader !== null){
 			$this->classLoader->register(true);
