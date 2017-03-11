@@ -41,4 +41,4 @@ Modules
 * __[TesseractBridge](https://github.com/PeratX/TesseractBridge)__ - The bridge between Tesseract-OCR and SimpleFramework.
 * __[SFQRCode](https://github.com/PeratX/SFQRCode)__ - PHPQRCode port to SimpleFramework.
 * __[SimpleHtmlDom](https://github.com/PeratX/SimpleHtmlDom)__ - Simple HTML DOM Parser port to SimpleFramework, optimized for pages which cannot be correctly parsed by DOMDocument.
-* __[PhQAgent - NextGeneration](https://github.com/PhQAgent/PhQAgent/tree/ng)__ - WebQQ API for PHP.
+* __[LeetQQ](https://github.com/PhQAgent/LeetQQ)__ - SmartQQ bot framework for PHP and SimpleFramework.
