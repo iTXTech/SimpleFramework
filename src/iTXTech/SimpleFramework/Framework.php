@@ -373,6 +373,10 @@ class Framework{
 
 				$this->displayTitle = $this->config->get("display-title", true);
 
+				if($this->moduleDependencyResolver instanceof WraithSpireMDR){
+					$this->moduleDependencyResolver->init();
+				}
+
 				Logger::notice("Done! Type 'help' for help.");
 
 				$this->tick();
