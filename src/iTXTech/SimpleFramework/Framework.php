@@ -363,7 +363,7 @@ class Framework{
 
 				$mdr = $this->config->get("module-dependency-resolver");
 				if($mdr["enabled"]){
-					Logger::info("Starting WraithSpire module dependency resolver,,,");
+					Logger::info("Starting WraithSpire module dependency resolver...");
 					$this->registerModuleDependencyResolver(new WraithSpireMDR($this, $mdr["remote-database"], $mdr["modules"]));
 				}
 
