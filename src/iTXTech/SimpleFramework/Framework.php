@@ -12,7 +12,7 @@
  * (at your option) any later version.
  *
  * @author iTXTech
- * @website https://itxtech.org
+ * @link https://itxtech.org
  */
 
 namespace iTXTech\SimpleFramework;
@@ -30,7 +30,7 @@ use iTXTech\SimpleFramework\Util\Config;
 
 class Framework{
 	const PROG_NAME = "SimpleFramework";
-	const PROG_VERSION = "2.0.0-alpha";
+	const PROG_VERSION = "2.0.0-beta.1";
 	const API_LEVEL = 4;
 	const CODENAME = "RYZEN";
 

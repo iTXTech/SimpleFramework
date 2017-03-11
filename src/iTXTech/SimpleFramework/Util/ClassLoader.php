@@ -12,7 +12,7 @@
  * (at your option) any later version.
  *
  * @author iTXTech
- * @website https://itxtech.org
+ * @link https://itxtech.org
  */
 
 class ClassLoader extends \Threaded{
