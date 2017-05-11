@@ -24,6 +24,7 @@ class Curl{
 
 	public function __construct(){
 		$this->reload();
+		return $this;
 	}
 
 	public function reload(){
