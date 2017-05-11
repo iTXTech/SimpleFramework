@@ -30,7 +30,7 @@ use iTXTech\SimpleFramework\Util\Config;
 
 class Framework{
 	const PROG_NAME = "SimpleFramework";
-	const PROG_VERSION = "2.0.0-beta.1";
+	const PROG_VERSION = "2.0.0-beta.2";
 	const API_LEVEL = 4;
 	const CODENAME = "RYZEN";
 
