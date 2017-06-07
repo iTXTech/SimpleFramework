@@ -96,7 +96,7 @@ class Curl{
 		foreach($post as $key => $content){
 			$payload .= urlencode($key) . '=' . urlencode($content) . '&';
 		}
-		curl_setopt($this->curl, CURLOPT_POST, true);
+		curl_setopt($this->curl, CURLOPT_POST, 1);
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, $payload);
 		return $this;
 	}
