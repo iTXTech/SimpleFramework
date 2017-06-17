@@ -217,7 +217,7 @@ class Framework{
 				$class = new \ReflectionClass($className);
 				if(is_a($className, Module::class, true) and !$class->isAbstract()){
 					$module = new $className($this, $info, $file);
-					$modules[$info->getLoadOrder()][] = [$class->getShortName(), $module];
+					$modules[$info->getLoadOrder()][] = [$info->getName(), $module];
 					return true;
 				}
 			}
@@ -236,7 +236,7 @@ class Framework{
 					$class = new \ReflectionClass($className);
 					if(is_a($className, Module::class, true) and !$class->isAbstract()){
 						$module = new $className($this, $info, $file);
-						$modules[$info->getLoadOrder()][] = [$class->getShortName(), $module];
+						$modules[$info->getLoadOrder()][] = [$info->getName(), $module];
 						return true;
 					}
 				}
