@@ -18,9 +18,9 @@
 namespace iTXTech\SimpleFramework\Util;
 
 class Curl{
-	private $curl;
-	private $url;
-	private $content;
+	protected $curl;
+	protected $url;
+	protected $content;
 
 	public function __construct(){
 		$this->reload();
@@ -40,6 +40,14 @@ class Curl{
 		$this->returnHeader(true);
 		$this->setTimeout(10);
 		return $this;
+	}
+
+	public function getUrl(){
+		return $this->url;
+	}
+
+	public function getContent(){
+		return $this->content;
 	}
 
 	public function setUA($ua){
