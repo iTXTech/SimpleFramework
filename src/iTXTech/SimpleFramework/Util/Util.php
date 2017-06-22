@@ -18,24 +18,17 @@
 namespace iTXTech\SimpleFramework\Util;
 
 class Util{
+	const USER_AGENT = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+
 	private static $os;
 
 	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
-		$ch = curl_init($page);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(["User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"], $extraHeaders));
-		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, (int) $timeout);
-		curl_setopt($ch, CURLOPT_TIMEOUT, (int) $timeout);
-		$ret = curl_exec($ch);
-		curl_close($ch);
-
-		return $ret;
+		$curl = new Curl();
+		return $curl->setUrl($page)
+			->setTimeout(10)
+			->setHeader($extraHeaders)
+			->setUA(self::USER_AGENT)
+			->exec();
 	}
 
 	public static function getOS(){
@@ -66,21 +59,13 @@ class Util{
 	}
 
 	public static function downloadFile(string $file, string $url){
-		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, ["User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"]);
-		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
-		curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 86400);//1 Day
-		curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_BUFFERSIZE, 20971520);//20M
-		$ret = curl_exec($ch);
-		curl_close($ch);
+		$curl = new Curl();
+		$ret = $curl->setUrl($url)
+			->setUA(self::USER_AGENT)
+			->setTimeout(60)
+			->setOpt(CURLOPT_BINARYTRANSFER, 1)
+			->setOpt(CURLOPT_BUFFERSIZE, 20971520)
+			->exec();
 
 		if($ret != false){
 			file_put_contents($file, $ret, FILE_BINARY);
