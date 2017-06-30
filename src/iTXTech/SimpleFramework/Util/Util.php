@@ -18,15 +18,20 @@
 namespace iTXTech\SimpleFramework\Util;
 
 class Util{
-	const USER_AGENT = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+	const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
 
 	private static $os;
 
 	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
 		$curl = new Curl();
 		return $curl->setUrl($page)
-			->setTimeout(10)
+			->setOpt(CURLOPT_AUTOREFERER, 1)
+			->setOpt(CURLOPT_FOLLOWLOCATION, 1)
+			->setOpt(CURLOPT_FORBID_REUSE, 1)
+			->setOpt(CURLOPT_FRESH_CONNECT, 1)
+			->setTimeout($timeout)
 			->setHeader($extraHeaders)
+			->returnHeader(false)
 			->setUA(self::USER_AGENT)
 			->exec();
 	}
@@ -63,8 +68,13 @@ class Util{
 		$ret = $curl->setUrl($url)
 			->setUA(self::USER_AGENT)
 			->setTimeout(60)
+			->setOpt(CURLOPT_AUTOREFERER, 1)
+			->setOpt(CURLOPT_FOLLOWLOCATION, 1)
+			->setOpt(CURLOPT_FORBID_REUSE, 1)
+			->setOpt(CURLOPT_FRESH_CONNECT, 1)
 			->setOpt(CURLOPT_BINARYTRANSFER, 1)
 			->setOpt(CURLOPT_BUFFERSIZE, 20971520)
+			->returnHeader(false)
 			->exec();
 
 		if($ret != false){
