@@ -69,7 +69,9 @@ class Framework{
 	private $moduleDataPath;
 
 	private $commandLineOnly = false;
-	private $displayTitle = true;
+	public $displayTitle = true;
+
+	public static $usleep = 5;
 
 	public function __construct(\ClassLoader $classLoader, array $argv){
 		if(self::$obj === null){
@@ -408,7 +410,7 @@ class Framework{
 			if(($this->currentTick % 20) === 0){
 				$this->combineTitle();
 			}
-			usleep(5);
+			usleep(self::$usleep);
 		}
 
 		//shutdown!
