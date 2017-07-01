@@ -19,6 +19,7 @@ namespace iTXTech\SimpleFramework {
 
 	use iTXTech\SimpleFramework\Console\Logger;
 	use iTXTech\SimpleFramework\Console\Terminal;
+	use iTXTech\SimpleFramework\Util\Util;
 
 	ini_set("memory_limit", -1);
 
@@ -40,6 +41,36 @@ namespace iTXTech\SimpleFramework {
 		@define('iTXTech\SimpleFramework\PATH', \Phar::running(true) . "/");
 	}else{
 		@define('iTXTech\SimpleFramework\PATH', \getcwd() . DIRECTORY_SEPARATOR);
+	}
+
+	function getTrace($start = 0, $trace = null){
+		if($trace === null){
+			if(function_exists("xdebug_get_function_stack")){
+				$trace = array_reverse(xdebug_get_function_stack());
+			}else{
+				$e = new \Exception();
+				$trace = $e->getTrace();
+			}
+		}
+
+		$messages = [];
+		$j = 0;
+		for($i = (int) $start; isset($trace[$i]); ++$i, ++$j){
+			$params = "";
+			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+				if(isset($trace[$i]["args"])){
+					$args = $trace[$i]["args"];
+				}else{
+					$args = $trace[$i]["params"];
+				}
+				foreach($args as $name => $value){
+					$params .= (is_object($value) ? get_class($value) . " object" : gettype($value) . " " . (is_array($value) ? "Array()" : Util::printable(@strval($value)))) . ", ";
+				}
+			}
+			$messages[] = "#$j " . (isset($trace[$i]["file"]) ? $trace[$i]["file"] : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Util::printable(substr($params, 0, -2)) . ")";
+		}
+
+		return $messages;
 	}
 
 	require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");

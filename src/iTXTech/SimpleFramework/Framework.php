@@ -333,6 +333,9 @@ class Framework{
 				$this->displayTitle("SimpleFramework is starting...");
 				@mkdir("modules");
 				@mkdir("data");
+
+				set_exception_handler("\\iTXTech\\SimpleFramework\\Console\\Logger::logException");
+
 				$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
 					"auto-load-modules" => true,
 					"async-workers" => 2,

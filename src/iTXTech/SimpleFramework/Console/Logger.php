@@ -74,6 +74,7 @@ class Logger{
 	}
 
 	public static function logException(\Throwable $e){
+		$trace = $e->getTrace();
 		$errstr = $e->getMessage();
 		$errfile = $e->getFile();
 		$errno = $e->getCode();
@@ -107,6 +108,9 @@ class Logger{
 			$errstr = substr($errstr, 0, $pos);
 		}
 		self::log($type, get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline");
+		foreach(\iTXTech\SimpleFramework\getTrace(0, $trace) as $i => $line){
+			self::debug($line);
+		}
 	}
 
 	public static function log($level, $message){

@@ -63,6 +63,14 @@ class Util{
 		return self::$os;
 	}
 
+	public static function printable($str){
+		if(!is_string($str)){
+			return gettype($str);
+		}
+
+		return preg_replace('#([^\x20-\x7E])#', '.', $str);
+	}
+
 	public static function downloadFile(string $file, string $url){
 		$curl = new Curl();
 		$ret = $curl->setUrl($url)
