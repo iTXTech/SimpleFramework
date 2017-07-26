@@ -71,7 +71,7 @@ class Framework{
 	private $commandLineOnly = false;
 	public $displayTitle = true;
 
-	public static $usleep = 5;
+	public static $usleep = 50000;
 
 	public function __construct(\ClassLoader $classLoader, array $argv){
 		if(self::$obj === null){
