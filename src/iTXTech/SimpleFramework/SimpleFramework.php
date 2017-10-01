@@ -29,8 +29,11 @@ namespace iTXTech\SimpleFramework {
 		exit(1);
 	}
 	if(!extension_loaded("pthreads")){
-		echo "Unable to find the pthreads extension" . PHP_EOL;
-		exit(1);
+		@define('iTXTech\SimpleFramework\SINGLE_THREAD', true);
+		echo "Unable to find the pthreads extension. " . PHP_EOL .
+			"This program will run in single thread mode." . PHP_EOL;
+	}else{
+		@define('iTXTech\SimpleFramework\SINGLE_THREAD', false);
 	}
 	if(!extension_loaded("curl")){
 		echo "Unable to find the cURL extension." . PHP_EOL;
@@ -82,14 +85,18 @@ namespace iTXTech\SimpleFramework {
 	date_default_timezone_set('Asia/Shanghai');
 
 	Terminal::init();
-	ThreadManager::init();
+	if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
+		ThreadManager::init();
+	}
 	new Framework($classLoader, $argv);
 
-	Logger::info("Stopping other threads");
+	if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
+		Logger::info("Stopping other threads");
 
-	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
-		Logger::debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
-		$thread->quit();
+		foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
+			Logger::debug("Stopping " . (new \ReflectionClass($thread))->getShortName() . " thread");
+			$thread->quit();
+		}
 	}
 
 	echo "SimpleFramework is stopped." . PHP_EOL;

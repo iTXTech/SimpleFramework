@@ -45,9 +45,15 @@ class ServerScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
+	private static $singleThread = false;
+
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
-		$this->asyncPool = new AsyncPool(Framework::getInstance(), self::$WORKERS);
+		if(\iTXTech\SimpleFramework\SINGLE_THREAD){
+			self::$singleThread = true;
+		}else{
+			$this->asyncPool = new AsyncPool(Framework::getInstance(), self::$WORKERS);
+		}
 	}
 
 	/**
@@ -67,9 +73,11 @@ class ServerScheduler{
 	 * @return void
 	 */
 	public function scheduleAsyncTask(AsyncTask $task){
-		$id = $this->nextId();
-		$task->setTaskId($id);
-		$this->asyncPool->submitTask($task);
+		if(!self::$singleThread){
+			$id = $this->nextId();
+			$task->setTaskId($id);
+			$this->asyncPool->submitTask($task);
+		}
 	}
 
 	/**
@@ -81,17 +89,21 @@ class ServerScheduler{
 	 * @return void
 	 */
 	public function scheduleAsyncTaskToWorker(AsyncTask $task, $worker){
-		$id = $this->nextId();
-		$task->setTaskId($id);
-		$this->asyncPool->submitTaskToWorker($task, $worker);
+		if(!self::$singleThread){
+			$id = $this->nextId();
+			$task->setTaskId($id);
+			$this->asyncPool->submitTaskToWorker($task, $worker);
+		}
 	}
 
 	public function getAsyncTaskPoolSize(){
-		return $this->asyncPool->getSize();
+		return self::$singleThread ? -1 : $this->asyncPool->getSize();
 	}
 
 	public function increaseAsyncTaskPoolSize($newSize){
-		$this->asyncPool->increaseSize($newSize);
+		if(!self::$singleThread){
+			$this->asyncPool->increaseSize($newSize);
+		}
 	}
 
 	/**
@@ -220,7 +232,9 @@ class ServerScheduler{
 			}
 		}
 
-		$this->asyncPool->collectTasks();
+		if(!self::$singleThread){
+			$this->asyncPool->collectTasks();
+		}
 	}
 
 	private function isReady($currentTicks){

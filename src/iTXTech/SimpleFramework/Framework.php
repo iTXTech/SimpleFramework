@@ -312,7 +312,7 @@ class Framework{
 						Logger::error("No input command.");
 						break;
 					}
-					$this->commandProcessor = new CommandProcessor($this);
+					$this->commandProcessor = new CommandProcessor();
 					$this->commandProcessor->dispatchCommand($argv[$c + 1]);
 					break;
 				case "-t":
@@ -354,12 +354,14 @@ class Framework{
 				Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 
-				Logger::info("Starting Console Daemon...");
-				$this->console = new ConsoleReader();
+				if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
+					Logger::info("Starting Console Daemon...");
+					$this->console = new ConsoleReader();
+				}
 
 				Logger::info("Starting Command Processor...");
 				if(!$this->commandProcessor instanceof CommandProcessor){
-					$this->commandProcessor = new CommandProcessor($this);
+					$this->commandProcessor = new CommandProcessor();
 				}
 
 				Logger::info("Starting multi-threading scheduler...");
@@ -431,8 +433,10 @@ class Framework{
 	}
 
 	private function checkConsole(){
-		while(($line = $this->console->getLine()) != null){
-			$this->commandProcessor->dispatchCommand($line);
+		if(isset($this->console)){
+			while(($line = $this->console->getLine()) != null){
+				$this->commandProcessor->dispatchCommand($line);
+			}
 		}
 	}
 
