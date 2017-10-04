@@ -110,6 +110,7 @@ class Curl{
 	}
 
 	public function setEncPost($post){
+		curl_setopt($this->curl, CURLOPT_POST, 1);
 		curl_setopt($this->curl, CURLOPT_POSTFIELDS, $post);
 		return $this;
 	}
