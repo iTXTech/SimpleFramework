@@ -22,6 +22,7 @@ namespace iTXTech\SimpleFramework {
 	use iTXTech\SimpleFramework\Util\Util;
 
 	ini_set("memory_limit", -1);
+	define('iTXTech\SimpleFramework\START_TIME', microtime(true));
 
 	//TODO: 7.1
 	if(version_compare("7.0", PHP_VERSION) > 0){
