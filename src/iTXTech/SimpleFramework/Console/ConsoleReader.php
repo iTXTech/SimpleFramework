@@ -21,7 +21,6 @@ use iTXTech\SimpleFramework\Thread;
 use iTXTech\SimpleFramework\Util\Util;
 
 class ConsoleReader extends Thread{
-	private $readline;
 	/** @var \Threaded */
 	protected $buffer;
 	private $shutdown = false;
@@ -29,12 +28,6 @@ class ConsoleReader extends Thread{
 
 	public function __construct(){
 		$this->stdin = fopen("php://stdin", "r");
-		$opts = getopt("", ["disable-readline"]);
-		if(extension_loaded("readline") && !isset($opts["disable-readline"]) && (!function_exists("posix_isatty") || posix_isatty($this->stdin))){
-			$this->readline = true;
-		}else{
-			$this->readline = false;
-		}
 		$this->buffer = new \Threaded;
 		$this->start();
 	}
@@ -47,13 +40,9 @@ class ConsoleReader extends Thread{
 	}
 
 	private function readLine(){
-		if(!$this->readline){
-			$line = trim(fgets($this->stdin));
-			if($line !== ""){
-				$this->buffer[] = $line;
-			}
-		}else{
-			readline_callback_read_char();
+		$line = trim(fgets($this->stdin));
+		if($line !== ""){
+			$this->buffer[] = $line;
 		}
 	}
 
