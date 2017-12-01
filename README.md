@@ -17,6 +17,12 @@ Manual
 -------------
 __[Wiki](https://github.com/iTXTech/SimpleFramework/wiki)__
 
+Requirements
+-------------
+* PHP >= 7.2
+* Optional [pthreads](https://github.com/krakjoe/pthreads) extension (multi thread support)
+* Optional [yaml](https://github.com/php/pecl-file_formats-yaml) extension (yaml file parse)
+
 Get SimpleFramework
 -------------
 * __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__
