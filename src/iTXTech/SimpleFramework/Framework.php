@@ -30,9 +30,9 @@ use iTXTech\SimpleFramework\Util\Config;
 
 class Framework{
 	const PROG_NAME = "SimpleFramework";
-	const PROG_VERSION = "2.0.0-beta.2";
-	const API_LEVEL = 4;
-	const CODENAME = "RYZEN";
+	const PROG_VERSION = "2.0.0-beta.3";
+	const API_LEVEL = 5;
+	const CODENAME = "Navi";
 
 	/** @var Framework */
 	private static $obj = null;

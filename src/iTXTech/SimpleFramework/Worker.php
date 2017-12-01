@@ -47,14 +47,14 @@ abstract class Worker extends \Worker{
 		}
 	}
 
-	public function start(int $options = PTHREADS_INHERIT_ALL){
+	public function start(?int $options = null){
 		ThreadManager::getInstance()->add($this);
 
 		if(!$this->isRunning() and !$this->isJoined() and !$this->isTerminated()){
 			if($this->getClassLoader() === null){
 				$this->setClassLoader();
 			}
-			return parent::start($options);
+			return parent::start(PTHREADS_INHERIT_ALL);
 		}
 
 		return false;
