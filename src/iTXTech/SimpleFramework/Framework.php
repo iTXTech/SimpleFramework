@@ -453,10 +453,10 @@ class Framework{
 		$uptime = ($minutes !== null ?
 				($hours !== null ?
 					($days !== null ?
-						"$days days "
-						: "") . "$hours hours "
-					: "") . "$minutes minutes "
-				: "") . "$seconds seconds";
+						"$days d "
+						: "") . "$hours h "
+					: "") . "$minutes m "
+				: "") . "$seconds s";
 		return $uptime;
 	}
 

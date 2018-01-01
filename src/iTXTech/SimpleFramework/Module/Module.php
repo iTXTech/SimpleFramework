@@ -54,9 +54,11 @@ abstract class Module{
 
 	public function preLoad(): bool{
 		if($this->info->getAPILevel() > Framework::API_LEVEL){
-			throw new \Exception("Module requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
+			Logger::error("Module requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
+			return false;
 		}
-		return (($resolver = $this->framework->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ? $resolver->resolveDependency($this) : $this->checkDependency();
+		return (($resolver = $this->framework->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ?
+			$resolver->resolveDependency($this) : $this->checkDependency();
 	}
 
 	protected function checkDependency(){
