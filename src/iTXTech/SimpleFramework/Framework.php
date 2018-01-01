@@ -30,7 +30,7 @@ use iTXTech\SimpleFramework\Util\Config;
 
 class Framework{
 	const PROG_NAME = "SimpleFramework";
-	const PROG_VERSION = "2.0.0-beta.3";
+	const PROG_VERSION = "2.0.0";
 	const API_LEVEL = 5;
 	const CODENAME = "Navi";
 
