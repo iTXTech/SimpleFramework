@@ -154,4 +154,66 @@ class Curl{
 	public function isError(){
 		return (curl_errno($this->curl)) ? true : false;
 	}
+
+	public function uploadFile(array $assoc = [], array $files = []){
+		$body = [];
+		// invalid characters for "name" and "filename"
+		$disallow = ["\0", "\"", "\r", "\n"];
+
+		// build normal parameters
+		foreach($assoc as $k => $v){
+			$k = str_replace($disallow, "_", $k);
+			$body[] = implode("\r\n", [
+				"Content-Disposition: form-data; name=\"{$k}\"",
+				"",
+				filter_var($v),
+			]);
+		}
+
+		foreach($files as $k => $v){
+			switch(true){
+				case false === $v = realpath(filter_var($v)):
+				case !is_file($v):
+				case !is_readable($v):
+					continue;
+			}
+			$data = file_get_contents($v);
+			$v = explode(DIRECTORY_SEPARATOR, $v);
+			$v = end($v);
+			$k = str_replace($disallow, "_", $k);
+			$v = str_replace($disallow, "_", $v);
+			$body[] = implode("\r\n", [
+				"Content-Disposition: form-data; name=\"{$k}\"; filename=\"{$v}\"",
+				"Content-Type: application/octet-stream",
+				"",
+				$data,
+			]);
+		}
+
+		// generate safe boundary
+		do{
+			$boundary = "---------------------" . md5(mt_rand() . microtime());
+		}while(preg_grep("/{$boundary}/", $body));
+
+		// add boundary for each parameters
+		array_walk($body, function (&$part) use ($boundary){
+			$part = "--{$boundary}\r\n{$part}";
+		});
+
+		// add final boundary
+		$body[] = "--{$boundary}--";
+		$body[] = "";
+
+		// set options
+		@curl_setopt_array($this->curl, [
+			CURLOPT_POST => true,
+			CURLOPT_POSTFIELDS => implode("\r\n", $body),
+			CURLOPT_HTTPHEADER => [
+				"Expect: ",
+				"Content-Type: multipart/form-data; boundary={$boundary}", // change Content-Type
+			],
+		]);
+
+		return $this;
+	}
 }
