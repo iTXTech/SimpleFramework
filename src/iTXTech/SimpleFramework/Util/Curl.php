@@ -155,7 +155,7 @@ class Curl{
 		return (curl_errno($this->curl)) ? true : false;
 	}
 
-	public function uploadFile(array $assoc = [], array $files = []){
+	public function uploadFile(array $assoc = [], array $files = [], string $fileType = "application/octet-stream"){
 		$body = [];
 		// invalid characters for "name" and "filename"
 		$disallow = ["\0", "\"", "\r", "\n"];
@@ -184,7 +184,7 @@ class Curl{
 			$v = str_replace($disallow, "_", $v);
 			$body[] = implode("\r\n", [
 				"Content-Disposition: form-data; name=\"{$k}\"; filename=\"{$v}\"",
-				"Content-Type: application/octet-stream",
+				"Content-Type: $fileType",
 				"",
 				$data,
 			]);
