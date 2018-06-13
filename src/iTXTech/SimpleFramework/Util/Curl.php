@@ -155,7 +155,9 @@ class Curl{
 		return (curl_errno($this->curl)) ? true : false;
 	}
 
-	public function uploadFile(array $assoc = [], array $files = [], string $fileType = "application/octet-stream"){
+	public function uploadFile(array $assoc = [], array $files = [],
+							   string $fileType = "application/octet-stream",
+							   array $extraHeaders = []){
 		$body = [];
 		// invalid characters for "name" and "filename"
 		$disallow = ["\0", "\"", "\r", "\n"];
@@ -208,10 +210,10 @@ class Curl{
 		@curl_setopt_array($this->curl, [
 			CURLOPT_POST => true,
 			CURLOPT_POSTFIELDS => implode("\r\n", $body),
-			CURLOPT_HTTPHEADER => [
+			CURLOPT_HTTPHEADER => array_merge([
 				"Expect: ",
 				"Content-Type: multipart/form-data; boundary={$boundary}", // change Content-Type
-			],
+			], $extraHeaders)
 		]);
 
 		return $this;
