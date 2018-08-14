@@ -10,6 +10,7 @@ Here are some features:
 * Module dependency auto resolver
 * Logger and Scheduler system
 * Multi threading AsyncTask and Thread support
+* All APIs can be used in a single script - *See examples*
 
 Contributions are welcomed.
 

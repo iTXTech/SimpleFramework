@@ -133,6 +133,7 @@ class Framework implements OnCompleteListener{
 		return null;
 	}
 
+	//TODO: independent ModuleManager
 	public function loadModule(Module $module){
 		if($module->isLoaded()){
 			Logger::notice("Module " . $module->getInfo()->getName() . " is already loaded");

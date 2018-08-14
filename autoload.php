@@ -16,7 +16,7 @@
 
 const PHAR_FILENAME = "SimpleFramework.phar";
 
-$workingDir = getcwd() . DIRECTORY_SEPARATOR;
+$workingDir = __DIR__ . DIRECTORY_SEPARATOR;
 if(file_exists($workingDir . PHAR_FILENAME)){
 	define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . PHAR_FILENAME . DIRECTORY_SEPARATOR);
 }else{
