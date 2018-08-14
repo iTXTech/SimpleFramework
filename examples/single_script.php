@@ -28,7 +28,7 @@ use iTXTech\SimpleFramework\Console\Terminal;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Scheduler\AsyncTask;
-use iTXTech\SimpleFramework\Scheduler\OnCompleteListener;
+use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
 use iTXTech\SimpleFramework\ThreadManager;
 
@@ -39,7 +39,7 @@ Terminal::$formattingCodes = true;
 Terminal::init();
 ThreadManager::init();
 Logger::info("Starting...");
-$scheduler = new ServerScheduler($classLoader, new class implements OnCompleteListener{
+$scheduler = new ServerScheduler($classLoader, new class implements OnCompletionListener{
 	public function test(){
 		Logger::info("Hello from OnCompleteListener! " . mt_rand(0, 10000));
 	}
@@ -53,7 +53,7 @@ for($i = 0; $i < 100; $i++){
 			Logger::info(TextFormat::RED . "AsyncTask is completed!");
 		}
 
-		public function onCompletion(OnCompleteListener $listener){
+		public function onCompletion(OnCompletionListener $listener){
 			$listener->test();
 		}
 	});

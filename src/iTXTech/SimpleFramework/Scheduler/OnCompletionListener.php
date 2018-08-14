@@ -16,5 +16,5 @@
 
 namespace iTXTech\SimpleFramework\Scheduler;
 
-interface OnCompleteListener{
+interface OnCompletionListener{
 }

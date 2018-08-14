@@ -23,7 +23,7 @@ class AsyncPool{
 	/** @var \ClassLoader */
 	private $classloader;
 
-	/** @var OnCompleteListener */
+	/** @var OnCompletionListener */
 	private $listener;
 
 	protected $size;
@@ -38,7 +38,7 @@ class AsyncPool{
 	/** @var int[] */
 	private $workerUsage = [];
 
-	public function __construct(\ClassLoader $classLoader, OnCompleteListener $listener, $size){
+	public function __construct(\ClassLoader $classLoader, OnCompletionListener $listener, $size){
 		$this->classloader = $classLoader;
 		$this->listener = $listener;
 		$this->size = (int) $size;

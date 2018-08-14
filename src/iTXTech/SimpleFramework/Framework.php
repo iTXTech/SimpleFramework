@@ -24,11 +24,11 @@ use iTXTech\SimpleFramework\Module\Module;
 use iTXTech\SimpleFramework\Module\ModuleDependencyResolver;
 use iTXTech\SimpleFramework\Module\ModuleInfo;
 use iTXTech\SimpleFramework\Module\WraithSpireMDR;
-use iTXTech\SimpleFramework\Scheduler\OnCompleteListener;
+use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
 use iTXTech\SimpleFramework\Util\Config;
 
-class Framework implements OnCompleteListener{
+class Framework implements OnCompletionListener{
 	const PROG_NAME = "SimpleFramework";
 	const PROG_VERSION = "2.1.0";
 	const API_LEVEL = 6;

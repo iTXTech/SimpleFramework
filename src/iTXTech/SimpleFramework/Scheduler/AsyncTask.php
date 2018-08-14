@@ -146,11 +146,11 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 	 * Actions to execute when completed (on main thread)
 	 * Implement this if you want to handle the data in your AsyncTask after it has been processed
 	 *
-	 * @param OnCompleteListener $listener
+	 * @param OnCompletionListener $listener
 	 *
 	 * @return void
 	 */
-	public function onCompletion(OnCompleteListener $listener){
+	public function onCompletion(OnCompletionListener $listener){
 
 	}
 

@@ -44,7 +44,7 @@ class ServerScheduler{
 
 	private static $singleThread = false;
 
-	public function __construct(\ClassLoader $classLoader, OnCompleteListener $listener, int $workers){
+	public function __construct(\ClassLoader $classLoader, OnCompletionListener $listener, int $workers){
 		$this->queue = new ReversePriorityQueue();
 		if(\iTXTech\SimpleFramework\SINGLE_THREAD){
 			self::$singleThread = true;
