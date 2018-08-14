@@ -1,10 +1,8 @@
 <?php
 
-/**
- * SimpleFramework
- * The fast, light-weighted, easy-to-extend php framework.
+/*
  *
- * Some classes are based on project PocketMine-MP.
+ * SimpleFramework
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,6 +11,7 @@
  *
  * @author iTXTech
  * @link https://itxtech.org
+ *
  */
 
 namespace iTXTech\SimpleFramework;
@@ -31,12 +30,12 @@ use iTXTech\SimpleFramework\Util\Config;
 
 class Framework implements OnCompleteListener{
 	const PROG_NAME = "SimpleFramework";
-	const PROG_VERSION = "2.0.1";
-	const API_LEVEL = 5;
+	const PROG_VERSION = "2.1.0";
+	const API_LEVEL = 6;
 	const CODENAME = "Navi";
 
 	/** @var Framework */
-	private static $obj = null;
+	private static $instance = null;
 
 	/** @var ConsoleReader */
 	private $console;
@@ -75,8 +74,8 @@ class Framework implements OnCompleteListener{
 	public static $usleep = 50000;
 
 	public function __construct(\ClassLoader $classLoader, array $argv){
-		if(self::$obj === null){
-			self::$obj = $this;
+		if(self::$instance === null){
+			self::$instance = $this;
 		}
 		$this->dataPath = \getcwd() . DIRECTORY_SEPARATOR;
 		$this->modulePath = $this->dataPath . "modules" . DIRECTORY_SEPARATOR;
@@ -114,7 +113,7 @@ class Framework implements OnCompleteListener{
 	}
 
 	public static function getInstance() : Framework{
-		return self::$obj;
+		return self::$instance;
 	}
 
 	public function getScheduler() : ServerScheduler{
