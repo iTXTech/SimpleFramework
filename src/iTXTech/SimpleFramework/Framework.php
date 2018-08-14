@@ -25,10 +25,11 @@ use iTXTech\SimpleFramework\Module\Module;
 use iTXTech\SimpleFramework\Module\ModuleDependencyResolver;
 use iTXTech\SimpleFramework\Module\ModuleInfo;
 use iTXTech\SimpleFramework\Module\WraithSpireMDR;
+use iTXTech\SimpleFramework\Scheduler\OnCompleteListener;
 use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
 use iTXTech\SimpleFramework\Util\Config;
 
-class Framework{
+class Framework implements OnCompleteListener{
 	const PROG_NAME = "SimpleFramework";
 	const PROG_VERSION = "2.0.1";
 	const API_LEVEL = 5;
@@ -365,8 +366,7 @@ class Framework{
 				}
 
 				Logger::info("Starting multi-threading scheduler...");
-				ServerScheduler::$WORKERS = $this->config->get("async-workers", 2);
-				$this->scheduler = new ServerScheduler();
+				$this->scheduler = new ServerScheduler($this->classLoader, $this, $this->config->get("async-workers", 2));
 
 				$mdr = $this->config->get("module-dependency-resolver");
 				if($mdr["enabled"]){

@@ -21,11 +21,9 @@
 namespace iTXTech\SimpleFramework\Scheduler;
 
 use iTXTech\SimpleFramework\Console\Logger;
-use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Util\ReversePriorityQueue;
 
 class ServerScheduler{
-	public static $WORKERS = 2;
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */
@@ -47,12 +45,12 @@ class ServerScheduler{
 
 	private static $singleThread = false;
 
-	public function __construct(){
+	public function __construct(\ClassLoader $classLoader, OnCompleteListener $listener, int $workers){
 		$this->queue = new ReversePriorityQueue();
 		if(\iTXTech\SimpleFramework\SINGLE_THREAD){
 			self::$singleThread = true;
 		}else{
-			$this->asyncPool = new AsyncPool(Framework::getInstance(), self::$WORKERS);
+			$this->asyncPool = new AsyncPool($classLoader, $listener, $workers);
 		}
 	}
 

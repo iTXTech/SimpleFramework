@@ -16,12 +16,9 @@
  */
 
 namespace iTXTech\SimpleFramework\Scheduler;
-use iTXTech\SimpleFramework\Framework;
 
 /**
  * Class used to run async tasks in other threads.
- *
- * WARNING: Do not call PocketMine-MP API methods, or save objects from/on other Threads!!
  */
 abstract class AsyncTask extends \Threaded implements \Collectable{
 
@@ -150,11 +147,11 @@ abstract class AsyncTask extends \Threaded implements \Collectable{
 	 * Actions to execute when completed (on main thread)
 	 * Implement this if you want to handle the data in your AsyncTask after it has been processed
 	 *
-	 * @param Framework $framework
+	 * @param OnCompleteListener $listener
 	 *
 	 * @return void
 	 */
-	public function onCompletion(Framework $framework){
+	public function onCompletion(OnCompleteListener $listener){
 
 	}
 

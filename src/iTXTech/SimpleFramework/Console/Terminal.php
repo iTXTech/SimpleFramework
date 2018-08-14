@@ -45,7 +45,7 @@ abstract class Terminal{
 	public static $COLOR_YELLOW = "";
 	public static $COLOR_WHITE = "";
 
-	private static $formattingCodes = null;
+	public static $formattingCodes = null;
 
 	public static function hasFormattingCodes(){
 		if(self::$formattingCodes === null){

@@ -18,12 +18,14 @@
 namespace iTXTech\SimpleFramework\Scheduler;
 
 use iTXTech\SimpleFramework\Console\Logger;
-use iTXTech\SimpleFramework\Framework;
 
 class AsyncPool{
 
-	/** @var Framework */
-	private $framework;
+	/** @var \ClassLoader */
+	private $classloader;
+
+	/** @var OnCompleteListener */
+	private $listener;
 
 	protected $size;
 
@@ -37,14 +39,15 @@ class AsyncPool{
 	/** @var int[] */
 	private $workerUsage = [];
 
-	public function __construct(Framework $framework, $size){
-		$this->framework = $framework;
+	public function __construct(\ClassLoader $classLoader, OnCompleteListener $listener, $size){
+		$this->classloader = $classLoader;
+		$this->listener = $listener;
 		$this->size = (int) $size;
 
 		for($i = 0; $i < $this->size; ++$i){
 			$this->workerUsage[$i] = 0;
 			$this->workers[$i] = new AsyncWorker($i + 1);
-			$this->workers[$i]->setClassLoader($this->framework->getLoader());
+			$this->workers[$i]->setClassLoader($classLoader);
 			$this->workers[$i]->start();
 		}
 	}
@@ -59,7 +62,7 @@ class AsyncPool{
 			for($i = $this->size; $i < $newSize; ++$i){
 				$this->workerUsage[$i] = 0;
 				$this->workers[$i] = new AsyncWorker($i + 1);
-				$this->workers[$i]->setClassLoader($this->framework->getLoader());
+				$this->workers[$i]->setClassLoader($this->classloader);
 				$this->workers[$i]->start();
 			}
 			$this->size = $newSize;
@@ -137,7 +140,7 @@ class AsyncPool{
 			if($task->isFinished() and !$task->isRunning() and !$task->isCrashed()){
 
 				if(!$task->hasCancelledRun()){
-					$task->onCompletion($this->framework);
+					$task->onCompletion($this->listener);
 				}
 
 				$this->removeTask($task);
