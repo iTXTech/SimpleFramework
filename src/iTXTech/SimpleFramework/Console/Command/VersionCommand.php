@@ -36,7 +36,7 @@ class VersionCommand implements Command{
 	public function execute(string $command, array $args) : bool{
 		if(count($args) > 0){
 			$module = $args[0];
-			$modules = Framework::getInstance()->getModules();
+			$modules = Framework::getInstance()->getModuleManager()->getModules();
 			if(isset($modules[$module])){
 				$module = $modules[$module];
 				Logger::info(TextFormat::YELLOW . "--------- " . TextFormat::WHITE . "Version: " . $module->getInfo()->getName() . TextFormat::YELLOW . " ---------");

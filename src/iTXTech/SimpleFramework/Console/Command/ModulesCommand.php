@@ -37,7 +37,7 @@ class ModulesCommand implements Command{
 		if(count($args) < 1){
 			return false;
 		}
-		$modules = Framework::getInstance()->getModules();
+		$modules = Framework::getInstance()->getModuleManager()->getModules();
 		switch(strtolower($args[0])){
 			case "list":
 				$message = "Modules (" . count($modules) . "): ";
@@ -53,7 +53,7 @@ class ModulesCommand implements Command{
 					$name = $args[1];
 					if(isset($modules[$name])){
 						$module = $modules[$name];
-						Framework::getInstance()->loadModule($module);
+						Framework::getInstance()->getModuleManager()->loadModule($module);
 					}else{
 						Logger::info(TextFormat::RED . "Module $name is not installed.");
 					}
@@ -66,7 +66,7 @@ class ModulesCommand implements Command{
 					$name = $args[1];
 					if(isset($modules[$name])){
 						$module = $modules[$name];
-						Framework::getInstance()->unloadModule($module);
+						Framework::getInstance()->getModuleManager()->unloadModule($module);
 					}else{
 						Logger::info(TextFormat::RED . "Module $name is not installed.");
 					}
@@ -77,11 +77,11 @@ class ModulesCommand implements Command{
 			case "read":
 				if(count($args) > 1){
 					$file = $args[1];
-					if(!file_exists(Framework::getInstance()->getModulePath() . $file)){
+					if(!file_exists(Framework::getInstance()->getModuleManager()->getModulePath() . $file)){
 						Logger::info(TextFormat::RED . "File not found.");
 						return true;
 					}
-					Framework::getInstance()->tryLoadModule(Framework::getInstance()->getModulePath() . $file);
+					Framework::getInstance()->getModuleManager()->tryLoadModule(Framework::getInstance()->getModuleManager()->getModulePath() . $file);
 					return true;
 				}else{
 					return false;

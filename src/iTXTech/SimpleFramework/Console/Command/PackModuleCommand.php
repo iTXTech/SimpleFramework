@@ -38,7 +38,7 @@ class PackModuleCommand implements Command{
 	public function execute(string $command, array $args) : bool{
 		$moduleName = trim(str_replace(["no-gz", "no-echo"], "", implode(" ", $args)));
 
-		if($moduleName === "" or !(($module = Framework::getInstance()->getModule($moduleName)) instanceof Module)){
+		if($moduleName === "" or !(($module = Framework::getInstance()->getModuleManager()->getModule($moduleName)) instanceof Module)){
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
@@ -49,7 +49,7 @@ class PackModuleCommand implements Command{
 			return true;
 		}
 
-		$outputDir = Framework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		$outputDir = Framework::getInstance()->getModuleManager()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		@mkdir($outputDir);
 		$pharPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . ".phar";
 		if(file_exists($pharPath)){

@@ -33,7 +33,7 @@ class PackSFCommand implements Command{
 	}
 
 	public function execute(string $command, array $args) : bool{
-		$outputDir = Framework::getInstance()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		$outputDir = Framework::getInstance()->getModuleManager()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		@mkdir($outputDir);
 		$framework = Framework::getInstance();
 		$pharPath = $outputDir . $framework->getName() . "_" . $framework->getVersion() . ".phar";

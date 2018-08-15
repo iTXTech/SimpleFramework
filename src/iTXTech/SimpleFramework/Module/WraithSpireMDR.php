@@ -25,13 +25,13 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 
 	private $database;
 
-	/** @var Framework */
-	private $framework;
+	/** @var ModuleManager */
+	private $manager;
 
 	private $modules;
 
-	public function __construct(Framework $framework, string $database, array $modules){
-		$this->framework = $framework;
+	public function __construct(ModuleManager $manager, string $database, array $modules){
+		$this->manager = $manager;
 		$this->database = $database;
 		$this->modules = $modules;
 	}
@@ -39,7 +39,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 	public function init(){
 		if($this->modules != []){
 			Logger::info(TextFormat::AQUA . "Resolving modules required by WraithSpire configuration.");
-			$this->resolveDependencies($this->modules, $this->framework->getName());
+			$this->resolveDependencies($this->modules, "Configuration");
 		}
 	}
 
@@ -72,7 +72,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 			Logger::info(TextFormat::RED . $moduleName . " requires dependency $name does not have a vendor, please contact the author of the module or manually resolve its dependency.");
 			return false;
 		}
-		if(($module = $this->framework->getModule($name)) instanceof Module){
+		if(($module = $this->manager->getModule($name)) instanceof Module){
 			if($module->getInfo()->getLoadMethod() == ModuleInfo::LOAD_METHOD_SOURCE){
 				Logger::info(TextFormat::RED . "Please manually remove the source folder of " . $module->getInfo()->getName() . " then the dependency resolver can download the specifying module.");
 				return false;
@@ -87,9 +87,9 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 			$fileName = explode("/", $data["link"]);
 			$fileName = end($fileName);
 			Logger::info(TextFormat::AQUA . "Downloading module $vendor/$name v$version ...");
-			Util::downloadFile($this->framework->getModulePath() . $fileName, $data["link"]);
+			Util::downloadFile($this->manager->getModulePath() . $fileName, $data["link"]);
 			Logger::info(TextFormat::GREEN . "Module $vendor/$name v$version downloaded. Loading...");
-			return $this->framework->tryloadModule($this->framework->getModulePath() . $fileName);
+			return $this->manager->tryloadModule($this->manager->getModulePath() . $fileName);
 		}
 		return false;
 	}
@@ -106,7 +106,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 			if(count($version) != 3){
 				$error = true;
 			}
-			if(($dependencyModule = $this->framework->getModule($name)) instanceof Module){
+			if(($dependencyModule = $this->manager->getModule($name)) instanceof Module){
 				$targetVersion = explode(".", $dependencyModule->getInfo()->getVersion());
 				if(count($targetVersion) != 3){
 					$error = true;
