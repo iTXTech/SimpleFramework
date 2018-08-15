@@ -133,6 +133,6 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 	}
 
 	public function resolveDependency(Module $module): bool{
-		return $this->resolveDependencies($module->getInfo()->getDependency(), $module->getInfo()->getName());
+		return $this->resolveDependencies($module->getInfo()->getDependencies(), $module->getInfo()->getName());
 	}
 }

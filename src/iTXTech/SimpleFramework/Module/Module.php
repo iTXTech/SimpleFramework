@@ -63,7 +63,7 @@ abstract class Module{
 	}
 
 	protected function checkDependency(){
-		$dependencies = $this->info->getDependency();
+		$dependencies = $this->info->getDependencies();
 		foreach($dependencies as $dependency){
 			$name = $dependency["name"];
 			if(strstr($name, "/")){
