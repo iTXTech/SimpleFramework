@@ -1,5 +1,12 @@
 SimpleFramework
 ===================
+[![License](https://img.shields.io/github/license/iTXTech/SimpleFramework.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/LICENSE)
+[![Stable Version](https://img.shields.io/badge/stable--version-2.0.1-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
+[![Stable API Level](https://img.shields.io/badge/stable--api-5-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
+
+[![Developing Version](https://img.shields.io/badge/dev--version-2.1.0-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
+[![Developing API Level](https://img.shields.io/badge/dev--api-6-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
+
 __The fast, light-weighted, easy-to-extend php command line framework__
 
 Introduction
@@ -14,20 +21,15 @@ Here are some features:
 
 Contributions are welcomed.
 
-Manual
--------------
-__[Wiki](https://github.com/iTXTech/SimpleFramework/wiki)__
-
 Requirements
 -------------
 * PHP >= 7.2
-* Optional [pthreads](https://github.com/krakjoe/pthreads) extension (multi thread support)
-* Optional [yaml](https://github.com/php/pecl-file_formats-yaml) extension (yaml file parse)
+* [pthreads](https://github.com/krakjoe/pthreads) - *Optional*
+* [php-yaml](https://github.com/php/pecl-file_formats-yaml) - *Optional*
 
 Get SimpleFramework
 -------------
 * __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__
-* __[PHP Runtime](https://itxtech.org/genisys/get/)__
 
 Modules
 -------------
