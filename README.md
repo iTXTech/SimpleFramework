@@ -1,12 +1,11 @@
 SimpleFramework
 ===================
 [![License](https://img.shields.io/github/license/iTXTech/SimpleFramework.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/LICENSE)
-[![Stable Version](https://img.shields.io/badge/stable--version-2.0.1-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
-[![Stable API Level](https://img.shields.io/badge/stable--api-5-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
-[![Developing Version](https://img.shields.io/badge/dev--version-2.1.0-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
-[![Developing API Level](https://img.shields.io/badge/dev--api-6-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
+[![Stable](https://img.shields.io/badge/stable-2.0.1(5)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
+[![Developing](https://img.shields.io/badge/dev-2.1.0(6)-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
 
-__The fast, light-weighted, easy-to-extend php command line framework__
+
+__An efficient, lightweight and easy to extend php command line framework.__
 
 Introduction
 -------------
@@ -15,8 +14,9 @@ SimpleFramework is a php command line framework designed for small programs writ
 Here are some features:
 
 * Module dependency resolver
-* Console & command support
+* Console & Command support
 * AsyncTask and Thread support
+* Network & Configuration utilities
 * All APIs can be used in a single script - *See examples*
 
 Contributions are welcomed.
