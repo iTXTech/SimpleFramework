@@ -3,7 +3,6 @@ SimpleFramework
 [![License](https://img.shields.io/github/license/iTXTech/SimpleFramework.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/LICENSE)
 [![Stable Version](https://img.shields.io/badge/stable--version-2.0.1-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
 [![Stable API Level](https://img.shields.io/badge/stable--api-5-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
-
 [![Developing Version](https://img.shields.io/badge/dev--version-2.1.0-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
 [![Developing API Level](https://img.shields.io/badge/dev--api-6-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
 
@@ -11,12 +10,13 @@ __The fast, light-weighted, easy-to-extend php command line framework__
 
 Introduction
 -------------
-SimpleFramework is a php framework designed for small command line php programs (a module).<br>
+SimpleFramework is a php command line framework designed for small programs written in php.
+
 Here are some features:
 
-* Module dependency auto resolver
-* Logger and Scheduler system
-* Multi threading AsyncTask and Thread support
+* Module dependency resolver
+* Console & command support
+* AsyncTask and Thread support
 * All APIs can be used in a single script - *See examples*
 
 Contributions are welcomed.
