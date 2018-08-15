@@ -16,6 +16,8 @@
 
 namespace iTXTech\SimpleFramework\Console;
 
+use iTXTech\SimpleFramework\Util\Util;
+
 class Logger{
 	const EMERGENCY = "emergency";
 	const ALERT = "alert";
@@ -107,7 +109,7 @@ class Logger{
 			$errstr = substr($errstr, 0, $pos);
 		}
 		self::log($type, get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline");
-		foreach(\iTXTech\SimpleFramework\getTrace(0, $trace) as $i => $line){
+		foreach(Util::getTrace(0, $trace) as $i => $line){
 			self::debug($line);
 		}
 	}
