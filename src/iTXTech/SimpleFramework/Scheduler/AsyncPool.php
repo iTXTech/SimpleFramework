@@ -51,6 +51,10 @@ class AsyncPool{
 		}
 	}
 
+	public function getWorkers(){
+		return $this->workers;
+	}
+
 	public function getSize(){
 		return $this->size;
 	}

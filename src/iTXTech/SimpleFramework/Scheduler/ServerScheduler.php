@@ -53,6 +53,10 @@ class ServerScheduler{
 		}
 	}
 
+	public function getAsyncPool(): AsyncPool{
+		return $this->asyncPool;
+	}
+
 	/**
 	 * @param Task $task
 	 *
