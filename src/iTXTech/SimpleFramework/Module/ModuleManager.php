@@ -77,8 +77,8 @@ class ModuleManager{
 				Logger::info("Loading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
 			}
 			if($module->preLoad()){
-				$module->load();
 				$module->setLoaded(true);
+				$module->load();
 			}else{
 				Logger::info(TextFormat::RED . "Module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion() . " load failed.");
 			}
