@@ -25,6 +25,7 @@ use iTXTech\SimpleFramework\Module\WraithSpireMDR;
 use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
 use iTXTech\SimpleFramework\Util\Config;
+use iTXTech\SimpleFramework\Util\Util;
 
 class Framework implements OnCompletionListener{
 	const PROG_NAME = "SimpleFramework";
@@ -298,32 +299,8 @@ class Framework implements OnCompletionListener{
 		$this->console->notify();
 	}
 
-	public function getUptime(){
-		$time = microtime(true) - \iTXTech\SimpleFramework\START_TIME;
-
-		$seconds = floor($time % 60);
-		$minutes = null;
-		$hours = null;
-		$days = null;
-
-		if($time >= 60){
-			$minutes = floor(($time % 3600) / 60);
-			if($time >= 3600){
-				$hours = floor(($time % (3600 * 24)) / 3600);
-				if($time >= 3600 * 24){
-					$days = floor($time / (3600 * 24));
-				}
-			}
-		}
-
-		$uptime = ($minutes !== null ?
-				($hours !== null ?
-					($days !== null ?
-						"$days d "
-						: "") . "$hours h "
-					: "") . "$minutes m "
-				: "") . "$seconds s";
-		return $uptime;
+	public static function getUptime(){
+		return Util::formatTime(microtime(true) - \iTXTech\SimpleFramework\START_TIME);
 	}
 
 	private function checkConsole(){
