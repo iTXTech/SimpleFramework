@@ -144,4 +144,26 @@ class Util{
 				: "") . "$seconds s";
 		return $readable;
 	}
+
+	public static function compareVersion(string $version, string $targetVer): bool{
+		$version = explode(".", $version);
+		if(count($version) != 3){
+			return true;
+		}
+
+		$targetVersion = explode(".", $targetVer);
+		if(count($targetVersion) != 3){
+			return true;
+		}
+
+		if($version[0] != $targetVersion[0]){
+			return true;
+		}elseif($version[1] > $targetVersion[1]){
+			return true;
+		}elseif($version[1] == $targetVersion[1] and $version[2] > $targetVersion[2]){
+			return true;
+		}
+
+		return false;
+	}
 }

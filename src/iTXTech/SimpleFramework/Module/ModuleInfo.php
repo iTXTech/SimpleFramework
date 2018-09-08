@@ -34,6 +34,7 @@ class ModuleInfo{
 	private $loadMethod;
 	private $loadOrder = self::LOAD_ORDER_DEFAULT;
 	private $dependencies = [];
+	private $extensions = [];
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -64,6 +65,8 @@ class ModuleInfo{
 		if($this->dependencies === []){
 			$this->dependencies = $info["dependency"] ?? [];//backward compatibility
 		}
+
+		$this->extensions = $info["extensions"] ?? [];
 	}
 
 	public function getDependencies(): array{
@@ -104,5 +107,9 @@ class ModuleInfo{
 
 	public function getWebsite(): string{
 		return $this->website;
+	}
+
+	public function getExtensions(): array{
+		return $this->extensions;
 	}
 }

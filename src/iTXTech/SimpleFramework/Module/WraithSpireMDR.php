@@ -94,33 +94,20 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 		return false;
 	}
 
-	private function resolveDependencies(array $dependencies, string $moduleName): bool{
+	private function resolve(array $dependencies, string $moduleName): bool{
 		foreach($dependencies as $dependency){
 			$name = $dependency["name"];
 			if(strstr($name, "/")){
 				$name = explode("/", $name, 2);
 				$name = end($name);
 			}
-			$version = explode(".", $dependency["version"]);
 			$error = false;
-			if(count($version) != 3){
-				$error = true;
-			}
-			if(($dependencyModule = $this->manager->getModule($name)) instanceof Module){
-				$targetVersion = explode(".", $dependencyModule->getInfo()->getVersion());
-				if(count($targetVersion) != 3){
+			if(isset($dependency["version"])){
+				if(($module = $this->manager->getModule($name)) instanceof Module){
 					$error = true;
+				}else{
+					$error = Util::compareVersion($dependency["version"], $module->getInfo()->getVersion());
 				}
-
-				if($version[0] != $targetVersion[0]){
-					$error = true;
-				}elseif($version[1] > $targetVersion[1]){
-					$error = true;
-				}elseif($version[1] == $targetVersion[1] and $version[2] > $targetVersion[2]){
-					$error = true;
-				}
-			}else{
-				$error = true;
 			}
 			if($error == true){
 				Logger::info(TextFormat::GOLD . "Resolving dependency " . $name . " version " . $dependency["version"] . " @ " . $moduleName);
@@ -132,7 +119,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 		return true;
 	}
 
-	public function resolveDependency(Module $module): bool{
-		return $this->resolveDependencies($module->getInfo()->getDependencies(), $module->getInfo()->getName());
+	public function resolveDependencies(Module $module): bool{
+		return $this->resolve($module->getInfo()->getDependencies(), $module->getInfo()->getName());
 	}
 }

@@ -18,6 +18,7 @@ namespace iTXTech\SimpleFramework\Module;
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Framework;
+use iTXTech\SimpleFramework\Util\Util;
 
 abstract class Module{
 	/** @var Framework */
@@ -58,11 +59,14 @@ abstract class Module{
 			Logger::error("Module requires API Level: " . $this->info->getAPILevel() . " Current API Level: " . Framework::API_LEVEL);
 			return false;
 		}
-		return (($resolver = $this->manager->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ?
-			$resolver->resolveDependency($this) : $this->checkDependency();
+		if($this->checkExtensions()){
+			return (($resolver = $this->manager->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ?
+				$resolver->resolveDependencies($this) : $this->checkDependencies();
+		}
+		return false;
 	}
 
-	protected function checkDependency(){
+	protected function checkDependencies(): bool{
 		$dependencies = $this->info->getDependencies();
 		foreach($dependencies as $dependency){
 			$name = $dependency["name"];
@@ -70,30 +74,37 @@ abstract class Module{
 				$name = explode("/", $name, 2);
 				$name = end($name);
 			}
-			$version = explode(".", $dependency["version"]);
 			$error = false;
-			if(count($version) != 3){
-				$error = true;
-			}
-			if(($module = $this->manager->getModule($name)) instanceof Module){
-				$targetVersion = explode(".", $module->getInfo()->getVersion());
-				if(count($targetVersion) != 3){
+			if(isset($dependency["version"])){
+				if(($module = $this->manager->getModule($name)) instanceof Module){
 					$error = true;
+				}else{
+					$error = Util::compareVersion($dependency["version"], $module->getInfo()->getVersion());
 				}
-
-				if($version[0] != $targetVersion[0]){
-					$error = true;
-				}elseif($version[1] > $targetVersion[1]){
-					$error = true;
-				}elseif($version[1] == $targetVersion[1] and $version[2] > $targetVersion[2]){
-					$error = true;
-				}
-			}else{
-				$error = true;
 			}
 			if($error == true){
-				Logger::error("Module " . '"' . $this->getName() . '"' . " requires dependency module " . '"' . $name . '"' . " version " . $dependency["version"]);
+				Logger::error("Module " . '"' . $this->getName() . '"' . " requires module " . '"' . $name . '"' .
+					" version " . ($dependency["version"] ?? "Unspecified"));
 				return false;
+			}
+		}
+		return true;
+	}
+
+	protected function checkExtensions(): bool{
+		$extensions = $this->info->getExtensions();
+		foreach($extensions as $extension){
+			if(extension_loaded($extension["name"])){
+				$error = false;
+				if(isset($extension["version"])){
+					$extVer = (new \ReflectionExtension($extension["name"]))->getVersion();
+					$error = Util::compareVersion($extension["version"], $extVer);
+				}
+				if($error == true){
+					Logger::error("Module " . '"' . $this->getName() . '"' . " requires extension " . '"' . $extension["name"] . '"' .
+						" version " . ($extension["version"] ?? "Unspecified"));
+					return false;
+				}
 			}
 		}
 		return true;

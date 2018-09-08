@@ -21,5 +21,5 @@ interface ModuleDependencyResolver{
 	 * @param Module $module
 	 * @return bool
 	 */
-	public function resolveDependency(Module $module): bool;
+	public function resolveDependencies(Module $module): bool;
 }
