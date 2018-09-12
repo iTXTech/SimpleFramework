@@ -18,13 +18,6 @@ namespace iTXTech\SimpleFramework\Util;
 
 use iTXTech\SimpleFramework\Console\Logger;
 
-/**
- * Class Config
- *
- * Config Class for simple config manipulation of multiple formats.
- *
- * JSON is recommended. You cannot use YAML without php_yaml extension.
- */
 class Config{
 	const DETECT = -1; //Detect by file extension
 	const PROPERTIES = 0; // .properties
@@ -67,9 +60,9 @@ class Config{
 	];
 
 	/**
-	 * @param string $file     Path of the file to be loaded
-	 * @param int    $type     Config type to load, -1 by default (detect)
-	 * @param array  $default  Array with the default values that will be written to the file if it did not exist
+	 * @param string $file Path of the file to be loaded
+	 * @param int    $type Config type to load, -1 by default (detect)
+	 * @param array  $default Array with the default values that will be written to the file if it did not exist
 	 * @param null   &$correct Sets correct to true if everything has been loaded correctly
 	 */
 	public function __construct($file, $type = Config::DETECT, $default = [], &$correct = null){
@@ -103,7 +96,7 @@ class Config{
 	 *
 	 * @return bool
 	 */
-	public function load($file, $type = Config::DETECT, $default = []){
+	public function load($file, $type = Config::DETECT, $default = []): bool{
 		$this->correct = true;
 		$this->type = (int) $type;
 		$this->file = $file;
@@ -162,19 +155,11 @@ class Config{
 		return true;
 	}
 
-	/**
-	 * @return boolean
-	 */
-	public function check(){
+	public function check(): bool{
 		return $this->correct === true;
 	}
 
-	/**
-	 * @param bool $async
-	 *
-	 * @return boolean
-	 */
-	public function save(){
+	public function save(?string $option = null): bool{
 		if($this->correct === true){
 			try{
 				$content = null;
@@ -184,10 +169,10 @@ class Config{
 						$content = $this->writeProperties();
 						break;
 					case Config::JSON:
-						$content = json_encode($this->config, JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING);
+						$content = json_encode($this->config, $option ?? (JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
 						break;
 					case Config::YAML:
-						$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
+						$content = yaml_emit($this->config, $option ?? YAML_UTF8_ENCODING);
 						break;
 					case Config::SERIALIZED:
 						$content = serialize($this->config);
@@ -196,12 +181,11 @@ class Config{
 						$content = implode("\r\n", array_keys($this->config));
 						break;
 				}
-					file_put_contents($this->file, $content);
+				file_put_contents($this->file, $content);
 			}catch(\Throwable $e){
 				Logger::critical("Could not save Config " . $this->file . ": " . $e->getMessage());
-					Logger::logException($e);
+				Logger::logException($e);
 			}
-
 			return true;
 		}else{
 			return false;
@@ -317,7 +301,7 @@ class Config{
 		foreach($this->nestedCache as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
 				unset($this->nestedCache[$nestedKey]);
-  			}
+			}
 		}
 	}
 
