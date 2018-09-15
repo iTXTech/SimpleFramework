@@ -77,7 +77,8 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 				Logger::info(TextFormat::RED . "Please manually remove the source folder of " . $module->getInfo()->getName() . " then the dependency resolver can download the specifying module.");
 				return false;
 			}
-			rename($module->getFile(), $module->getFile() . ".old");
+			$file = str_replace("phar://", "", substr($module->getFile(), 0, strlen($module->getFile()) - 1));
+			rename($file, $file . ".old");
 			Logger::info(TextFormat::AQUA . "You must restart this program after resolved dependencies.");
 		}
 		if(($data = $this->getModuleData($vendor, $name, $version)) !== false){
