@@ -76,7 +76,7 @@ abstract class Module{
 			}
 			$error = false;
 			if(isset($dependency["version"])){
-				if(($module = $this->manager->getModule($name)) instanceof Module){
+				if(!($module = $this->manager->getModule($name)) instanceof Module){
 					$error = true;
 				}else{
 					$error = Util::compareVersion($dependency["version"], $module->getInfo()->getVersion());
