@@ -1,0 +1,31 @@
+<?php
+
+/*
+ *
+ * SimpleFramework
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author iTXTech
+ * @link https://itxtech.org
+ *
+ */
+
+namespace iTXTech\SimpleFramework\Util;
+
+abstract class StringUtil{
+	public static function startsWith(string $str, string $prefix): bool{
+		return substr($str, 0, strlen($prefix)) === $prefix;
+	}
+
+	public static function endsWith(string $str, string $suffix): bool{
+		return substr($str, strlen($str) - strlen($suffix), strlen($suffix)) === $suffix;
+	}
+
+	public static function contains(string $str, string $s){
+		return strpos($str, $s) > 0;
+	}
+}
