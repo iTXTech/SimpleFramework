@@ -24,20 +24,15 @@
 require_once "../autoload.php";
 
 use iTXTech\SimpleFramework\Console\Logger;
-use iTXTech\SimpleFramework\Console\Terminal;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Scheduler\AsyncTask;
 use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
-use iTXTech\SimpleFramework\ThreadManager;
 
-@define('iTXTech\SimpleFramework\SINGLE_THREAD', false);//multi-threading!
+Initializer::setSingleThread(false);
+Initializer::initTerminal(true);
 
-//initialize utilities
-Terminal::$formattingCodes = true;
-Terminal::init();
-ThreadManager::init();
 Logger::info("Starting...");
 $scheduler = new ServerScheduler($classLoader, new class implements OnCompletionListener{
 	public function test(){

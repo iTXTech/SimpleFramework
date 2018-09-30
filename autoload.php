@@ -27,3 +27,17 @@ require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/C
 $classLoader = new \ClassLoader();
 $classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
 $classLoader->register(true);
+
+abstract class Initializer{
+	public static function setSingleThread(bool $bool = false){
+		@define('iTXTech\SimpleFramework\SINGLE_THREAD', $bool);
+		if(!$bool){
+			\iTXTech\SimpleFramework\ThreadManager::init();
+		}
+	}
+
+	public static function initTerminal(bool $formattingCodes = true){
+		\iTXTech\SimpleFramework\Console\Terminal::$formattingCodes = $formattingCodes;
+		\iTXTech\SimpleFramework\Console\Terminal::init();
+	}
+}
