@@ -69,7 +69,7 @@ class Framework implements OnCompletionListener{
 
 	public static $usleep = 50000;
 
-	public function __construct(\ClassLoader $classLoader, array $argv){
+	public function __construct(\ClassLoader $classLoader){
 		if(self::$instance === null){
 			self::$instance = $this;
 		}
@@ -77,7 +77,6 @@ class Framework implements OnCompletionListener{
 		$this->modulePath = $this->dataPath . "modules" . DIRECTORY_SEPARATOR;
 		$this->moduleDataPath = $this->dataPath . "data" . DIRECTORY_SEPARATOR;
 		$this->classLoader = $classLoader;
-		$this->start($argv);
 	}
 
 	public function getLoader(){
@@ -189,7 +188,7 @@ class Framework implements OnCompletionListener{
 		return false;
 	}
 
-	private function start(array $argv){
+	public function start(array $argv){
 		try{
 			if(!$this->processCommandLineOptions($argv)){
 				$this->displayTitle("SimpleFramework is starting...");
