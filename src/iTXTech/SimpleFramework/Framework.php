@@ -99,7 +99,7 @@ class Framework implements OnCompletionListener{
 		return self::API_LEVEL;
 	}
 
-	public static function getInstance() : Framework{
+	public static function getInstance(): ?Framework{
 		return self::$instance;
 	}
 
