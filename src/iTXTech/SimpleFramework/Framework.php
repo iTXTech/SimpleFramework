@@ -23,7 +23,7 @@ use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\ModuleManager;
 use iTXTech\SimpleFramework\Module\WraithSpireMDR;
 use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
-use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
+use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Config;
 use iTXTech\SimpleFramework\Util\Util;
 
@@ -48,7 +48,7 @@ class Framework implements OnCompletionListener{
 	/** @var \ClassLoader */
 	private $classLoader;
 
-	/** @var ServerScheduler */
+	/** @var Scheduler */
 	private $scheduler;
 
 	/** @var ModuleManager */
@@ -107,7 +107,7 @@ class Framework implements OnCompletionListener{
 		return self::$instance !== null;
 	}
 
-	public function getScheduler() : ServerScheduler{
+	public function getScheduler(): Scheduler{
 		return $this->scheduler;
 	}
 
@@ -226,7 +226,7 @@ class Framework implements OnCompletionListener{
 				}
 
 				Logger::info("Starting multi-threading scheduler...");
-				$this->scheduler = new ServerScheduler($this->classLoader, $this, $this->config->get("async-workers", 2));
+				$this->scheduler = new Scheduler($this->classLoader, $this, $this->config->get("async-workers", 2));
 
 				if($this->moduleManager === null){
 					$this->moduleManager = new ModuleManager($this->classLoader, $this->modulePath, $this->moduleDataPath, $this->commandLineOnly);

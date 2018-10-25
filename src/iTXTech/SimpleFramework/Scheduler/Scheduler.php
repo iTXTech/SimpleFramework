@@ -22,7 +22,7 @@ namespace iTXTech\SimpleFramework\Scheduler;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Util\ReversePriorityQueue;
 
-class ServerScheduler{
+class Scheduler{
 	/**
 	 * @var ReversePriorityQueue<Task>
 	 */

@@ -28,13 +28,13 @@ use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Scheduler\AsyncTask;
 use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
-use iTXTech\SimpleFramework\Scheduler\ServerScheduler;
+use iTXTech\SimpleFramework\Scheduler\Scheduler;
 
 Initializer::setSingleThread(false);
 Initializer::initTerminal(true);
 
 Logger::info("Starting...");
-$scheduler = new ServerScheduler($classLoader, new class implements OnCompletionListener{
+$scheduler = new Scheduler($classLoader, new class implements OnCompletionListener{
 	public function test(){
 		Logger::info("Hello from OnCompleteListener! " . mt_rand(0, 10000));
 	}
