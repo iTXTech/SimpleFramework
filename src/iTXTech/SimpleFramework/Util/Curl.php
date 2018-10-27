@@ -45,6 +45,15 @@ class Curl{
 		curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, $enable ? 1 : 0);
 	}
 
+	public function setSocks5Proxy(string $address, string $pass = ""){
+		curl_setopt($this->curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+		curl_setopt($this->curl, CURLOPT_PROXY, $address);
+		if($pass !== ""){
+			curl_setopt($this->curl, CURLOPT_PROXYUSERPWD, $pass);
+		}
+		return $this;
+	}
+
 	public function getUrl(){
 		return $this->url;
 	}
@@ -53,33 +62,33 @@ class Curl{
 		return $this->content;
 	}
 
-	public function setUA($ua){
+	public function setUA(string $ua){
 		curl_setopt($this->curl, CURLOPT_USERAGENT, $ua);
 		return $this;
 	}
 
-	public function setUrl($url){
+	public function setUrl(string $url){
 		$this->url = $url;
 		curl_setopt($this->curl, CURLOPT_URL, $url);
 		return $this;
 	}
 
-	public function returnHeader($bool){
+	public function returnHeader(bool $bool){
 		curl_setopt($this->curl, CURLOPT_HEADER, ($bool == true) ? 1 : 0);
 		return $this;
 	}
 
-	public function returnBody($bool){
+	public function returnBody(bool $bool){
 		curl_setopt($this->curl, CURLOPT_NOBODY, ($bool == false) ? 1 : 0);
 		return $this;
 	}
 
-	public function setHeader($arr){
+	public function setHeader(array $arr){
 		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $arr);
 		return $this;
 	}
 
-	public function setCookie($cookies){
+	public function setCookie(array $cookies){
 		$payload = '';
 		foreach($cookies as $key => $cookie){
 			$payload .= "$key=$cookie; ";
@@ -88,27 +97,27 @@ class Curl{
 		return $this;
 	}
 
-	public function setReferer($referer){
+	public function setReferer(string $referer){
 		curl_setopt($this->curl, CURLOPT_REFERER, $referer);
 		return $this;
 	}
 
-	public function setGet($get){
+	public function setGet(array $get){
 		$payload = '?';
 		foreach($get as $key => $content){
 			$payload .= urlencode($key) . '=' . urlencode($content) . '&';
 		}
-		curl_setopt($this->curl, CURLOPT_URL, $this->url . $payload);
+		curl_setopt($this->curl, CURLOPT_URL, $this->url . substr($payload, 0, strlen($payload) - 1));
 		return $this;
 	}
 
-	public function setPost($post){
+	public function setPost(array $post){
 		$payload = '';
 		foreach($post as $key => $content){
 			$payload .= urlencode($key) . '=' . urlencode($content) . '&';
 		}
 		curl_setopt($this->curl, CURLOPT_POST, 1);
-		curl_setopt($this->curl, CURLOPT_POSTFIELDS, $payload);
+		curl_setopt($this->curl, CURLOPT_POSTFIELDS, substr($payload, 0, strlen($payload) - 1));
 		return $this;
 	}
 
@@ -118,7 +127,7 @@ class Curl{
 		return $this;
 	}
 
-	public function setTimeout($timeout){
+	public function setTimeout(int $timeout){
 		curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_setopt($this->curl, CURLOPT_TIMEOUT, $timeout);
 		return $this;
