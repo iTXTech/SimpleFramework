@@ -123,7 +123,7 @@ class Framework implements OnCompletionListener{
 					break;
 				case "-v":
 					Logger::info(self::PROG_NAME . ' version "' . self::PROG_VERSION . '"');
-					Logger::info("SFCLI API Level " . self::API_LEVEL . " [" . self::CODENAME . "]");
+					Logger::info("SimpleFramework API " . self::API_LEVEL . " [" . self::CODENAME . "]");
 					break;
 				case "-c":
 					Logger::$noColor = true;

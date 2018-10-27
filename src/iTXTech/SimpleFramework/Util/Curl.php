@@ -31,14 +31,18 @@ class Curl{
 			curl_close($this->curl);
 		}
 		$this->curl = curl_init();
-		if(substr(php_uname(), 0, 7) == "Windows"){
-			curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, 0);
-			curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, 0);
-		}//Stupid Windows
+		if(Util::getOS() === Util::OS_WINDOWS){
+			$this->ssl(false);
+		}
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
 		$this->returnHeader(true);
 		$this->setTimeout(10);
 		return $this;
+	}
+
+	public function ssl(bool $enable){
+		curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, $enable ? 1 : 0);
+		curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, $enable ? 1 : 0);
 	}
 
 	public function getUrl(){

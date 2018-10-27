@@ -17,7 +17,15 @@
 namespace iTXTech\SimpleFramework\Util;
 
 abstract class Util{
-	const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+	public const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+
+	public const OS_WINDOWS = "win";
+	public const OS_LINUX = "linux";
+	public const OS_MACOS = "mac";
+	public const OS_ANDROID = "android";
+	public const OS_IOS = "ios";
+	public const OS_BSD = "bsd";
+	public const OS_OTHER = "other";
 
 	private static $os;
 
@@ -40,22 +48,22 @@ abstract class Util{
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
 				if(strpos(php_uname("m"), "iP") === 0){
-					self::$os = "ios";
+					self::$os = self::OS_IOS;
 				}else{
-					self::$os = "mac";
+					self::$os = self::OS_MACOS;
 				}
 			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
-				self::$os = "win";
+				self::$os = self::OS_WINDOWS;
 			}elseif(stripos($uname, "Linux") !== false){
 				if(@file_exists("/system/build.prop")){
-					self::$os = "android";
+					self::$os = self::OS_ANDROID;
 				}else{
-					self::$os = "linux";
+					self::$os = self::OS_LINUX;
 				}
 			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
-				self::$os = "bsd";
+				self::$os = self::OS_BSD;
 			}else{
-				self::$os = "other";
+				self::$os = self::OS_OTHER;
 			}
 		}
 

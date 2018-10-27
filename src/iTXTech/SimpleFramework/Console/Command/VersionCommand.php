@@ -51,7 +51,7 @@ class VersionCommand implements Command{
 				Logger::error(TextFormat::RED . "Module " . $module . " is not installed.");
 			}
 		}else{
-			Logger::info(TextFormat::AQUA . Framework::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . Framework::PROG_VERSION . " " . TextFormat::GREEN . "[PHP " . PHP_VERSION . "]" . TextFormat::WHITE . " Implementing API level: " . TextFormat::GREEN . Framework::API_LEVEL . " " . TextFormat::GOLD . "[" . Framework::CODENAME . "]");
+			Logger::info(TextFormat::AQUA . Framework::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . Framework::PROG_VERSION . " " . TextFormat::GREEN . "[PHP " . PHP_VERSION . "]" . TextFormat::WHITE . " Implementing API " . TextFormat::GREEN . Framework::API_LEVEL . " " . TextFormat::GOLD . "[" . Framework::CODENAME . "]");
 		}
 		return true;
 	}

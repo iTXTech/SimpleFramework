@@ -83,7 +83,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 		}
 		if(($data = $this->getModuleData($vendor, $name, $version)) !== false){
 			if($data["api"] > Framework::API_LEVEL){
-				Logger::info("$vendor/$name version $version requires API Level: " . $data["api"] . " Current API Level: " . Framework::API_LEVEL . ". Module may not work properly.");
+				Logger::info("$vendor/$name version $version requires API: " . $data["api"] . " Current API: " . Framework::API_LEVEL . ". Module may not work properly.");
 			}
 			$fileName = explode("/", $data["link"]);
 			$fileName = end($fileName);
