@@ -37,7 +37,7 @@ class Logger{
 	private static $loggerHandler = "";
 
 	public static function setLoggerHandler(string $class) : bool{
-		if(is_a($class, LoggerHandler::class)){
+		if(is_a($class, LoggerHandler::class, true)){
 			self::$loggerHandler = $class;
 			return true;
 		}

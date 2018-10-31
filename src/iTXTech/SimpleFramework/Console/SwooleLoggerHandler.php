@@ -38,7 +38,7 @@ abstract class SwooleLoggerHandler extends LoggerHandler{
 					while(($line = $channel->pop()) !== false){
 						echo $line . PHP_EOL;
 					}
-					\co::sleep(0.1);
+					\co::sleep(0.01);
 				}
 			});
 		});
