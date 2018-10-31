@@ -19,17 +19,19 @@ namespace iTXTech\SimpleFramework {
 	use iTXTech\SimpleFramework\Console\Logger;
 	use iTXTech\SimpleFramework\Console\Terminal;
 
+	Terminal::init();
+
 	ini_set("memory_limit", -1);
 	define('iTXTech\SimpleFramework\START_TIME', microtime(true));
 
 	if(version_compare("7.2", PHP_VERSION) > 0){
-		echo "You must use PHP >= 7.2" . PHP_EOL;
+		Logger::error("You must use PHP >= 7.2");
 		exit(1);
 	}
 	if(!extension_loaded("pthreads")){
 		@define('iTXTech\SimpleFramework\SINGLE_THREAD', true);
-		echo "Unable to find the pthreads extension. " . PHP_EOL .
-			"This program will run in single thread mode." . PHP_EOL;
+		Logger::notice("Unable to find the pthreads extension.");
+		Logger::notice("SimpleFramework will run in single thread mode.");
 	}else{
 		@define('iTXTech\SimpleFramework\SINGLE_THREAD', false);
 	}
@@ -48,7 +50,6 @@ namespace iTXTech\SimpleFramework {
 
 	date_default_timezone_set('Asia/Shanghai');
 
-	Terminal::init();
 	if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
 		ThreadManager::init();
 	}

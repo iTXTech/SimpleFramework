@@ -33,7 +33,16 @@ class Logger{
 	public static $noOutput = false;
 
 	private static $logfile = "";
+	/** @var LoggerHandler */
+	private static $loggerHandler = "";
 
+	public static function setLoggerHandler(string $class) : bool{
+		if(is_a($class, LoggerHandler::class)){
+			self::$loggerHandler = $class;
+			return true;
+		}
+		return false;
+	}
 
 	public static function setLogFile(string $logfile){
 		if($logfile != ""){
@@ -143,7 +152,11 @@ class Logger{
 		}
 	}
 
-	protected static function send($message, $prefix, $color){
+	public static function send(string $message, string $prefix, string $color){
+		if(self::$loggerHandler !== ""){
+			self::$loggerHandler::send($message, $prefix, $color);
+			return;
+		}
 		if(self::$fullDisplay){
 			$now = time();
 			$class = @end(explode('\\', debug_backtrace()[2]['class']));
@@ -151,7 +164,8 @@ class Logger{
 				$class = substr($class, 0, 20);
 			}
 			$class = $class == "" ? "Console" : $class;
-			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("G:i:s", $now) . "] " . TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
+			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("G:i:s", $now) . "] " .
+				TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
 		}else{
 			$message = TextFormat::toANSI($message);
 		}
