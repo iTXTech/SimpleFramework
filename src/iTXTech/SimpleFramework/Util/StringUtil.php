@@ -28,4 +28,9 @@ abstract class StringUtil{
 	public static function contains(string $str, string $s){
 		return strpos($str, $s) > 0;
 	}
+
+	public static function between(string $string, string $after, string $before, int $offset = 0){
+		return substr($string, $pos = strpos($string, $after, $offset) + strlen($after),
+			strpos($string, $before, $pos) - $pos);
+	}
 }
