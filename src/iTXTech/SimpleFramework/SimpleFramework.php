@@ -19,6 +19,20 @@ namespace iTXTech\SimpleFramework {
 	use iTXTech\SimpleFramework\Console\Logger;
 	use iTXTech\SimpleFramework\Console\Terminal;
 
+	date_default_timezone_set('Asia/Shanghai');
+
+	if(\Phar::running(true) !== ""){
+		@define('iTXTech\SimpleFramework\PATH', \Phar::running(true) . "/");
+	}else{
+		@define('iTXTech\SimpleFramework\PATH', \getcwd() . DIRECTORY_SEPARATOR);
+	}
+
+	require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
+
+	$classLoader = new \ClassLoader();
+	$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
+	$classLoader->register(true);
+
 	Terminal::init();
 
 	ini_set("memory_limit", -1);
@@ -35,20 +49,6 @@ namespace iTXTech\SimpleFramework {
 	}else{
 		@define('iTXTech\SimpleFramework\SINGLE_THREAD', false);
 	}
-
-	if(\Phar::running(true) !== ""){
-		@define('iTXTech\SimpleFramework\PATH', \Phar::running(true) . "/");
-	}else{
-		@define('iTXTech\SimpleFramework\PATH', \getcwd() . DIRECTORY_SEPARATOR);
-	}
-
-	require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
-
-	$classLoader = new \ClassLoader();
-	$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
-	$classLoader->register(true);
-
-	date_default_timezone_set('Asia/Shanghai');
 
 	if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
 		ThreadManager::init();
