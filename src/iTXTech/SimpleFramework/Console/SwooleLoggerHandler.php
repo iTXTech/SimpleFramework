@@ -26,12 +26,18 @@ abstract class SwooleLoggerHandler extends LoggerHandler{
 	private static $channel;
 
 	public static function shutdown(){
-		self::$proc->close();
+		if(self::$proc instanceof Process){
+			self::$proc->close();
+		}
 	}
 
 	public static function init(){
-		$channel = new Channel(1024 * 1024 * 32);
-		self::$channel = $channel;
+		if(!self::$channel instanceof Channel){
+			$channel = new Channel(1024 * 1024 * 32);
+			self::$channel = $channel;
+		}else{
+			$channel = self::$channel;
+		}
 		self::$proc = new Process(function(Process $process) use ($channel){
 			go(function() use ($channel){
 				while(true){
