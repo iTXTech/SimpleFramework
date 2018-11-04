@@ -40,9 +40,10 @@ class Curl{
 		return $this;
 	}
 
-	public function ssl(bool $enable){
+	public function certVerify(bool $enable){
 		curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, $enable ? 1 : 0);
 		curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, $enable ? 1 : 0);
+		return $this;
 	}
 
 	public function setSocks5Proxy(string $address, string $pass = ""){
