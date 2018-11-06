@@ -42,7 +42,7 @@ abstract class Module{
 		$this->dataFolder = $manager->getModuleDataPath() . $info->getName() . DIRECTORY_SEPARATOR;
 	}
 
-	public function getDataFolder(): string{
+	public function getDataFolder() : string{
 		return $this->dataFolder;
 	}
 
@@ -50,11 +50,11 @@ abstract class Module{
 		$this->loaded = $loaded;
 	}
 
-	public final function getFramework(): Framework{
+	public final function getFramework() : Framework{
 		return $this->framework;
 	}
 
-	public function preLoad(): bool{
+	public function preLoad() : bool{
 		if($this->info->getAPILevel() > Framework::API_LEVEL){
 			Logger::error("Module requires API: " . $this->info->getAPILevel() . " Current API: " . Framework::API_LEVEL);
 			return false;
@@ -66,7 +66,7 @@ abstract class Module{
 		return false;
 	}
 
-	protected function checkDependencies(): bool{
+	protected function checkDependencies() : bool{
 		$dependencies = $this->info->getDependencies();
 		foreach($dependencies as $dependency){
 			$name = $dependency["name"];
@@ -91,20 +91,22 @@ abstract class Module{
 		return true;
 	}
 
-	protected function checkExtensions(): bool{
+	protected function checkExtensions() : bool{
 		$extensions = $this->info->getExtensions();
 		foreach($extensions as $extension){
+			$error = true;
 			if(extension_loaded($extension["name"])){
-				$error = false;
 				if(isset($extension["version"])){
 					$extVer = (new \ReflectionExtension($extension["name"]))->getVersion();
 					$error = Util::compareVersion($extension["version"], $extVer);
+				}else{
+					$error = false;
 				}
-				if($error == true){
-					Logger::error("Module " . '"' . $this->getName() . '"' . " requires extension " . '"' . $extension["name"] . '"' .
-						" version " . ($extension["version"] ?? "Unspecified"));
-					return false;
-				}
+			}
+			if($error){
+				Logger::error("Module " . '"' . $this->getName() . '"' . " requires extension " . '"' . $extension["name"] . '"' .
+					" version " . ($extension["version"] ?? "Unspecified"));
+				return false;
 			}
 		}
 		return true;
@@ -114,18 +116,18 @@ abstract class Module{
 
 	public abstract function unload();
 
-	public final function isLoaded(): bool{
+	public final function isLoaded() : bool{
 		return $this->loaded;
 	}
 
 	public function doTick(int $currentTick){
 	}
 
-	public final function getInfo(): ModuleInfo{
+	public final function getInfo() : ModuleInfo{
 		return $this->info;
 	}
 
-	public final function getName(): string{
+	public final function getName() : string{
 		return $this->info->getName();
 	}
 
@@ -140,7 +142,7 @@ abstract class Module{
 
 	/**
 	 * @param string $filename
-	 * @param bool   $replace
+	 * @param bool $replace
 	 *
 	 * @return bool
 	 */
@@ -184,7 +186,7 @@ abstract class Module{
 		return $resources;
 	}
 
-	public function getFile(): string{
+	public function getFile() : string{
 		return $this->file;
 	}
 }
