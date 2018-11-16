@@ -32,7 +32,7 @@ class Curl{
 		}
 		$this->curl = curl_init();
 		if(Util::getOS() === Util::OS_WINDOWS){
-			$this->ssl(false);
+			$this->certVerify(false);
 		}
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
 		$this->returnHeader(true);
