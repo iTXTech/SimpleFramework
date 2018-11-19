@@ -17,19 +17,19 @@
 namespace iTXTech\SimpleFramework\Util;
 
 abstract class StringUtil{
-	public static function startsWith(string $str, string $prefix): bool{
+	public static function startsWith(string $str, string $prefix) : bool{
 		return substr($str, 0, strlen($prefix)) === $prefix;
 	}
 
-	public static function endsWith(string $str, string $suffix): bool{
+	public static function endsWith(string $str, string $suffix) : bool{
 		return substr($str, strlen($str) - strlen($suffix), strlen($suffix)) === $suffix;
 	}
 
-	public static function contains(string $str, string $s){
+	public static function contains(string $str, string $s) : bool{
 		return strpos($str, $s) > 0;
 	}
 
-	public static function between(string $string, string $after, string $before, int $offset = 0){
+	public static function between(string $string, string $after, string $before, int $offset = 0) : string{
 		return substr($string, $pos = strpos($string, $after, $offset) + strlen($after),
 			strpos($string, $before, $pos) - $pos);
 	}
