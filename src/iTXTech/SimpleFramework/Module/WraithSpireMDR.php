@@ -22,12 +22,9 @@ use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Util\Util;
 
 class WraithSpireMDR implements ModuleDependencyResolver{
-
 	private $database;
-
 	/** @var ModuleManager */
 	private $manager;
-
 	private $modules;
 
 	public function __construct(ModuleManager $manager, string $database, array $modules){
@@ -39,7 +36,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 	public function init(){
 		if($this->modules != []){
 			Logger::info(TextFormat::AQUA . "Resolving modules required by WraithSpire configuration.");
-			$this->resolveDependencies($this->modules, "Configuration");
+			$this->resolve($this->modules, "Configuration");
 		}
 	}
 

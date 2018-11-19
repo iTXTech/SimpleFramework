@@ -19,6 +19,8 @@ namespace iTXTech\SimpleFramework\Console\Command;
 use iTXTech\SimpleFramework\Framework;
 
 class StopCommand implements Command{
+	private $framework;
+
 	public function getName() : string{
 		return "stop";
 	}

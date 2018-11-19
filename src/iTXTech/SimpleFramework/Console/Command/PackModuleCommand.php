@@ -21,8 +21,16 @@ use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Module\Module;
 use iTXTech\SimpleFramework\Module\ModuleInfo;
+use iTXTech\SimpleFramework\Module\ModuleManager;
 
 class PackModuleCommand implements Command{
+	/** @var ModuleManager */
+	private $manager;
+
+	public function __construct(ModuleManager $manager){
+		$this->manager = $manager;
+	}
+
 	public function getName() : string{
 		return "pm";
 	}
@@ -38,7 +46,7 @@ class PackModuleCommand implements Command{
 	public function execute(string $command, array $args) : bool{
 		$moduleName = trim(str_replace(["no-gz", "no-echo"], "", implode(" ", $args)));
 
-		if($moduleName === "" or !(($module = Framework::getInstance()->getModuleManager()->getModule($moduleName)) instanceof Module)){
+		if($moduleName === "" or !(($module = $this->manager->getModule($moduleName)) instanceof Module)){
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
@@ -49,7 +57,7 @@ class PackModuleCommand implements Command{
 			return true;
 		}
 
-		$outputDir = Framework::getInstance()->getModuleManager()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		$outputDir = $this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		@mkdir($outputDir);
 		$pharPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . ".phar";
 		if(file_exists($pharPath)){

@@ -25,29 +25,33 @@ use iTXTech\SimpleFramework\Console\Command\PackSFCommand;
 use iTXTech\SimpleFramework\Console\Command\StopCommand;
 use iTXTech\SimpleFramework\Console\Command\UnpackModuleCommand;
 use iTXTech\SimpleFramework\Console\Command\VersionCommand;
+use iTXTech\SimpleFramework\Framework;
 
 class CommandProcessor{
 	/** @var Command[] */
 	private $registeredCommands;
 
 	public function __construct(){
-		$this->registerCommands();
 	}
 
 	public function getCommands(){
 		return $this->registeredCommands;
 	}
 
-	public function registerCommands(){
-		$this->register(new HelpCommand(), "help");
+	public function registerDefaultCommands(){
+		$moduleManager = Framework::getInstance()->getModuleManager();
+
+		if($moduleManager !== null){
+			$this->register(new ModulesCommand($moduleManager), "modules");
+			$this->register(new PackModuleCommand($moduleManager), "pm");
+			$this->register(new UnpackModuleCommand($moduleManager), "um");
+		}
+
+		$this->register(new HelpCommand($this), "help");
 		$this->register(new VersionCommand(), "version");
 		$this->register(new StopCommand(), "stop");
-		$this->register(new ModulesCommand(), "modules");
 		$this->register(new ClearCommand(), "clear");
-
-		$this->register(new PackModuleCommand(), "pm");
 		$this->register(new PackSFCommand(), "psf");
-		$this->register(new UnpackModuleCommand(), "um");
 	}
 
 	public function register(Command $command, string $name){

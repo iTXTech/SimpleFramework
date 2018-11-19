@@ -107,11 +107,11 @@ class Framework implements OnCompletionListener{
 		return self::$instance !== null;
 	}
 
-	public function getScheduler(): Scheduler{
+	public function getScheduler() : ?Scheduler{
 		return $this->scheduler;
 	}
 
-	public function getModuleManager(): ModuleManager{
+	public function getModuleManager() : ?ModuleManager{
 		return $this->moduleManager;
 	}
 
@@ -174,6 +174,7 @@ class Framework implements OnCompletionListener{
 						break;
 					}
 					$this->commandProcessor = new CommandProcessor();
+					$this->commandProcessor->registerDefaultCommands();
 					$this->commandProcessor->dispatchCommand($argv[$c + 1]);
 					break;
 				case "-t":
@@ -215,22 +216,23 @@ class Framework implements OnCompletionListener{
 				Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 
+				if($this->moduleManager === null){
+					$this->moduleManager = new ModuleManager($this->classLoader, $this->modulePath, $this->moduleDataPath, $this->commandLineOnly);
+				}
+
 				if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
-					Logger::info("Starting Console Daemon...");
+					Logger::info("Starting ConsoleReader...");
 					$this->console = new ConsoleReader();
 				}
 
 				Logger::info("Starting Command Processor...");
 				if(!$this->commandProcessor instanceof CommandProcessor){
 					$this->commandProcessor = new CommandProcessor();
+					$this->commandProcessor->registerDefaultCommands();
 				}
 
 				Logger::info("Starting multi-threading scheduler...");
 				$this->scheduler = new Scheduler($this->classLoader, $this, $this->config->get("async-workers", 2));
-
-				if($this->moduleManager === null){
-					$this->moduleManager = new ModuleManager($this->classLoader, $this->modulePath, $this->moduleDataPath, $this->commandLineOnly);
-				}
 
 				$mdr = $this->config->get("module-dependency-resolver");
 				if($mdr["enabled"]){

@@ -18,9 +18,16 @@ namespace iTXTech\SimpleFramework\Console\Command;
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
-use iTXTech\SimpleFramework\Framework;
+use iTXTech\SimpleFramework\Module\ModuleManager;
 
 class ModulesCommand implements Command{
+	/** @var ModuleManager */
+	private $manager;
+
+	public function __construct(ModuleManager $manager){
+		$this->manager = $manager;
+	}
+
 	public function getName() : string{
 		return "modules";
 	}
@@ -37,7 +44,7 @@ class ModulesCommand implements Command{
 		if(count($args) < 1){
 			return false;
 		}
-		$modules = Framework::getInstance()->getModuleManager()->getModules();
+		$modules = $this->manager->getModules();
 		switch(strtolower($args[0])){
 			case "list":
 				$message = "Modules (" . count($modules) . "): ";
@@ -53,7 +60,7 @@ class ModulesCommand implements Command{
 					$name = $args[1];
 					if(isset($modules[$name])){
 						$module = $modules[$name];
-						Framework::getInstance()->getModuleManager()->loadModule($module);
+						$this->manager->loadModule($module);
 					}else{
 						Logger::info(TextFormat::RED . "Module $name is not installed.");
 					}
@@ -66,7 +73,7 @@ class ModulesCommand implements Command{
 					$name = $args[1];
 					if(isset($modules[$name])){
 						$module = $modules[$name];
-						Framework::getInstance()->getModuleManager()->unloadModule($module);
+						$this->manager->unloadModule($module);
 					}else{
 						Logger::info(TextFormat::RED . "Module $name is not installed.");
 					}
@@ -77,11 +84,11 @@ class ModulesCommand implements Command{
 			case "read":
 				if(count($args) > 1){
 					$file = $args[1];
-					if(!file_exists(Framework::getInstance()->getModuleManager()->getModulePath() . $file)){
+					if(!file_exists($this->manager->getModulePath() . $file)){
 						Logger::info(TextFormat::RED . "File not found.");
 						return true;
 					}
-					Framework::getInstance()->getModuleManager()->tryLoadModule(Framework::getInstance()->getModuleManager()->getModulePath() . $file);
+					$this->manager->tryLoadModule($this->manager->getModulePath() . $file);
 					return true;
 				}else{
 					return false;

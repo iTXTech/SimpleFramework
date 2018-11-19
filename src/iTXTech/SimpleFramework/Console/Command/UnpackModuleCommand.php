@@ -18,11 +18,18 @@ namespace iTXTech\SimpleFramework\Console\Command;
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
-use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Module\Module;
 use iTXTech\SimpleFramework\Module\ModuleInfo;
+use iTXTech\SimpleFramework\Module\ModuleManager;
 
 class UnpackModuleCommand implements Command{
+	/** @var ModuleManager */
+	private $manager;
+
+	public function __construct(ModuleManager $manager){
+		$this->manager = $manager;
+	}
+	
 	public function getName() : string{
 		return "um";
 	}
@@ -37,7 +44,7 @@ class UnpackModuleCommand implements Command{
 
 	public function execute(string $command, array $args) : bool{
 		$moduleName = trim(implode(" ", $args));
-		if($moduleName === "" or !(($module = Framework::getInstance()->getModuleManager()->getModule($moduleName)) instanceof Module)){
+		if($moduleName === "" or !(($module = $this->manager->getModule($moduleName)) instanceof Module)){
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
@@ -48,7 +55,7 @@ class UnpackModuleCommand implements Command{
 			return true;
 		}
 
-		$outputDir = Framework::getInstance()->getModuleManager()->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
+		$outputDir = $this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
 		$folderPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . DIRECTORY_SEPARATOR;
 		if(file_exists($folderPath)){
 			Logger::info("Module files already exist, overwriting...");

@@ -16,11 +16,18 @@
 
 namespace iTXTech\SimpleFramework\Console\Command;
 
+use iTXTech\SimpleFramework\Console\CommandProcessor;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
-use iTXTech\SimpleFramework\Framework;
 
 class HelpCommand implements Command{
+	/** @var CommandProcessor */
+	private $processor;
+
+	public function __construct(CommandProcessor $processor){
+		$this->processor = $processor;
+	}
+
 	public function getName() : string{
 		return "help";
 	}
@@ -34,7 +41,7 @@ class HelpCommand implements Command{
 	}
 
 	public function execute(string $command, array $args) : bool{
-		$commands = Framework::getInstance()->getCommandProcessor()->getCommands();
+		$commands = $this->processor->getCommands();
 		if(count($args) > 0){
 			$command = strtolower($args[0]);
 			if(isset($commands[$command])){
