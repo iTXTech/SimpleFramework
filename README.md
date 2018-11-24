@@ -5,7 +5,7 @@ SimpleFramework
 [![Developing](https://img.shields.io/badge/dev-2.1.0(6)-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
 
 
-__An efficient, lightweight and easy to extend php command line framework.__
+__A fast, lightweighted and extensible php command line framework.__
 
 Introduction
 -------------

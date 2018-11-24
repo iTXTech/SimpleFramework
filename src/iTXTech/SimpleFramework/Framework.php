@@ -189,7 +189,7 @@ class Framework implements OnCompletionListener{
 		return false;
 	}
 
-	public function start(array $argv){
+	public function start(bool $useMainThreadTick = true, array $argv){
 		try{
 			if(!$this->processCommandLineOptions($argv)){
 				$this->displayTitle("SimpleFramework is starting...");
@@ -254,7 +254,9 @@ class Framework implements OnCompletionListener{
 
 				Logger::notice("Done! Type 'help' for help.");
 
-				$this->tick();
+				if($useMainThreadTick){
+					$this->tick();
+				}
 			}
 		}catch(\Throwable $e){
 			Logger::logException($e);
@@ -272,21 +274,29 @@ class Framework implements OnCompletionListener{
 	//main thread tick, not recommend for modules
 	private function tick(){
 		while(!$this->shutdown){
-			$this->currentTick++;
-			foreach($this->moduleManager->getModules() as $module){
-				if($module->isLoaded()){
-					$module->doTick($this->currentTick);
-				}
-			}
-			$this->scheduler->mainThreadHeartbeat($this->currentTick);
-			$this->checkConsole();
-			if(($this->currentTick % 20) === 0){
-				$this->combineTitle();
-			}
+			$this->update();
 			usleep(self::$usleep);
 		}
 
 		//shutdown!
+		$this->stop();
+	}
+
+	public function update(){
+		$this->currentTick++;
+		foreach($this->moduleManager->getModules() as $module){
+			if($module->isLoaded()){
+				$module->doTick($this->currentTick);
+			}
+		}
+		$this->scheduler->mainThreadHeartbeat($this->currentTick);
+		$this->checkConsole();
+		if(($this->currentTick % 20) === 0){
+			$this->combineTitle();
+		}
+	}
+
+	public function stop(){
 		Logger::notice("Stopping SimpleFramework...");
 		foreach($this->moduleManager->getModules() as $module){
 			if($module->isLoaded()){

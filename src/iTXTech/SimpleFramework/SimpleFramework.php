@@ -54,7 +54,7 @@ namespace iTXTech\SimpleFramework {
 		ThreadManager::init();
 	}
 	$framework = new Framework($classLoader);
-	$framework->start($argv);
+	$framework->start(true, $argv);
 
 	if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
 		Logger::info("Stopping other threads");
