@@ -59,7 +59,7 @@ class CommandLine{
 		if(is_string($option)){
 			$option = $this->resolveOption($option);
 		}
-		if($option == null){
+		if($option === null){
 			return null;
 		}
 
@@ -83,7 +83,7 @@ class CommandLine{
 
 		foreach($this->options as $processedOption){
 			if($processedOption === $option){
-				array_merge($values, $processedOption->getValues());
+				$values = array_merge($values, $processedOption->getValues());
 			}
 		}
 
@@ -134,7 +134,7 @@ class CommandLine{
 	 *
 	 * @param Option $opt
 	 */
-	protected function addOption(Option $opt){
+	public function addOption(Option $opt){
 		$this->options[] = $opt;
 	}
 

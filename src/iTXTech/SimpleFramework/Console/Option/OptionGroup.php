@@ -55,7 +55,7 @@ class OptionGroup{
 	 *
 	 * @return bool
 	 */
-	public function setSelected(Option $option) : bool{
+	public function setSelected(?Option $option) : bool{
 		if($option == null){
 			// reset the option previously selected
 			$this->selected = null;

@@ -187,4 +187,15 @@ abstract class Util{
 
 		return $str;
 	}
+
+	public static function stripLeadingAndTrailingQuotes(string $str) : string{
+		$length = strlen($str);
+		if($length > 1 and StringUtil::startsWith($str, "\"") and
+			StringUtil::endsWith($str, "\"") and
+			strpos(substr($str, 1, strlen($str) - 1), "\"") === false){
+			$str = substr($str, 1, strlen($str) - 1);
+		}
+
+		return $str;
+	}
 }

@@ -45,7 +45,7 @@ class Options{
 	 */
 	public function addOptionGroup(OptionGroup $group){
 		if($group->isRequired()){
-			$this->requiredOpts[] = $group;
+			$this->requiredOpts[spl_object_hash($group)] = $group;
 		}
 		foreach($group->getOptions() as $option){
 			$option->setRequired(false);
@@ -101,14 +101,8 @@ class Options{
 
 		// if the option is required add it to the required list
 		if($opt->isRequired()){
-			if(in_array($key, $this->requiredOpts)){
-				foreach($this->requiredOpts as $k => $opt){
-					if($k === $key){
-						unset($this->requiredOpts[$k]);
-					}
-				}
-			}
-			$this->requiredOpts[] = $key;
+			unset($this->requiredOpts[$key]);
+			$this->requiredOpts[$key] = $key;
 		}
 
 		$this->shortOpts[$key] = $opt;
@@ -141,14 +135,14 @@ class Options{
 	 *
 	 * @return Option
 	 */
-	public function getOption(string $opt) : Option{
+	public function getOption(string $opt) : ?Option{
 		$opt = Util::stripLeadingHyphens($opt);
 
 		if(isset($this->shortOpts[$opt])){
 			return $this->shortOpts[$opt];
 		}
 
-		return $this->longOpts[$opt];
+		return $this->longOpts[$opt] ?? null;
 	}
 
 	/**
@@ -158,7 +152,7 @@ class Options{
 	 *
 	 * @return string[]
 	 */
-	public function getMatchingOptions(string $opt) : string{
+	public function getMatchingOptions(string $opt) : array{
 		$opt = Util::stripLeadingHyphens($opt);
 
 		$matchingOpts = [];
