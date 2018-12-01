@@ -19,6 +19,9 @@ namespace iTXTech\SimpleFramework;
 use iTXTech\SimpleFramework\Console\CommandProcessor;
 use iTXTech\SimpleFramework\Console\ConsoleReader;
 use iTXTech\SimpleFramework\Console\Logger;
+use iTXTech\SimpleFramework\Console\Option\HelpFormatter;
+use iTXTech\SimpleFramework\Console\Option\OptionBuilder;
+use iTXTech\SimpleFramework\Console\Option\Options;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\ModuleManager;
 use iTXTech\SimpleFramework\Module\WraithSpireMDR;
@@ -67,6 +70,9 @@ class Framework implements OnCompletionListener{
 	private $commandLineOnly = false;
 	public $displayTitle = true;
 
+	/** @var Options */
+	private $options;
+
 	public static $usleep = 50000;
 
 	public function __construct(\ClassLoader $classLoader){
@@ -77,6 +83,9 @@ class Framework implements OnCompletionListener{
 		$this->modulePath = $this->dataPath . "modules" . DIRECTORY_SEPARATOR;
 		$this->moduleDataPath = $this->dataPath . "data" . DIRECTORY_SEPARATOR;
 		$this->classLoader = $classLoader;
+
+		$this->options = new Options();
+		$this->registerDefaultOptions();
 	}
 
 	public function getLoader(){
@@ -113,6 +122,19 @@ class Framework implements OnCompletionListener{
 
 	public function getModuleManager() : ?ModuleManager{
 		return $this->moduleManager;
+	}
+
+	private function registerDefaultOptions(){
+		try{
+			$this->options->addOption((new OptionBuilder("v"))->longOpt("version")->
+			desc("Display version of SimpleFramework")->build());
+			$this->options->addOption((new OptionBuilder("m"))->longOpt("load-module")->hasArg()
+				->argName("path")->desc("Load the specified module")->build());
+			$t = (new HelpFormatter())->generateHelp("simpleframework", $this->options, true);
+			echo $t;
+		}catch(\Throwable $e){
+			Logger::logException($e);
+		}
 	}
 
 	private function processCommandLineOptions(array $argv) : bool{
@@ -189,10 +211,10 @@ class Framework implements OnCompletionListener{
 		return false;
 	}
 
-	public function start(bool $useMainThreadTick = true, array $argv){
+	public function start(bool $useMainThreadTick = true, array $argv = []){
 		try{
 			if(!$this->processCommandLineOptions($argv)){
-				$this->displayTitle("SimpleFramework is starting...");
+				//$this->displayTitle("SimpleFramework is starting...");
 				@mkdir("modules");
 				@mkdir("data");
 

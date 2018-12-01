@@ -153,7 +153,7 @@ abstract class Util{
 		return $readable;
 	}
 
-	public static function compareVersion(string $version, string $targetVer): bool{
+	public static function compareVersion(string $version, string $targetVer) : bool{
 		$version = explode(".", $version);
 		if(count($version) != 3){
 			return true;
@@ -173,5 +173,18 @@ abstract class Util{
 		}
 
 		return false;
+	}
+
+	public static function stripLeadingHyphens(string $str) : string{
+		if($str == null){
+			return null;
+		}
+		if(StringUtil::startsWith($str, "--")){
+			return substr($str, 2);
+		}elseif(StringUtil::startsWith($str, "-")){
+			return substr($str, 1);
+		}
+
+		return $str;
 	}
 }
