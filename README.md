@@ -1,15 +1,14 @@
-SimpleFramework
-===================
+# SimpleFramework
+
 [![License](https://img.shields.io/github/license/iTXTech/SimpleFramework.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/LICENSE)
 [![Stable](https://img.shields.io/badge/stable-2.0.1(5)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
 [![Developing](https://img.shields.io/badge/dev-2.1.0(6)-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
 
-
 __A fast, lightweighted and extensible php command line framework.__
 
-Introduction
--------------
-SimpleFramework is a php command line framework designed for small programs written in php.
+## Introduction
+
+SimpleFramework is a php command line framework.
 
 Here are some features:
 
@@ -21,26 +20,34 @@ Here are some features:
 
 Contributions are welcomed.
 
-Requirements
--------------
-* PHP >= 7.2
-* [pthreads](https://github.com/krakjoe/pthreads) - *Optional*
-* [php-yaml](https://github.com/php/pecl-file_formats-yaml) - *Optional*
+### See also
 
-Get SimpleFramework
--------------
+* [Development Roadmap](https://github.com/iTXTech/SimpleFramework/issues/3)
+
+## Requirements
+
+* [PHP](https://secure.php.net/) >= 7.2 - *Note that only cli sapi is supported*
+* [pthreads](https://github.com/krakjoe/pthreads) - *Highly Recommended*
+
+### Integrated support
+
+* [php-yaml](https://github.com/php/pecl-file_formats-yaml) - `Config`
+* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler`
+
+## Get SimpleFramework
+
 * __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__
 
-Modules
--------------
+## Modules
+
 * __[SimpleGUI](https://github.com/PeratX/SimpleGUI)__ - The GUI SDK based on [php-gui](https://github.com/gabrielrcouto/php-gui) for SimpleFramework(CLI).
 * __[TesseractBridge](https://github.com/PeratX/TesseractBridge)__ - The bridge between Tesseract-OCR and SimpleFramework.
 * __[SFQRCode](https://github.com/PeratX/SFQRCode)__ - PHPQRCode port to SimpleFramework.
 * __[SimpleHtmlDom](https://github.com/PeratX/SimpleHtmlDom)__ - Simple HTML DOM Parser port to SimpleFramework, optimized for pages which cannot be correctly parsed by DOMDocument.
 * __[LeetQQ](https://github.com/PhQAgent/LeetQQ)__ - SmartQQ bot framework for PHP and SimpleFramework.
 
-License
--------------
+## License
+
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
