@@ -220,11 +220,11 @@ class Option{
 	 *
 	 * @param string $value
 	 *
-	 * @throws \Exception
+	 * @throws \RuntimeException
 	 */
 	public function addValueForProcessing(string $value){
 		if($this->numberOfArgs == self::UNINITIALIZED){
-			throw new \Exception("NO_ARGS_ALLOWED");
+			throw new \RuntimeException("NO_ARGS_ALLOWED");
 		}
 		$this->processValue($value);
 	}
@@ -237,8 +237,6 @@ class Option{
 	 * added as a single token.
 	 *
 	 * @param string
-	 *
-	 * @throws \Exception
 	 */
 	private function processValue(string $value){
 		// this Option has a separator character
@@ -278,11 +276,11 @@ class Option{
 	 *
 	 * @param string $value
 	 *
-	 * @throws \Exception
+	 * @throws \RuntimeException
 	 */
 	private function add(string $value){
 		if(!$this->acceptsArg()){
-			throw new \Exception("Cannot add value, list full.");
+			throw new \RuntimeException("Cannot add value, list full.");
 		}
 
 		// store value
@@ -296,8 +294,6 @@ class Option{
 	 * @param int $index
 	 *
 	 * @return string
-	 *
-	 * @throws \Exception
 	 */
 	public function getValue(int $index = 0) : string{
 		return $this->hasNoValues() ? null : $this->values[$index];
@@ -310,8 +306,6 @@ class Option{
 	 * @param $defaultValue string
 	 *
 	 * @return string
-	 *
-	 * @throws \Exception
 	 */
 	public function getValueDef(string $defaultValue) : string{
 		$value = $this->getValue();

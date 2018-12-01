@@ -16,6 +16,12 @@
 
 namespace iTXTech\SimpleFramework\Console\Option;
 
+use iTXTech\SimpleFramework\Console\Option\Exception\AlreadySelectedException;
+use iTXTech\SimpleFramework\Console\Option\Exception\AmbiguousOptionException;
+use iTXTech\SimpleFramework\Console\Option\Exception\MissingArgumentException;
+use iTXTech\SimpleFramework\Console\Option\Exception\MissingOptionException;
+use iTXTech\SimpleFramework\Console\Option\Exception\ParseException;
+use iTXTech\SimpleFramework\Console\Option\Exception\UnrecognizedOptionException;
 use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
@@ -79,7 +85,7 @@ class Parser{
 	/**
 	 * @param array|null $properties
 	 *
-	 * @throws \Exception
+	 * @throws ParseException
 	 */
 	private function handleProperties(?array $properties){
 		if($properties === null){
@@ -89,7 +95,7 @@ class Parser{
 		foreach($properties as $option => $v){
 			$opt = $this->options->getOption($option);
 			if($opt === null){
-				throw new \Exception("Default option wasn't defined");
+				throw new UnrecognizedOptionException("Default option wasn't defined", $option);
 			}
 			$group = $this->options->getOptionGroup($opt);
 			$selected = ($group !== null and $group->getSelected() !== null);
@@ -114,23 +120,23 @@ class Parser{
 	 */
 	protected function checkRequiredOptions(){
 		if(!empty($this->expectedOpts)){
-			throw new \Exception("Missing Excepted Options: " . json_encode($this->expectedOpts));
+			throw new MissingOptionException($this->expectedOpts);
 		}
 	}
 
 	/**
-	 * @throws \Exception
+	 * @throws MissingArgumentException
 	 */
 	private function checkRequiredArgs(){
 		if($this->currentOption !== null && $this->currentOption->requiresArg()){
-			throw new \Exception("Missing argument: " . $this->currentOption->getKey());
+			throw new MissingArgumentException($this->currentOption);
 		}
 	}
 
 	/**
 	 * @param string $token
 	 *
-	 * @throws \Exception
+	 * @throws ParseException
 	 */
 	private function handleToken(string $token){
 		$this->currentToken = $token;
@@ -193,9 +199,20 @@ class Parser{
 		return false;
 	}
 
+	/**
+	 * Handles an unknown token. If the token starts with a dash an
+	 * UnrecognizedOptionException is thrown. Otherwise the token is added
+	 * to the arguments of the command line. If the stopAtNonOption flag
+	 * is set, this stops the parsing and the remaining tokens are added
+	 * as-is in the arguments of the command line.
+	 *
+	 * @param string $token
+	 *
+	 * @throws UnrecognizedOptionException
+	 */
 	private function handleUnknownToken(string $token){
 		if(StringUtil::startsWith($token, "-") and strlen($token) > 1 and !$this->stopAtNonOption){
-			throw new \Exception("Unrecognized option: " . $token);
+			throw new UnrecognizedOptionException("Unrecognized option: " . $token, $token);
 		}
 
 		$this->cmd->addArg($token);
@@ -207,7 +224,7 @@ class Parser{
 	/**
 	 * @param string $token
 	 *
-	 * @throws \Exception
+	 * @throws ParseException
 	 */
 	private function handleLongOption(string $token){
 		if(strpos($token, "=") === false){
@@ -220,15 +237,14 @@ class Parser{
 	/**
 	 * @param string $token
 	 *
-	 * @throws \Exception
+	 * @throws ParseException
 	 */
 	private function handleLongOptionWithoutEqual(string $token){
 		$matchingOpts = $this->getMatchingLongOptions($token);
 		if(empty($matchingOpts)){
 			$this->handleUnknownToken($this->currentToken);
 		}elseif(count($matchingOpts) > 1 and !$this->options->hasLongOption($token)){
-			//TODO AmbiguousOptionException
-			throw new \Exception("GG");
+			throw new AmbiguousOptionException($token, $matchingOpts);
 		}else{
 			$key = $this->options->hasLongOption($token) ? $token : $matchingOpts[0];
 			$this->handleOption($this->options->getOption($key));
@@ -238,7 +254,7 @@ class Parser{
 	/**
 	 * @param string $token
 	 *
-	 * @throws \Exception
+	 * @throws ParseException
 	 */
 	private function handleLongOptionWithEqual(string $token){
 		list($value, $opt) = explode("=", $token, 2);
@@ -246,8 +262,7 @@ class Parser{
 		if(empty($matchingOpts)){
 			$this->handleUnknownToken($this->currentToken);
 		}elseif(count($matchingOpts) > 1 and !$this->options->hasLongOption($token)){
-			//TODO AmbiguousOptionException
-			throw new \Exception("GG");
+			throw new AmbiguousOptionException($token, $matchingOpts);
 		}else{
 			$key = $this->options->hasLongOption($opt) ? $opt : $matchingOpts[0];
 			$option = $this->options->getOption($key);
@@ -265,7 +280,7 @@ class Parser{
 	/**
 	 * @param string $token
 	 *
-	 * @throws \Exception
+	 * @throws ParseException
 	 */
 	private function handleShortAndLongOption(string $token){
 		$t = Util::stripLeadingHyphens($token);
@@ -357,6 +372,11 @@ class Parser{
 		}
 	}
 
+	/**
+	 * @param Option $option
+	 *
+	 * @throws AlreadySelectedException
+	 */
 	private function updateRequiredOptions(Option $option){
 		if($option->isRequired()){
 			unset($this->expectedOpts[$option->getKey()]);

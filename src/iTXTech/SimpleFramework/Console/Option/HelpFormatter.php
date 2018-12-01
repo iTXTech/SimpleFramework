@@ -276,7 +276,7 @@ class HelpFormatter{
 	 * @param string|null $footer
 	 *
 	 * @return string
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 */
 	public function generateHelp(string $cmdLineSyntax, Options $options, bool $autoUsage = false,
 	                             int $width = self::DEFAULT_VALUE, int $leftPad = self::DEFAULT_VALUE,
@@ -292,7 +292,7 @@ class HelpFormatter{
 		}
 
 		if($cmdLineSyntax == null || strlen($cmdLineSyntax) == 0){
-			throw new \Exception("cmdLineSyntax not provided");
+			throw new \InvalidArgumentException("cmdLineSyntax not provided");
 		}
 
 		$text = "";
@@ -340,8 +340,8 @@ class HelpFormatter{
 			if($group !== null){
 				if(!isset($processedGroups[spl_object_hash($group)])){
 					$processedGroups[spl_object_hash($group)] = $group;
+					$this->appendOptionGroup($buff, $group);
 				}
-				$this->appendOptionGroup($buff, $group);
 			}else{
 				$this->appendOption($buff, $option, $option->isRequired());
 			}

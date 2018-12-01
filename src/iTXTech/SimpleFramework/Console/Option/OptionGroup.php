@@ -16,6 +16,8 @@
 
 namespace iTXTech\SimpleFramework\Console\Option;
 
+use iTXTech\SimpleFramework\Console\Option\Exception\AlreadySelectedException;
+
 class OptionGroup{
 
 	/** hold the options */
@@ -26,7 +28,7 @@ class OptionGroup{
 	private $selected;
 
 	/** specified whether this group is required */
-	private $required;
+	private $required = false;
 
 	/**
 	 * Add the specified <code>Option</code> to this group.
@@ -53,13 +55,13 @@ class OptionGroup{
 	 *
 	 * @param $option Option
 	 *
-	 * @return bool
+	 * @throws AlreadySelectedException
 	 */
-	public function setSelected(?Option $option) : bool{
+	public function setSelected(?Option $option){
 		if($option == null){
 			// reset the option previously selected
 			$this->selected = null;
-			return true;
+			return;
 		}
 
 		// if no option has already been selected or the
@@ -68,9 +70,8 @@ class OptionGroup{
 		if($this->selected == null || $this->selected === $option->getKey()){
 			$this->selected = $option->getKey();
 		}else{
-			return false;
+			throw new AlreadySelectedException($this, $option);
 		}
-		return true;
 	}
 
 	/**
@@ -94,5 +95,25 @@ class OptionGroup{
 	 */
 	public function isRequired() : bool{
 		return $this->required;
+	}
+
+	public function __toString(){
+		$buf = "[";
+		foreach($this->getOptions() as $option){
+			if($option->getOpt() !== null){
+				$buf .= "-" . $option->getOpt();
+			}else{
+				$buf .= "--" . $option->getLongOpt();
+			}
+
+			if($option->getDescription() !== null){
+				$buf .= " " . $option->getDescription();
+			}
+
+			$buf .= ", ";
+		}
+		$buf = substr($buf, 0, strlen($buf));
+
+		return $buf;
 	}
 }
