@@ -31,13 +31,11 @@ class ModuleManager{
 
 	private $modulePath;
 	private $moduleDataPath;
-	private $cliOnly;
 
-	public function __construct(\ClassLoader $loader, string $modulePath, string $moduleDataPath, bool $cliOnly = false){
+	public function __construct(\ClassLoader $loader, string $modulePath, string $moduleDataPath){
 		$this->classLoader = $loader;
 		$this->modulePath = $modulePath;
 		$this->moduleDataPath = $moduleDataPath;
-		$this->cliOnly = $cliOnly;
 	}
 
 	public function setModulePath(string $modulePath): void{
@@ -73,9 +71,7 @@ class ModuleManager{
 		if($module->isLoaded()){
 			Logger::notice("Module " . $module->getInfo()->getName() . " is already loaded");
 		}else{
-			if(!$this->cliOnly){
-				Logger::info("Loading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
-			}
+			Logger::info("Loading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
 			if($module->preLoad()){
 				$module->setLoaded(true);
 				$module->load();
@@ -87,9 +83,7 @@ class ModuleManager{
 
 	public function unloadModule(Module $module){
 		if($module->isLoaded()){
-			if(!$this->cliOnly){
-				Logger::info("Unloading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
-			}
+			Logger::info("Unloading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
 			$module->unload();
 			$module->setLoaded(false);
 		}else{

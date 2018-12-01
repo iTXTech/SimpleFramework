@@ -16,6 +16,7 @@
 
 namespace iTXTech\SimpleFramework\Console;
 
+use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
 abstract class Terminal{
@@ -48,13 +49,11 @@ abstract class Terminal{
 
 	public static function hasFormattingCodes(){
 		if(self::$formattingCodes === null){
-			$opts = getopt("", ["enable-ansi", "disable-ansi"]);
-			if(isset($opts["disable-ansi"])){
-				self::$formattingCodes = false;
-			}else{
-				self::$formattingCodes = ((Util::getOS() !== "win" and getenv("TERM") != "" and
-						(!function_exists("posix_ttyname") or !defined("STDOUT")
-							or posix_ttyname(STDOUT) !== false)) or isset($opts["enable-ansi"]));
+			if((Util::getOS() !== Util::OS_WINDOWS and getenv("TERM") != "" and
+					(!function_exists("posix_ttyname") or !defined("STDOUT")
+						or posix_ttyname(STDOUT) !== false)) or
+				(Util::getOS() === Util::OS_WINDOWS and StringUtil::contains(php_uname("v"), "Windows 10"))){
+				self::$formattingCodes = true;
 			}
 		}
 
@@ -133,19 +132,16 @@ abstract class Terminal{
 		}
 
 		switch(Util::getOS()){
-			case "linux":
-			case "mac":
-			case "bsd":
+			case Util::OS_LINUX:
+			case Util::OS_MACOS:
+			case Util::OS_BSD:
 				self::getEscapeCodes();
 				return;
-
-			case "win":
-			case "android":
+			case Util::OS_ANDROID:
+			case Util::OS_WINDOWS:
 				self::getFallbackEscapeCodes();
 				return;
 		}
-
-		//TODO: iOS
 	}
 
 }

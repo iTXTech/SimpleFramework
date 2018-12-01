@@ -28,9 +28,9 @@ class Logger{
 	const INFO = "info";
 	const DEBUG = "debug";
 
-	public static $noColor = false;
-	public static $fullDisplay = true;
-	public static $noOutput = false;
+	public static $hasPrefix = true;
+	public static $disableOutput = false;
+	public static $disableClass = false;
 
 	private static $logfile = "";
 	/** @var LoggerHandler */
@@ -153,28 +153,31 @@ class Logger{
 	}
 
 	public static function send(string $message, string $prefix, string $color){
+		if(self::$disableOutput){
+			return;
+		}
 		if(self::$loggerHandler !== ""){
 			self::$loggerHandler::send($message, $prefix, $color);
 			return;
 		}
-		if(self::$fullDisplay){
+		if(self::$hasPrefix){
 			$now = time();
-			$class = @end(explode('\\', debug_backtrace()[2]['class']));
-			if(strlen($class) > 20){
-				$class = substr($class, 0, 20);
+			$class = "Console";
+			if(!self::$disableClass){
+				$class = @end(explode("\\", debug_backtrace()[2]['class']));
+				if(strlen($class) > 20){
+					$class = substr($class, 0, 20);
+				}
+				$class = $class == "" ? "Console" : $class;
 			}
-			$class = $class == "" ? "Console" : $class;
 			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("G:i:s", $now) . "] " .
-				TextFormat::RESET . $color . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
+				TextFormat::RESET . $color . "<" . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
 		}else{
-			$message = TextFormat::toANSI($message);
+			$message = TextFormat::toANSI($message . TextFormat::RESET);
 		}
 		$cleanMessage = TextFormat::clean($message);
 
-		if(self::$noOutput){
-			return;
-		}
-		if(!Terminal::hasFormattingCodes() or self::$noColor){
+		if(!Terminal::hasFormattingCodes()){
 			echo $cleanMessage . PHP_EOL;
 		}else{
 			echo $message . PHP_EOL;

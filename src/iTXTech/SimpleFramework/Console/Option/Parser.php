@@ -51,7 +51,7 @@ class Parser{
 	 * @param array|null $properties
 	 *
 	 * @return CommandLine
-	 * @throws \Exception
+	 * @throws ParseException
 	 */
 	public function parse(Options $options, array $arguments = null,
 	                      bool $stopAtNonOption = false, array $properties = null) : CommandLine{
@@ -116,7 +116,7 @@ class Parser{
 	}
 
 	/**
-	 * @throws \Exception
+	 * @throws MissingOptionException
 	 */
 	protected function checkRequiredOptions(){
 		if(!empty($this->expectedOpts)){

@@ -198,4 +198,15 @@ abstract class Util{
 
 		return $str;
 	}
+
+	public static function getCliOptBool(string $token) : bool{
+		$token = strtolower($token);
+		if($token === "yes"){
+			return true;
+		}
+		if($token === "no"){
+			return false;
+		}
+		return false;
+	}
 }

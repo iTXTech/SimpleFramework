@@ -31,7 +31,7 @@ class OptionBuilder{
 	 *
 	 * @param $opt
 	 *
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 */
 	public function __construct($opt){
 		OptionValidator::validateOption($opt);
@@ -142,11 +142,11 @@ class OptionBuilder{
 	 * Constructs an Option with the values declared by this {@link Builder}.
 	 *
 	 * @return Option
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 */
 	public function build() : Option{
 		if($this->opt == null && $this->longOpt == null){
-			throw new \Exception("Either opt or longOpt must be specified");
+			throw new \InvalidArgumentException("Either opt or longOpt must be specified");
 		}
 		return new Option($this);
 	}

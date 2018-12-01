@@ -40,7 +40,7 @@ class CommandLine{
 			$option = $this->resolveOption($option);
 		}
 		foreach($this->options as $opt){
-			if($option == $opt){
+			if($opt->equals($option)){
 				return true;
 			}
 		}
@@ -82,7 +82,7 @@ class CommandLine{
 		$values = [];
 
 		foreach($this->options as $processedOption){
-			if($processedOption === $option){
+			if($processedOption->equals($option)){
 				$values = array_merge($values, $processedOption->getValues());
 			}
 		}

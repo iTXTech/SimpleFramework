@@ -22,6 +22,8 @@ use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\Option\HelpFormatter;
 use iTXTech\SimpleFramework\Console\Option\OptionBuilder;
 use iTXTech\SimpleFramework\Console\Option\Options;
+use iTXTech\SimpleFramework\Console\Option\Parser;
+use iTXTech\SimpleFramework\Console\Terminal;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\ModuleManager;
 use iTXTech\SimpleFramework\Module\WraithSpireMDR;
@@ -66,8 +68,6 @@ class Framework implements OnCompletionListener{
 	private $dataPath;
 	private $modulePath;
 	private $moduleDataPath;
-
-	private $commandLineOnly = false;
 	public $displayTitle = true;
 
 	/** @var Options */
@@ -92,15 +92,15 @@ class Framework implements OnCompletionListener{
 		return $this->classLoader;
 	}
 
-	public function getName() : string {
+	public function getName() : string{
 		return self::PROG_NAME;
 	}
 
-	public function getVersion() : string {
+	public function getVersion() : string{
 		return self::PROG_VERSION;
 	}
 
-	public function getCodename() : string {
+	public function getCodename() : string{
 		return self::CODENAME;
 	}
 
@@ -108,11 +108,11 @@ class Framework implements OnCompletionListener{
 		return self::API_LEVEL;
 	}
 
-	public static function getInstance(): ?Framework{
+	public static function getInstance() : ?Framework{
 		return self::$instance;
 	}
 
-	public static function isStarted(): bool{
+	public static function isStarted() : bool{
 		return self::$instance !== null;
 	}
 
@@ -125,88 +125,70 @@ class Framework implements OnCompletionListener{
 	}
 
 	private function registerDefaultOptions(){
-		try{
-			$this->options->addOption((new OptionBuilder("v"))->longOpt("version")->
-			desc("Display version of SimpleFramework")->build());
-			$this->options->addOption((new OptionBuilder("m"))->longOpt("load-module")->hasArg()
-				->argName("path")->desc("Load the specified module")->build());
-			$t = (new HelpFormatter())->generateHelp("simpleframework", $this->options, true);
-			echo $t;
-		}catch(\Throwable $e){
-			Logger::logException($e);
-		}
+		$this->options->addOption((new OptionBuilder("h"))->longOpt("help")
+			->desc("Display this help message")->build());
+		$this->options->addOption((new OptionBuilder("v"))->longOpt("version")
+			->desc("Display version of SimpleFramework")->build());
+		$this->options->addOption((new OptionBuilder("l"))->longOpt("disable-logger")
+			->desc("Disable Logger output")->build());
+		$this->options->addOption((new OptionBuilder("c"))->longOpt("disable-logger-class")
+			->desc("Disable Logger Class detection")->build());
+		$this->options->addOption((new OptionBuilder("p"))->longOpt("without-prefix")
+			->desc("Do not print prefix when printing log")->build());
+		$this->options->addOption((new OptionBuilder("a"))->longOpt("ansi")
+			->desc("Enable or Disable ANSI")->hasArg()->argName("yes|no")->build());
+		$this->options->addOption((new OptionBuilder("t"))->longOpt("title")
+			->desc("Enable or Disable title display")->hasArg()->argName("yes|no")->build());
+
+		//TODO
+		$this->options->addOption((new OptionBuilder("l"))->longOpt("load-module")->hasArg()
+			->desc("Load the specified module")->argName("path")->build());
+		$this->options->addOption((new OptionBuilder("r"))->longOpt("cmd")->hasArg()
+			->desc("Execute the specified command")->argName("command")->build());
 	}
 
 	private function processCommandLineOptions(array $argv) : bool{
-		foreach($argv as $c => $arg){
-			switch($arg){
-				case "-s":
-					$this->commandLineOnly = true;
-					break;
-				case "-v":
-					Logger::info(self::PROG_NAME . ' version "' . self::PROG_VERSION . '"');
-					Logger::info("SimpleFramework API " . self::API_LEVEL . " [" . self::CODENAME . "]");
-					break;
-				case "-c":
-					Logger::$noColor = true;
-					break;
-				case "-w":
-					Logger::$fullDisplay = false;
-					break;
-				case "-h":
-					Logger::info("Usage: sfcli");
-					Logger::info("       sfcli [options]");
-					Logger::info("  -a           No command line output.");
-					Logger::info("  -c           Display in no color mode.");
-					Logger::info("  -e [COMMAND] Execute a registered command.");
-					Logger::info("  -f [FILE]    Load a module.");
-					Logger::info("  -h           Display this message.");
-					Logger::info("  -l [FILE]    Log to a specified file, only work with -s .");
-					Logger::info("  -s           Execute in pure command line mode.");
-					Logger::info("  -t           Do not display title.");
-					Logger::info("  -v           Display version of this program.");
-					Logger::info("  -w           Logger without time and prefix.");
-					break;
-				case "-a":
-					Logger::$noOutput = true;
-					break;
-				case "-f":
-					if(!isset($argv[$c + 1])){
-						Logger::error("Module file not found.");
-						break;
-					}
-					$file = $argv[$c + 1];
-					if(!file_exists($file)){
-						Logger::error("Module file not found.");
-						break;
-					}
-					$this->moduleManager = new ModuleManager($this->classLoader, "", "", $this->commandLineOnly);
-					$this->moduleManager->tryLoadModule($file);
-					break;
-				case "-l":
-					if(!isset($argv[$c + 1])){
-						Logger::error("No input file.");
-						break;
-					}
-					Logger::setLogFile($argv[$c + 1]);
-					break;
-				case "-e":
-					if(!isset($argv[$c + 1])){
-						Logger::error("No input command.");
-						break;
-					}
-					$this->commandProcessor = new CommandProcessor();
-					$this->commandProcessor->registerDefaultCommands();
-					$this->commandProcessor->dispatchCommand($argv[$c + 1]);
-					break;
-				case "-t":
-					$this->displayTitle = false;
-					break;
+		try{
+			$cmd = (new Parser())->parse($this->options, $argv);
+			if($cmd->hasOption("help")){
+				$t = (new HelpFormatter())->generateHelp("sf", $this->options, true);
+				echo $t;
+				exit(0);
 			}
-		}
 
-		if(in_array("-s", $argv)){
-			return true;
+			if($cmd->hasOption("version")){
+				echo Framework::PROG_NAME . " " . Framework::PROG_VERSION .
+					" [" . Framework::CODENAME . "]" . PHP_EOL .
+					"Implementing API " . Framework::API_LEVEL . PHP_EOL;
+				exit(0);
+			}
+
+			if($cmd->hasOption("disable-logger")){
+				Logger::$disableOutput = true;
+			}
+
+			if($cmd->hasOption("disable-logger-class")){
+				Logger::$disableClass = true;
+			}
+
+			if($cmd->hasOption("without-prefix")){
+				Logger::$hasPrefix = false;
+			}
+
+			if($cmd->hasOption("ansi")){
+				Terminal::$formattingCodes = Util::getCliOptBool($cmd->getOptionValue("ansi"));
+				Terminal::init();
+			}
+
+			if($cmd->hasOption("title")){
+				$this->displayTitle = false;
+			}
+
+		}catch(\Throwable $e){
+			echo $e->getMessage() . PHP_EOL;
+			$t = (new HelpFormatter())->generateHelp("sf", $this->options, true);
+			echo $t;
+			exit(1);
 		}
 		return false;
 	}
@@ -239,7 +221,7 @@ class Framework implements OnCompletionListener{
 				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 
 				if($this->moduleManager === null){
-					$this->moduleManager = new ModuleManager($this->classLoader, $this->modulePath, $this->moduleDataPath, $this->commandLineOnly);
+					$this->moduleManager = new ModuleManager($this->classLoader, $this->modulePath, $this->moduleDataPath);
 				}
 
 				if(!\iTXTech\SimpleFramework\SINGLE_THREAD){

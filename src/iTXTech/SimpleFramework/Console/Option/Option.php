@@ -42,7 +42,7 @@ class Option{
 	 * @param bool $hasArg
 	 * @param string $description
 	 *
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 */
 	public function __construct($builder, string $longOpt = null, bool $hasArg = false, string $description = null){
 		if($builder instanceof OptionBuilder){
@@ -361,5 +361,19 @@ class Option{
 			return empty($this->values);
 		}
 		return $this->acceptsArg();
+	}
+
+	public function equals(?Option $option) : bool{
+		if($option === null){
+			return false;
+		}
+		if($this->opt != null ? $this->opt !== $option->opt : $option->opt != null){
+			return false;
+		}
+		if($this->longOpt != null ? $this->longOpt !== $option->longOpt : $option->longOpt != null){
+			return false;
+		}
+
+		return true;
 	}
 }

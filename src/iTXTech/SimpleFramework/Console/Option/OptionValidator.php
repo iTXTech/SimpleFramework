@@ -22,7 +22,7 @@ abstract class OptionValidator{
 	 *
 	 * @param string $opt
 	 *
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 */
 	public static function validateOption(string $opt){
 		// if opt is NULL do not check further
@@ -35,13 +35,13 @@ abstract class OptionValidator{
 			$ch = $opt{0};
 
 			if(!self::isValidOpt($ch)){
-				throw new \Exception("Illegal option name '" . $ch . "'");
+				throw new \InvalidArgumentException("Illegal option name '" . $ch . "'");
 			}
 		}else{
 			for($i = 0; $i < strlen($opt); $i++){
 				if(!self::isValidChar($opt{$i})){
-					throw new \Exception("The option '" . $opt . "' contains an illegal "
-						. "character : '" . $opt{$i} . "'");
+					throw new \InvalidArgumentException("The option '" . $opt .
+						"' contains an illegal character : '" . $opt{$i} . "'");
 				}
 			}
 		}
