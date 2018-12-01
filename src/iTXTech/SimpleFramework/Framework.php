@@ -151,15 +151,19 @@ class Framework implements OnCompletionListener{
 		try{
 			$cmd = (new Parser())->parse($this->options, $argv);
 			if($cmd->hasOption("help")){
-				$t = (new HelpFormatter())->generateHelp("sf", $this->options, true);
+				$t = (new HelpFormatter())->generateHelp("sf", $this->options);
 				echo $t;
 				exit(0);
 			}
 
 			if($cmd->hasOption("version")){
-				echo Framework::PROG_NAME . " " . Framework::PROG_VERSION .
-					" [" . Framework::CODENAME . "]" . PHP_EOL .
-					"Implementing API " . Framework::API_LEVEL . PHP_EOL;
+				Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
+					" \"" . Framework::CODENAME . "\" [PHP " . PHP_VERSION . "]");
+				Util::println(Framework::PROG_NAME . " API " . Framework::API_LEVEL);
+				Util::println(str_repeat("-", 30));
+				foreach(["curl", "Phar", "pthreads", "yaml", "swoole"] as $ext){
+					Util::println(Util::generateExtensionInfo($ext));
+				}
 				exit(0);
 			}
 
@@ -185,7 +189,7 @@ class Framework implements OnCompletionListener{
 			}
 
 		}catch(\Throwable $e){
-			echo $e->getMessage() . PHP_EOL;
+			Util::println($e->getMessage());
 			$t = (new HelpFormatter())->generateHelp("sf", $this->options, true);
 			echo $t;
 			exit(1);

@@ -209,4 +209,26 @@ abstract class Util{
 		}
 		return false;
 	}
+
+	public static function println(string $str){
+		echo $str . PHP_EOL;
+	}
+
+	/**
+	 * @param string $ext
+	 *
+	 * @return string
+	 * @throws \ReflectionException
+	 */
+	public static function generateExtensionInfo(string $ext) : string{
+		$info = $ext . " => ";
+		if(extension_loaded($ext)){
+			$extension = new \ReflectionExtension($ext);
+			$info .= $extension->getVersion();
+		}else{
+			$info .= "not installed";
+		}
+
+		return $info;
+	}
 }
