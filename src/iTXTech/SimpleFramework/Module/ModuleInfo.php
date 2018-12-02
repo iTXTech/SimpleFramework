@@ -93,7 +93,7 @@ class ModuleInfo{
 		return $this->authors;
 	}
 
-	public function getAPILevel(): int{
+	public function getApi() : int{
 		return $this->api;
 	}
 

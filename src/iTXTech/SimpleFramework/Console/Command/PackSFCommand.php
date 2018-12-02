@@ -45,7 +45,7 @@ class PackSFCommand implements Command{
 		$phar->setMetadata([
 			"name" => $framework->getName(),
 			"version" => $framework->getVersion(),
-			"api" => $framework->getAPILevel(),
+			"api" => $framework->getApi(),
 			"creationDate" => time()
 		]);
 		$phar->setStub('<?php define("iTXTech\\\\SimpleFramework\\\\PATH", "phar://". __FILE__ ."/"); require_once("phar://". __FILE__ ."/src/iTXTech/SimpleFramework/SimpleFramework.php");  __HALT_COMPILER();');

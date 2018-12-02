@@ -55,8 +55,8 @@ abstract class Module{
 	}
 
 	public function preLoad() : bool{
-		if($this->info->getAPILevel() > Framework::API_LEVEL){
-			Logger::error("Module requires API: " . $this->info->getAPILevel() . " Current API: " . Framework::API_LEVEL);
+		if($this->info->getApi() > Framework::API_LEVEL){
+			Logger::error("Module requires API: " . $this->info->getApi() . " Current API: " . Framework::API_LEVEL);
 			return false;
 		}
 		if($this->checkExtensions()){

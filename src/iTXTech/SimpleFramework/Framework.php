@@ -30,62 +30,74 @@ use iTXTech\SimpleFramework\Module\WraithSpireMDR;
 use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Config;
+use iTXTech\SimpleFramework\Util\FrameworkProperties;
+use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
 class Framework implements OnCompletionListener{
-	const PROG_NAME = "SimpleFramework";
-	const PROG_VERSION = "2.1.0";
-	const API_LEVEL = 6;
-	const CODENAME = "Navi";
+	public const PROG_NAME = "SimpleFramework";
+	public const PROG_VERSION = "2.1.0";
+	public const API_LEVEL = 6;
+	public const CODENAME = "Navi";
 
 	/** @var Framework */
 	private static $instance = null;
 
+	private static $tickInterval = 50000;
+
+	//Objects
 	/** @var ConsoleReader */
 	private $console;
-
 	/** @var CommandProcessor */
 	private $commandProcessor;
-
 	/** @var Config */
 	private $config;
-
 	/** @var \ClassLoader */
 	private $classLoader;
-
 	/** @var Scheduler */
 	private $scheduler;
-
 	/** @var ModuleManager */
 	private $moduleManager;
-
-	private $shutdown = false;
-
-	private $currentTick = 0;
-
-	private $titleQueue = [];
-
-	private $dataPath;
-	private $modulePath;
-	private $moduleDataPath;
-	public $displayTitle = true;
-
 	/** @var Options */
 	private $options;
+	/** @var FrameworkProperties */
+	private $properties;
 
-	public static $usleep = 50000;
+	//Properties
+	private $shutdown = false;
+	private $displayTitle = true;
+
+	//
+	private $currentTick = 0;
+	private $titleQueue = [];
 
 	public function __construct(\ClassLoader $classLoader){
 		if(self::$instance === null){
 			self::$instance = $this;
 		}
-		$this->dataPath = \getcwd() . DIRECTORY_SEPARATOR;
-		$this->modulePath = $this->dataPath . "modules" . DIRECTORY_SEPARATOR;
-		$this->moduleDataPath = $this->dataPath . "data" . DIRECTORY_SEPARATOR;
 		$this->classLoader = $classLoader;
-
 		$this->options = new Options();
 		$this->registerDefaultOptions();
+
+		$this->properties = new FrameworkProperties();
+		$this->properties->dataPath = \getcwd() . DIRECTORY_SEPARATOR;
+		$this->properties->generatePath();
+	}
+
+	public static function getTickInterval() : int{
+		return self::$tickInterval;
+	}
+
+	public static function setTickInterval(int $tickInterval) : void{
+		self::$tickInterval = max($tickInterval, 0);
+	}
+
+	public function isDisplayTitle() : bool{
+		return $this->displayTitle;
+	}
+
+	public function setDisplayTitle(bool $displayTitle) : void{
+		$this->displayTitle = $displayTitle;
 	}
 
 	public function getLoader(){
@@ -104,7 +116,7 @@ class Framework implements OnCompletionListener{
 		return self::CODENAME;
 	}
 
-	public function getAPILevel() : int{
+	public function getApi() : int{
 		return self::API_LEVEL;
 	}
 
@@ -129,7 +141,8 @@ class Framework implements OnCompletionListener{
 			->desc("Display this help message")->build());
 		$this->options->addOption((new OptionBuilder("v"))->longOpt("version")
 			->desc("Display version of SimpleFramework")->build());
-		$this->options->addOption((new OptionBuilder("l"))->longOpt("disable-logger")
+
+		$this->options->addOption((new OptionBuilder("d"))->longOpt("disable-logger")
 			->desc("Disable Logger output")->build());
 		$this->options->addOption((new OptionBuilder("c"))->longOpt("disable-logger-class")
 			->desc("Disable Logger Class detection")->build());
@@ -139,15 +152,25 @@ class Framework implements OnCompletionListener{
 			->desc("Enable or Disable ANSI")->hasArg()->argName("yes|no")->build());
 		$this->options->addOption((new OptionBuilder("t"))->longOpt("title")
 			->desc("Enable or Disable title display")->hasArg()->argName("yes|no")->build());
+		$this->options->addOption((new OptionBuilder("e"))->longOpt("config")
+			->desc("Overwrite specified config property")->hasArg()->argName("prop")->build());
 
-		//TODO
+		$this->options->addOption((new OptionBuilder("l"))->longOpt("data-path")
+			->desc("Specify SimpleFramework data path")->hasArg()->argName("path")->build());
+		$this->options->addOption((new OptionBuilder("m"))->longOpt("module-path")
+			->desc("Specify SimpleFramework module path")->hasArg()->argName("path")->build());
+		$this->options->addOption((new OptionBuilder("n"))->longOpt("module-data-path")
+			->desc("Specify SimpleFramework module data path")->hasArg()->argName("path")->build());
+		$this->options->addOption((new OptionBuilder("o"))->longOpt("config-path")
+			->desc("Specify SimpleFramework config file")->hasArg()->argName("path")->build());
+
 		$this->options->addOption((new OptionBuilder("l"))->longOpt("load-module")->hasArg()
 			->desc("Load the specified module")->argName("path")->build());
-		$this->options->addOption((new OptionBuilder("r"))->longOpt("cmd")->hasArg()
+		$this->options->addOption((new OptionBuilder("r"))->longOpt("run-command")->hasArg()
 			->desc("Execute the specified command")->argName("command")->build());
 	}
 
-	private function processCommandLineOptions(array $argv) : bool{
+	private function processCommandLineOptions(array $argv){
 		try{
 			$cmd = (new Parser())->parse($this->options, $argv);
 			if($cmd->hasOption("help")){
@@ -155,7 +178,6 @@ class Framework implements OnCompletionListener{
 				echo $t;
 				exit(0);
 			}
-
 			if($cmd->hasOption("version")){
 				Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
 					" \"" . Framework::CODENAME . "\" [PHP " . PHP_VERSION . "]");
@@ -166,105 +188,128 @@ class Framework implements OnCompletionListener{
 				}
 				exit(0);
 			}
-
 			if($cmd->hasOption("disable-logger")){
 				Logger::$disableOutput = true;
 			}
-
 			if($cmd->hasOption("disable-logger-class")){
 				Logger::$disableClass = true;
 			}
-
 			if($cmd->hasOption("without-prefix")){
 				Logger::$hasPrefix = false;
 			}
-
 			if($cmd->hasOption("ansi")){
 				Terminal::$formattingCodes = Util::getCliOptBool($cmd->getOptionValue("ansi"));
 				Terminal::init();
 			}
-
 			if($cmd->hasOption("title")){
-				$this->displayTitle = false;
+				$this->properties->config["display-title"] = false;
 			}
-
+			if($cmd->hasOption("load-module")){
+				foreach($cmd->getOptionValues("load-module") as $value){
+					$this->properties->additionalModules[] = $value;
+				}
+			}
+			if($cmd->hasOption("run-command")){
+				foreach($cmd->getOptionValues("run-command") as $value){
+					$this->properties->commands[] = $value;
+				}
+			}
+			if($cmd->hasOption("data-path")){
+				$this->properties->dataPath = $cmd->getOptionValue("data-path");
+				$this->properties->generatePath();
+			}
+			if($cmd->hasOption("module-path")){
+				$this->properties->modulePath = $cmd->getOptionValue("module-path");
+			}
+			if($cmd->hasOption("module-data-path")){
+				$this->properties->moduleDataPath = $cmd->getOptionValue("module-data-path");
+			}
+			if($cmd->hasOption("config")){
+				foreach($cmd->getOptionValues("config") as $value){
+					list($k, $v) = explode("=", $value, 2);
+					if(StringUtil::contains($k, ".")){
+						list($k1, $k2) = explode(".", $k);
+						$this->properties->config[$k1][$k2] = $v;
+					}else{
+						$this->properties->config[$k] = $v;
+					}
+				}
+			}
 		}catch(\Throwable $e){
 			Util::println($e->getMessage());
 			$t = (new HelpFormatter())->generateHelp("sf", $this->options, true);
 			echo $t;
 			exit(1);
 		}
-		return false;
 	}
 
 	public function start(bool $useMainThreadTick = true, array $argv = []){
 		try{
-			if(!$this->processCommandLineOptions($argv)){
-				//$this->displayTitle("SimpleFramework is starting...");
-				@mkdir("modules");
-				@mkdir("data");
+			$this->processCommandLineOptions($argv);
+			$this->properties->mkdirDirs();
 
-				set_exception_handler("\\iTXTech\\SimpleFramework\\Console\\Logger::logException");
+			set_exception_handler("\\iTXTech\\SimpleFramework\\Console\\Logger::logException");
 
-				$this->config = new Config($this->dataPath . "config.json", Config::JSON, [
-					"auto-load-modules" => true,
-					"async-workers" => 2,
-					"log-file" => "",
-					"display-title" => true,
-					"module-dependency-resolver" => [
-						"enabled" => true,
-						"remote-database" => "https://raw.githubusercontent.com/iTXTech/WraithSpireDatabase/master/",
-						"modules" => []
-					]
-				]);
-				$this->config->save();
+			$this->config = new Config($this->properties->configPath, Config::JSON, [
+				"auto-load-modules" => true,
+				"async-workers" => 2,
+				"log-file" => "",
+				"display-title" => true,
+				"wsmdr" => [//WraithSpireModuleDependencyResolver
+					"enabled" => true,
+					"remote-database" => "https://raw.githubusercontent.com/iTXTech/WraithSpireDatabase/master/",
+					"modules" => []
+				]
+			]);
+			$this->config->save();
+			$this->properties->mergeConfig($this->config);
 
-				Logger::setLogFile($this->config->get("log-file", ""));
+			Logger::setLogFile($this->config->get("log-file", ""));
 
-				Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE . self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
-				Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
+			Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE .
+				self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
+			Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 
-				if($this->moduleManager === null){
-					$this->moduleManager = new ModuleManager($this->classLoader, $this->modulePath, $this->moduleDataPath);
-				}
+			$this->moduleManager = new ModuleManager($this->classLoader,
+				$this->properties->modulePath, $this->properties->moduleDataPath);
 
-				if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
-					Logger::info("Starting ConsoleReader...");
-					$this->console = new ConsoleReader();
-				}
+			if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
+				Logger::info("Starting ConsoleReader...");
+				$this->console = new ConsoleReader();
+			}
 
-				Logger::info("Starting Command Processor...");
-				if(!$this->commandProcessor instanceof CommandProcessor){
-					$this->commandProcessor = new CommandProcessor();
-					$this->commandProcessor->registerDefaultCommands();
-				}
+			Logger::info("Starting Command Processor...");
+			$this->commandProcessor = new CommandProcessor();
+			$this->commandProcessor->registerDefaultCommands();
 
-				Logger::info("Starting multi-threading scheduler...");
-				$this->scheduler = new Scheduler($this->classLoader, $this, $this->config->get("async-workers", 2));
+			Logger::info("Starting multi-threading scheduler...");
+			$this->scheduler = new Scheduler($this->classLoader, $this, $this->config->get("async-workers", 2));
 
-				$mdr = $this->config->get("module-dependency-resolver");
-				if($mdr["enabled"]){
-					Logger::info("Starting WraithSpire module dependency resolver...");
-					$this->moduleManager->registerModuleDependencyResolver(
-						new WraithSpireMDR($this->moduleManager, $mdr["remote-database"], $mdr["modules"]));
-				}
+			$mdr = $this->config->get("wsmdr");
+			if($mdr["enabled"]){
+				Logger::info("Starting WraithSpire module dependency resolver...");
+				$this->moduleManager->registerModuleDependencyResolver(
+					new WraithSpireMDR($this->moduleManager, $mdr["remote-database"], $mdr["modules"]));
+			}
 
-				if($this->config->get("auto-load-modules", true)){
-					$this->moduleManager->loadModules();
-				}
+			if($this->config->get("auto-load-modules", true)){
+				$this->moduleManager->loadModules();
+			}
+			$this->properties->loadModules($this->moduleManager);
 
-				$this->displayTitle = $this->config->get("display-title", true);
+			$this->displayTitle = $this->config->get("display-title", true);
 
-				if(($mdr = $this->moduleManager->getModuleDependencyResolver()) instanceof WraithSpireMDR){
-					/** @var WraithSpireMDR $mdr */
-					$mdr->init();
-				}
+			if(($mdr = $this->moduleManager->getModuleDependencyResolver()) instanceof WraithSpireMDR){
+				/** @var WraithSpireMDR $mdr */
+				$mdr->init();
+			}
 
-				Logger::notice("Done! Type 'help' for help.");
+			Logger::notice("Done! Type 'help' for help.");
 
-				if($useMainThreadTick){
-					$this->tick();
-				}
+			$this->properties->runCommands($this->commandProcessor);
+
+			if($useMainThreadTick){
+				$this->tick();
 			}
 		}catch(\Throwable $e){
 			Logger::logException($e);
@@ -279,11 +324,10 @@ class Framework implements OnCompletionListener{
 		return $this->commandProcessor;
 	}
 
-	//main thread tick, not recommend for modules
 	private function tick(){
 		while(!$this->shutdown){
 			$this->update();
-			usleep(self::$usleep);
+			usleep(self::$tickInterval);
 		}
 
 		//shutdown!

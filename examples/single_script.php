@@ -56,5 +56,5 @@ for($i = 0; $i < 100; $i++){
 
 while(true){
 	$scheduler->mainThreadHeartbeat(1);
-	usleep(Framework::$usleep);
+	usleep(Framework::getTickInterval());
 }

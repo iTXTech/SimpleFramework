@@ -69,7 +69,7 @@ class PackModuleCommand implements Command{
 			"name" => $info->getName(),
 			"version" => $info->getVersion(),
 			"main" => $info->getMain(),
-			"api" => $info->getAPILevel(),
+			"api" => $info->getApi(),
 			"description" => $info->getDescription(),
 			"authors" => $info->getAuthors(),
 			"creationDate" => time()
