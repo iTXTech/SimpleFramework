@@ -18,7 +18,7 @@ namespace iTXTech\SimpleFramework\Console;
 
 use iTXTech\SimpleFramework\Util\Util;
 
-abstract class Logger extends LoggerHandler{
+abstract class Logger implements LoggerHandler{
 	public const ERROR = 3;
 	public const WARNING = 2;
 	public const INFO = 1;

@@ -19,7 +19,7 @@ namespace iTXTech\SimpleFramework\Console;
 use Swoole\Channel;
 use Swoole\Process;
 
-abstract class SwooleLoggerHandler extends LoggerHandler{
+abstract class SwooleLoggerHandler implements LoggerHandler{
 	/** @var Process */
 	private static $proc;
 	/** @var Channel */
