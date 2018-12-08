@@ -36,7 +36,12 @@ abstract class Initializer{
 		}
 	}
 
-	public static function initTerminal(bool $formattingCodes = true){
+	/**
+	 * Initiate Terminal
+	 *
+	 * @param bool|null $formattingCodes
+	 */
+	public static function initTerminal(?bool $formattingCodes = null){
 		\iTXTech\SimpleFramework\Console\Terminal::$formattingCodes = $formattingCodes;
 		\iTXTech\SimpleFramework\Console\Terminal::init();
 	}

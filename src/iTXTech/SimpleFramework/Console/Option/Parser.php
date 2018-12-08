@@ -257,7 +257,7 @@ class Parser{
 	 * @throws ParseException
 	 */
 	private function handleLongOptionWithEqual(string $token){
-		list($value, $opt) = explode("=", $token, 2);
+		list($opt, $value) = explode("=", $token, 2);
 		$matchingOpts = $this->getMatchingLongOptions($opt);
 		if(empty($matchingOpts)){
 			$this->handleUnknownToken($this->currentToken);
@@ -356,6 +356,11 @@ class Parser{
 		return $option !== null && ($option->getArgs() >= 2 or $option->getArgs() === Option::UNLIMITED_VALUES);
 	}
 
+	/**
+	 * @param Option $option
+	 *
+	 * @throws ParseException
+	 */
 	private function handleOption(Option $option){
 		$this->checkRequiredArgs();
 
@@ -404,6 +409,11 @@ class Parser{
 		}
 	}
 
+	/**
+	 * @param string $token
+	 *
+	 * @throws ParseException
+	 */
 	protected function handleConcatenatedOptions(string $token){
 		for($i = 1; $i < strlen($token) - 1; $i++){
 			$c = $token{$i};
