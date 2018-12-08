@@ -16,6 +16,8 @@
 
 namespace iTXTech\SimpleFramework\Util;
 
+use iTXTech\SimpleFramework\Util\Curl\Curl;
+
 abstract class Util{
 	public const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
 
@@ -30,7 +32,7 @@ abstract class Util{
 	private static $os;
 
 	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
-		$curl = new Curl();
+		$curl = Curl::newInstance();
 		return $curl->setUrl($page)
 			->setOpt(CURLOPT_AUTOREFERER, 1)
 			->setOpt(CURLOPT_FOLLOWLOCATION, 1)
@@ -79,9 +81,9 @@ abstract class Util{
 	}
 
 	public static function downloadFile(string $file, string $url){
-		$curl = new Curl();
+		$curl = Curl::newInstance();
 		$ret = $curl->setUrl($url)
-			->setUA(self::USER_AGENT)
+			->setUserAgent(self::USER_AGENT)
 			->setTimeout(60)
 			->setOpt(CURLOPT_AUTOREFERER, 1)
 			->setOpt(CURLOPT_FOLLOWLOCATION, 1)
@@ -201,10 +203,10 @@ abstract class Util{
 
 	public static function getCliOptBool(string $token) : bool{
 		$token = strtolower($token);
-		if($token === "yes"){
+		if(in_array($token, ["yes", "y", "true", "t"])){
 			return true;
 		}
-		if($token === "no"){
+		if(in_array($token, ["no", "n", "false", "f"])){
 			return false;
 		}
 		return false;
