@@ -44,8 +44,8 @@ namespace iTXTech\SimpleFramework {
 	}
 	if(!extension_loaded("pthreads")){
 		@define('iTXTech\SimpleFramework\SINGLE_THREAD', true);
-		Logger::notice("Unable to find the pthreads extension.");
-		Logger::notice("SimpleFramework will run in single thread mode.");
+		Logger::debug("Unable to find the pthreads extension.");
+		Logger::debug("SimpleFramework will run in single thread mode.");
 	}else{
 		@define('iTXTech\SimpleFramework\SINGLE_THREAD', false);
 	}

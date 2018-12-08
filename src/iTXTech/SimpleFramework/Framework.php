@@ -142,18 +142,19 @@ class Framework implements OnCompletionListener{
 		$this->options->addOption((new OptionBuilder("v"))->longOpt("version")
 			->desc("Display version of SimpleFramework")->build());
 
-		$this->options->addOption((new OptionBuilder("d"))->longOpt("disable-logger")
-			->desc("Disable Logger output")->build());
-		$this->options->addOption((new OptionBuilder("c"))->longOpt("disable-logger-class")
-			->desc("Disable Logger Class detection")->build());
-		$this->options->addOption((new OptionBuilder("p"))->longOpt("without-prefix")
-			->desc("Do not print prefix when printing log")->build());
 		$this->options->addOption((new OptionBuilder("a"))->longOpt("ansi")
-			->desc("Enable or Disable ANSI")->hasArg()->argName("yes|no")->build());
-		$this->options->addOption((new OptionBuilder("t"))->longOpt("title")
-			->desc("Enable or Disable title display")->hasArg()->argName("yes|no")->build());
-		$this->options->addOption((new OptionBuilder("e"))->longOpt("config")
+			->desc("Enable or disable ANSI")->hasArg()->argName("yes|no")->build());
+		$this->options->addOption((new OptionBuilder("b"))->longOpt("config")
 			->desc("Overwrite specified config property")->hasArg()->argName("prop")->build());
+		//c, d
+
+		$this->options->addOption((new OptionBuilder("e"))->longOpt("disable-logger")
+			->desc("Disable Logger output")->build());
+		$this->options->addOption((new OptionBuilder("f"))->longOpt("disable-logger-class")
+			->desc("Disable Logger Class detection")->build());
+		$this->options->addOption((new OptionBuilder("g"))->longOpt("without-prefix")
+			->desc("Do not print prefix when printing log")->build());
+		//i, j, k
 
 		$this->options->addOption((new OptionBuilder("l"))->longOpt("data-path")
 			->desc("Specify SimpleFramework data path")->hasArg()->argName("path")->build());
@@ -163,11 +164,13 @@ class Framework implements OnCompletionListener{
 			->desc("Specify SimpleFramework module data path")->hasArg()->argName("path")->build());
 		$this->options->addOption((new OptionBuilder("o"))->longOpt("config-path")
 			->desc("Specify SimpleFramework config file")->hasArg()->argName("path")->build());
+		//p, q
 
-		$this->options->addOption((new OptionBuilder("l"))->longOpt("load-module")->hasArg()
+		$this->options->addOption((new OptionBuilder("r"))->longOpt("load-module")->hasArg()
 			->desc("Load the specified module")->argName("path")->build());
-		$this->options->addOption((new OptionBuilder("r"))->longOpt("run-command")->hasArg()
+		$this->options->addOption((new OptionBuilder("s"))->longOpt("run-command")->hasArg()
 			->desc("Execute the specified command")->argName("command")->build());
+		//t, u, w, x, y, z
 	}
 
 	private function processCommandLineOptions(array $argv){
@@ -200,9 +203,6 @@ class Framework implements OnCompletionListener{
 			if($cmd->hasOption("ansi")){
 				Terminal::$formattingCodes = Util::getCliOptBool($cmd->getOptionValue("ansi"));
 				Terminal::init();
-			}
-			if($cmd->hasOption("title")){
-				$this->properties->config["display-title"] = false;
 			}
 			if($cmd->hasOption("load-module")){
 				foreach($cmd->getOptionValues("load-module") as $value){
@@ -237,7 +237,7 @@ class Framework implements OnCompletionListener{
 			}
 		}catch(\Throwable $e){
 			Util::println($e->getMessage());
-			$t = (new HelpFormatter())->generateHelp("sf", $this->options, true);
+			$t = (new HelpFormatter())->generateHelp("sf", $this->options);
 			echo $t;
 			exit(1);
 		}
@@ -254,6 +254,7 @@ class Framework implements OnCompletionListener{
 				"auto-load-modules" => true,
 				"async-workers" => 2,
 				"log-file" => "",
+				"log-level" => 1,
 				"display-title" => true,
 				"wsmdr" => [//WraithSpireModuleDependencyResolver
 					"enabled" => true,
@@ -265,6 +266,7 @@ class Framework implements OnCompletionListener{
 			$this->properties->mergeConfig($this->config);
 
 			Logger::setLogFile($this->config->get("log-file", ""));
+			Logger::$logLevel = $this->config->get("log-level", 1);
 
 			Logger::info(TextFormat::AQUA . self::PROG_NAME . " " . TextFormat::LIGHT_PURPLE .
 				self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
@@ -304,7 +306,7 @@ class Framework implements OnCompletionListener{
 				$mdr->init();
 			}
 
-			Logger::notice("Done! Type 'help' for help.");
+			Logger::info("Done! Type 'help' for help.");
 
 			$this->properties->runCommands($this->commandProcessor);
 
@@ -349,7 +351,7 @@ class Framework implements OnCompletionListener{
 	}
 
 	public function stop(){
-		Logger::notice("Stopping SimpleFramework...");
+		Logger::info("Stopping SimpleFramework...");
 		foreach($this->moduleManager->getModules() as $module){
 			if($module->isLoaded()){
 				$this->moduleManager->unloadModule($module);

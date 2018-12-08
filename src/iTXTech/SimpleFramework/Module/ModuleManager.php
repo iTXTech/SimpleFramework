@@ -69,7 +69,7 @@ class ModuleManager{
 
 	public function loadModule(Module $module){
 		if($module->isLoaded()){
-			Logger::notice("Module " . $module->getInfo()->getName() . " is already loaded");
+			Logger::info("Module " . $module->getInfo()->getName() . " is already loaded");
 		}else{
 			Logger::info("Loading module " . $module->getInfo()->getName() . " v" . $module->getInfo()->getVersion());
 			if($module->preLoad()){
@@ -87,7 +87,7 @@ class ModuleManager{
 			$module->unload();
 			$module->setLoaded(false);
 		}else{
-			Logger::notice("Module " . $module->getInfo()->getName() . " is not loaded.");
+			Logger::info("Module " . $module->getInfo()->getName() . " is not loaded.");
 		}
 	}
 

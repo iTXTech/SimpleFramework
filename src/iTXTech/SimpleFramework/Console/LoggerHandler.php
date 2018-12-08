@@ -17,5 +17,5 @@
 namespace iTXTech\SimpleFramework\Console;
 
 abstract class LoggerHandler{
-	public static abstract function send(string $message, string $prefix, string $color);
+	public static abstract function println(string $message);
 }

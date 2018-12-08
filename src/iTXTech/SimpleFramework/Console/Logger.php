@@ -18,23 +18,27 @@ namespace iTXTech\SimpleFramework\Console;
 
 use iTXTech\SimpleFramework\Util\Util;
 
-class Logger{
-	const EMERGENCY = "emergency";
-	const ALERT = "alert";
-	const CRITICAL = "critical";
-	const ERROR = "error";
-	const WARNING = "warning";
-	const NOTICE = "notice";
-	const INFO = "info";
-	const DEBUG = "debug";
+abstract class Logger extends LoggerHandler{
+	public const ERROR = 3;
+	public const WARNING = 2;
+	public const INFO = 1;
+	public const DEBUG = 0;
 
+	private const PREFIX = [
+		self::DEBUG => "DEBUG",
+		self::INFO => "INFO",
+		self::WARNING => "WARNING",
+		self::ERROR => "ERROR"
+	];
+
+	public static $logLevel = self::INFO;
 	public static $hasPrefix = true;
 	public static $disableOutput = false;
 	public static $disableClass = false;
 
 	private static $logfile = "";
 	/** @var LoggerHandler */
-	private static $loggerHandler = "";
+	private static $loggerHandler = Logger::class;
 
 	public static function setLoggerHandler(string $class) : bool{
 		if(is_a($class, LoggerHandler::class, true)){
@@ -51,36 +55,20 @@ class Logger{
 		self::$logfile = $logfile;
 	}
 
-	public static function emergency($message, $name = "EMERGENCY"){
-		self::send($message, $name, TextFormat::RED);
+	public static function error(string $message){
+		self::send($message, self::ERROR, TextFormat::DARK_RED);
 	}
 
-	public static function alert($message, $name = "ALERT"){
-		self::send($message, $name, TextFormat::RED);
+	public static function warning(string $message){
+		self::send($message, self::WARNING, TextFormat::YELLOW);
 	}
 
-	public static function critical($message, $name = "CRITICAL"){
-		self::send($message, $name, TextFormat::RED);
+	public static function info(string $message){
+		self::send($message, self::INFO, TextFormat::WHITE);
 	}
 
-	public static function error($message, $name = "ERROR"){
-		self::send($message, $name, TextFormat::DARK_RED);
-	}
-
-	public static function warning($message, $name = "WARNING"){
-		self::send($message, $name, TextFormat::YELLOW);
-	}
-
-	public static function notice($message, $name = "NOTICE"){
-		self::send($message, $name, TextFormat::AQUA);
-	}
-
-	public static function info($message, $name = "INFO"){
-		self::send($message, $name, TextFormat::WHITE);
-	}
-
-	public static function debug($message, $name = "DEBUG"){
-		self::send($message, $name, TextFormat::GRAY);
+	public static function debug(string $message){
+		self::send($message, self::DEBUG, TextFormat::GRAY);
 	}
 
 	public static function logException(\Throwable $e){
@@ -109,9 +97,9 @@ class Logger{
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
 		];
 		if($errno === 0){
-			$type = self::CRITICAL;
+			$type = self::ERROR;
 		}else{
-			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? self::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? self::WARNING : self::NOTICE);
+			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? self::ERROR : self::WARNING;
 		}
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
 		if(($pos = strpos($errstr, "\n")) !== false){
@@ -125,23 +113,11 @@ class Logger{
 
 	public static function log($level, $message){
 		switch($level){
-			case self::EMERGENCY:
-				self::emergency($message);
-				break;
-			case self::ALERT:
-				self::alert($message);
-				break;
-			case self::CRITICAL:
-				self::critical($message);
-				break;
 			case self::ERROR:
 				self::error($message);
 				break;
 			case self::WARNING:
 				self::warning($message);
-				break;
-			case self::NOTICE:
-				self::notice($message);
 				break;
 			case self::INFO:
 				self::info($message);
@@ -152,12 +128,11 @@ class Logger{
 		}
 	}
 
-	public static function send(string $message, string $prefix, string $color){
+	public static function send(string $message, int $level, string $color){
 		if(self::$disableOutput){
 			return;
 		}
-		if(self::$loggerHandler !== ""){
-			self::$loggerHandler::send($message, $prefix, $color);
+		if($level < self::$logLevel){
 			return;
 		}
 		if(self::$hasPrefix){
@@ -171,10 +146,16 @@ class Logger{
 				$class = $class == "" ? "Console" : $class;
 			}
 			$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("G:i:s", $now) . "] " .
-				TextFormat::RESET . $color . "<" . $class . "/" . $prefix . ">" . " " . $message . TextFormat::RESET);
+				TextFormat::RESET . $color . "<" . $class . "/" . self::PREFIX[$level] . ">" . " " .
+				$message . TextFormat::RESET);
 		}else{
 			$message = TextFormat::toANSI($message . TextFormat::RESET);
 		}
+
+		self::$loggerHandler::println($message);
+	}
+
+	public static function println(string $message){
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){
