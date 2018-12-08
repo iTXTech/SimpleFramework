@@ -19,28 +19,36 @@ require_once "../autoload.php";
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Util\Curl\Curl;
-use iTXTech\SimpleFramework\Util\Curl\UrlResolver;
+use iTXTech\SimpleFramework\Util\Curl\Preprocessor;
 
 Logger::$logLevel = Logger::DEBUG;
 Initializer::initTerminal(true);
 
 class CustomizedCurl extends Curl{
-	public function __construct(){
-		parent::__construct()->setResolver(new class implements UrlResolver{
-			public function resolve(string $url) : string{
-				$u = parse_url($url);
+	/** @var Preprocessor */
+	public static $processor;
+
+	public static function init(){
+		self::$processor = new class implements Preprocessor{
+			public function process(Curl $curl){
+				$u = parse_url($curl->getUrl());
 				Logger::debug("Parsed URL: " . json_encode($u));
-				return $url;
 			}
-		});
+		};
+	}
+
+	public function __construct(){
+		parent::__construct()->setPreprocessor(self::$processor);
 	}
 }
 
+CustomizedCurl::init();
 $res = Curl::setCurlClass(CustomizedCurl::class);
 Logger::info("CustomizedCurl init result: " . ($res ? "true" : "false"));
 
 $curl = Curl::newInstance();
 $resp = $curl->setUrl("https://github.com")
+	->setHeader(["Expect:"])
 	->setUserAgent(Framework::PROG_NAME . " " . Framework::PROG_VERSION)
 	->exec();
 

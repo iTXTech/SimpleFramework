@@ -20,11 +20,14 @@ use iTXTech\SimpleFramework\Util\Util;
 
 class Curl{
 	protected $curl;
-	protected $url;
+
+	protected $headers = [];
+	public $url;
+
 	/** @var Response */
 	protected $response;
-	/** @var UrlResolver */
-	protected $resolver;
+	/** @var Preprocessor */
+	protected $preprocessor;
 
 	private static $CURL_CLASS = Curl::class;
 
@@ -59,8 +62,9 @@ class Curl{
 		return $this;
 	}
 
-	public function setResolver(UrlResolver $resolver) : void{
-		$this->resolver = $resolver;
+	public function setPreprocessor(Preprocessor $preprocessor){
+		$this->preprocessor = $preprocessor;
+		return $this;
 	}
 
 	public function certVerify(bool $enable){
@@ -92,16 +96,19 @@ class Curl{
 	}
 
 	public function setUrl(string $url){
-		if($this->resolver !== null){
-			$url = $this->resolver->resolve($url);
-		}
 		$this->url = $url;
-		curl_setopt($this->curl, CURLOPT_URL, $url);
 		return $this;
 	}
 
-	public function setHeader(array $arr){
-		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $arr);
+	public function setHeaders(array $arr){
+		$this->headers = $arr;
+		return $this;
+	}
+
+	public function setHeader($k, string $v = ""){
+		if(is_string($k)){
+			$this->headers[$k] = $v;
+		}
 		return $this;
 	}
 
@@ -158,6 +165,15 @@ class Curl{
 	}
 
 	public function exec(){
+		if($this->preprocessor !== null){
+			$this->preprocessor->process($this);
+		}
+		$headers = [];
+		foreach($this->headers as $k => $v){
+			$headers[] = $k . ": " . $v;
+		}
+		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($this->curl, CURLOPT_URL, $this->url);
 		$this->response = new Response(curl_exec($this->curl));
 		$this->reload();
 		return $this->response;
@@ -168,8 +184,7 @@ class Curl{
 	}
 
 	public function uploadFile(array $assoc = [], array $files = [],
-	                           string $fileType = "application/octet-stream",
-	                           array $extraHeaders = []){
+	                           string $fileType = "application/octet-stream"){
 		$body = [];
 		// invalid characters for "name" and "filename"
 		$disallow = ["\0", "\"", "\r", "\n"];
@@ -221,13 +236,10 @@ class Curl{
 		// set options
 		@curl_setopt_array($this->curl, [
 			CURLOPT_POST => true,
-			CURLOPT_POSTFIELDS => implode("\r\n", $body),
-			CURLOPT_HTTPHEADER => array_merge([
-				"Expect: ",
-				"Content-Type: multipart/form-data; boundary={$boundary}", // change Content-Type
-			], $extraHeaders)
+			CURLOPT_POSTFIELDS => implode("\r\n", $body)
 		]);
 
-		return $this;
+		return $this->setHeader("Expect", "")
+			->setHeader("Content-Type", "multipart/form-data; boundary={$boundary}");
 	}
 }

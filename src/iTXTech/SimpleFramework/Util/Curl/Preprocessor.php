@@ -16,6 +16,6 @@
 
 namespace iTXTech\SimpleFramework\Util\Curl;
 
-interface UrlResolver{
-	public function resolve(string $url) : string;
+interface Preprocessor{
+	public function process(Curl $curl);
 }
