@@ -254,7 +254,7 @@ class Framework implements OnCompletionListener{
 				"auto-load-modules" => true,
 				"async-workers" => 2,
 				"log-file" => "",
-				"log-level" => 1,
+				"log-level" => Logger::INFO,
 				"display-title" => true,
 				"wsmdr" => [//WraithSpireModuleDependencyResolver
 					"enabled" => true,
@@ -357,7 +357,7 @@ class Framework implements OnCompletionListener{
 				$this->moduleManager->unloadModule($module);
 			}
 		}
-		$this->config->save();
+		//$this->config->save();
 		$this->scheduler->cancelAllTasks();
 		$this->scheduler->mainThreadHeartbeat(PHP_INT_MAX);
 		$this->console->shutdown();
