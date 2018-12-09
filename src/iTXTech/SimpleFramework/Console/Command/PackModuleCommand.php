@@ -72,9 +72,10 @@ class PackModuleCommand implements Command{
 			"api" => $info->getApi(),
 			"description" => $info->getDescription(),
 			"authors" => $info->getAuthors(),
+			"generator" => Framework::PROG_NAME . " " . Framework::PROG_VERSION,
 			"creationDate" => time()
 		]);
-		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\nThis file has been generated using PackModule Command at ' . date("r") . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
+		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
 		$phar->setSignatureAlgorithm(\Phar::SHA1);
 		$filePath = rtrim(str_replace("\\", "/", $module->getFile()), "/") . "/";
 		$phar->startBuffering();

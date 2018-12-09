@@ -16,7 +16,6 @@
 
 namespace iTXTech\SimpleFramework\Console;
 
-use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
 abstract class Terminal{
@@ -52,7 +51,7 @@ abstract class Terminal{
 			if((Util::getOS() !== Util::OS_WINDOWS and getenv("TERM") != "" and
 					(!function_exists("posix_ttyname") or !defined("STDOUT")
 						or posix_ttyname(STDOUT) !== false)) or
-				(Util::getOS() === Util::OS_WINDOWS and StringUtil::contains(php_uname("v"), "Windows 10"))){
+				(Util::getOS() === Util::OS_WINDOWS and php_uname("r") >= 10)){
 				self::$formattingCodes = true;
 			}
 		}

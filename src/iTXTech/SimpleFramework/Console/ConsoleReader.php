@@ -30,7 +30,6 @@ class ConsoleReader extends Thread{
 	private $shutdown = false;
 	private $type = self::TYPE_STREAM;
 
-
 	public function __construct(){
 		$this->buffer = new \Threaded;
 		$this->start();

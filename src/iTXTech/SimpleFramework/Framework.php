@@ -182,10 +182,19 @@ class Framework implements OnCompletionListener{
 				exit(0);
 			}
 			if($cmd->hasOption("version")){
+				$built = date("r") . " (Source)";
+				if(($phar = \Phar::running(true)) !== ""){
+					$phar = new \Phar($phar);
+					$built = date("r", $phar->getMetadata()["creationDate"]) . " (Phar)";
+				}
+
 				Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
-					" \"" . Framework::CODENAME . "\" [PHP " . PHP_VERSION . "]");
-				Util::println(Framework::PROG_NAME . " API " . Framework::API_LEVEL);
+					" \"" . Framework::CODENAME . "\" (API " . Framework::API_LEVEL . ")");
+				Util::println("Built: " . $built);
+				Util::println("Copyright (C) 2016-2018 iTX Technologies");
 				Util::println(str_repeat("-", 30));
+				Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));
+				Util::println("PHP => " . PHP_VERSION);
 				foreach(["curl", "Phar", "pthreads", "yaml", "swoole"] as $ext){
 					Util::println(Util::generateExtensionInfo($ext));
 				}
@@ -272,8 +281,11 @@ class Framework implements OnCompletionListener{
 				self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 			Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 
-			$this->moduleManager = new ModuleManager($this->classLoader,
-				$this->properties->modulePath, $this->properties->moduleDataPath);
+			//TODO: preload plugins before initialize
+			if($this->moduleManager === null){
+				$this->moduleManager = new ModuleManager($this->classLoader,
+					$this->properties->modulePath, $this->properties->moduleDataPath);
+			}
 
 			if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
 				Logger::info("Starting ConsoleReader...");
