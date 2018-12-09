@@ -28,6 +28,8 @@ class Response{
 	private $header;
 	private $body;
 
+	private $multipleHeaders;
+
 	/** @var Cookie[] */
 	private $cookies;
 	/** @var string[] */
@@ -41,7 +43,11 @@ class Response{
 			$this->body = substr($buffer, $headerSize);
 
 			//parse headers
-			$headers = explode("\r\n", $this->header);
+			$headers = explode(self::HTTP_HEADER_SEPARATOR, trim($this->header));
+			$this->multipleHeaders = count($headers) > 1;
+			//drop redundant header, like 302
+			//to get these headers, do getRawHeader and parse manually
+			$headers = explode("\r\n", end($headers));
 			list($this->httpVersion, $this->httpCode, $this->httpCodeName) = explode(" ", array_shift($headers));
 			$this->headers = [];
 			foreach($headers as $header){
@@ -75,6 +81,10 @@ class Response{
 
 	public function isSuccessfully() : bool{
 		return $this->successfully;
+	}
+
+	public function hasMultipleHeaders() : bool{
+		return $this->multipleHeaders;
 	}
 
 	public function getHttpVersion(){
