@@ -33,17 +33,21 @@ class Response{
 	/** @var string[] */
 	private $headers;
 
-	public function __construct($content){
-		$this->successfully = $content !== false;
+	public function __construct($buffer, array $info){
+		$this->successfully = $buffer !== false;
 		if($this->successfully){
-			list($this->header, $this->body) = explode(self::HTTP_HEADER_SEPARATOR, $content, 2);
+			$headerSize = $info["header_size"];
+			$this->header = substr($buffer, 0, $headerSize);
+			$this->body = substr($buffer, $headerSize);
 
 			//parse headers
 			$headers = explode("\r\n", $this->header);
 			list($this->httpVersion, $this->httpCode, $this->httpCodeName) = explode(" ", array_shift($headers));
 			$this->headers = [];
 			foreach($headers as $header){
-				list($k, $v) = explode(": ", $header, 2);
+				$parts = explode(": ", $header, 2);
+				$k = $parts[0];
+				$v = $parts[1] ?? "";
 				if(!isset($this->headers[$k])){
 					$this->headers[$k] = $v;
 				}else{

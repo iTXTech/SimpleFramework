@@ -220,7 +220,7 @@ class Scheduler{
 				try{
 					$task->run($this->currentTick);
 				}catch(\Throwable $e){
-					Logger::critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
+					Logger::error("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
 					Logger::logException($e);
 				}
 			}

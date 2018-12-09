@@ -174,7 +174,7 @@ class Curl{
 		}
 		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
 		curl_setopt($this->curl, CURLOPT_URL, $this->url);
-		$this->response = new Response(curl_exec($this->curl));
+		$this->response = new Response(curl_exec($this->curl), curl_getinfo($this->curl));
 		$this->reload();
 		return $this->response;
 	}

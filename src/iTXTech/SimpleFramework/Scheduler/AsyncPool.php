@@ -148,7 +148,7 @@ class AsyncPool{
 
 				$this->removeTask($task);
 			}elseif($task->isTerminated() or $task->isCrashed()){
-				Logger::critical("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
+				Logger::error("Could not execute asynchronous task " . (new \ReflectionClass($task))->getShortName() . ": Task crashed");
 				$this->removeTask($task, true);
 			}
 		}

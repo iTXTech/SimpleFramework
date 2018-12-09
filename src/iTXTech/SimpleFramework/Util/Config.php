@@ -183,7 +183,7 @@ class Config{
 				}
 				file_put_contents($this->file, $content);
 			}catch(\Throwable $e){
-				Logger::critical("Could not save Config " . $this->file . ": " . $e->getMessage());
+				Logger::error("Could not save Config " . $this->file . ": " . $e->getMessage());
 				Logger::logException($e);
 			}
 			return true;

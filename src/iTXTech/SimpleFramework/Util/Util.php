@@ -17,6 +17,7 @@
 namespace iTXTech\SimpleFramework\Util;
 
 use iTXTech\SimpleFramework\Util\Curl\Curl;
+use iTXTech\SimpleFramework\Util\Curl\Response;
 
 abstract class Util{
 	public const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
@@ -31,17 +32,16 @@ abstract class Util{
 
 	private static $os;
 
-	public static function getURL($page, $timeout = 10, array $extraHeaders = []){
-		$curl = Curl::newInstance();
-		return $curl->setUrl($page)
+	public static function getURL($page, $timeout = 10, array $extraHeaders = []) : Response{
+		return Curl::newInstance()
+			->setUrl($page)
 			->setOpt(CURLOPT_AUTOREFERER, 1)
 			->setOpt(CURLOPT_FOLLOWLOCATION, 1)
 			->setOpt(CURLOPT_FORBID_REUSE, 1)
 			->setOpt(CURLOPT_FRESH_CONNECT, 1)
 			->setTimeout($timeout)
 			->setHeader($extraHeaders)
-			->returnHeader(false)
-			->setUA(self::USER_AGENT)
+			->setUserAgent(self::USER_AGENT)
 			->exec();
 	}
 
@@ -80,9 +80,8 @@ abstract class Util{
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
 
-	public static function downloadFile(string $file, string $url){
-		$curl = Curl::newInstance();
-		$ret = $curl->setUrl($url)
+	public static function downloadFile(string $file, string $url) : bool{
+		$response = Curl::newInstance()->setUrl($url)
 			->setUserAgent(self::USER_AGENT)
 			->setTimeout(60)
 			->setOpt(CURLOPT_AUTOREFERER, 1)
@@ -91,12 +90,13 @@ abstract class Util{
 			->setOpt(CURLOPT_FRESH_CONNECT, 1)
 			->setOpt(CURLOPT_BINARYTRANSFER, 1)
 			->setOpt(CURLOPT_BUFFERSIZE, 20971520)
-			->returnHeader(false)
 			->exec();
 
-		if($ret != false){
-			file_put_contents($file, $ret, FILE_BINARY);
+		if($response->isSuccessfully()){
+			file_put_contents($file, $response->getBody(), FILE_BINARY);
+			return true;
 		}
+		return false;
 	}
 
 	public static function getTrace($start = 0, $trace = null){
@@ -232,5 +232,20 @@ abstract class Util{
 		}
 
 		return $info;
+	}
+
+	/**
+	 * @param string $dir Should be ended with a DIRECTORY_SEPARATOR
+	 *
+	 * @return string|null
+	 */
+	public static function getLatestGitCommitId(string $dir) : ?string{
+		$dir .= ".git" . DIRECTORY_SEPARATOR;
+		if(file_exists($dir)){
+			return trim(file_get_contents($dir .
+				str_replace("/", DIRECTORY_SEPARATOR,
+					explode(": ", trim(file_get_contents($dir . "HEAD")))[1])));
+		}
+		return null;
 	}
 }

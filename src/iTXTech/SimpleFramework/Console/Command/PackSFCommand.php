@@ -18,6 +18,7 @@ namespace iTXTech\SimpleFramework\Console\Command;
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Framework;
+use iTXTech\SimpleFramework\Util\Util;
 
 class PackSFCommand implements Command{
 	public function getName() : string{
@@ -25,7 +26,7 @@ class PackSFCommand implements Command{
 	}
 
 	public function getUsage() : string{
-		return "psf  (no-gz) (no-echo)";
+		return "psf  (no-gz) (no-echo) (no-git)";
 	}
 
 	public function getDescription() : string{
@@ -41,11 +42,16 @@ class PackSFCommand implements Command{
 			Logger::info("Phar file already exists, overwriting...");
 			@\Phar::unlinkArchive($pharPath);
 		}
+		$git = "Unknown";
+		if(!in_array("no-git", $args)){
+			$git = Util::getLatestGitCommitId(\iTXTech\SimpleFramework\PATH) ?? "Unknown";
+		}
 		$phar = new \Phar($pharPath);
 		$phar->setMetadata([
 			"name" => $framework->getName(),
 			"version" => $framework->getVersion(),
 			"api" => $framework->getApi(),
+			"gitCommitId" => $git,
 			"creationDate" => time()
 		]);
 		$phar->setStub('<?php define("iTXTech\\\\SimpleFramework\\\\PATH", "phar://". __FILE__ ."/"); require_once("phar://". __FILE__ ."/src/iTXTech/SimpleFramework/SimpleFramework.php");  __HALT_COMPILER();');

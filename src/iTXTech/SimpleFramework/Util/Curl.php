@@ -18,8 +18,9 @@ namespace iTXTech\SimpleFramework\Util;
 
 use iTXTech\SimpleFramework\Util\Curl\Preprocessor;
 
-//This class is created for backward compatibility
-//TODO: Deprecate in 2.3
+/**
+ * @deprecated 2.3.0
+ */
 class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 	protected $content;
 

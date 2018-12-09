@@ -43,19 +43,19 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 	private function getModuleData(string $vendor, string $name, string $version){
 		$link = $this->database . "$vendor/$name/$version.json";
 		$i = 1;
-		while(($result = Util::getURL($link)) === false and $i <= 3){
-			Logger::alert("Obtaining module data for $vendor/$name version $version failed, retrying $i...");
+		while(!($result = Util::getURL($link))->isSuccessfully() and $i <= 3){
+			Logger::error("Obtaining module data for $vendor/$name version $version failed, retrying $i...");
 			$i++;
 		}
 		if($result == false){
-			Logger::alert("Obtaining module data for $vendor/$name version $version failed, please check your network connection.");
+			Logger::error("Obtaining module data for $vendor/$name version $version failed, please check your network connection.");
 			return false;
 		}
 		if(strstr($result, "404: Not Found")){
-			Logger::alert("Not found module data for $vendor/$name version $version .");
+			Logger::error("Not found module data for $vendor/$name version $version .");
 			return false;
 		}
-		return json_decode($result, true);
+		return json_decode($result->getBody(), true);
 	}
 
 	public function downloadDependency(string $moduleName, string $name, string $version): bool{

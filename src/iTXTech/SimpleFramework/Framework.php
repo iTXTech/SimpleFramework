@@ -36,7 +36,7 @@ use iTXTech\SimpleFramework\Util\Util;
 
 class Framework implements OnCompletionListener{
 	public const PROG_NAME = "SimpleFramework";
-	public const PROG_VERSION = "2.1.0-beta.1";
+	public const PROG_VERSION = "2.1.0-beta.2";
 	public const API_LEVEL = 6;
 	public const CODENAME = "Navi";
 
@@ -82,6 +82,10 @@ class Framework implements OnCompletionListener{
 		$this->properties = new FrameworkProperties();
 		$this->properties->dataPath = \getcwd() . DIRECTORY_SEPARATOR;
 		$this->properties->generatePath();
+	}
+
+	public function getProperties() : FrameworkProperties{
+		return $this->properties;
 	}
 
 	public static function getTickInterval() : int{
@@ -182,15 +186,19 @@ class Framework implements OnCompletionListener{
 				exit(0);
 			}
 			if($cmd->hasOption("version")){
-				$built = date("r") . " (Source)";
 				if(($phar = \Phar::running(true)) !== ""){
 					$phar = new \Phar($phar);
 					$built = date("r", $phar->getMetadata()["creationDate"]) . " (Phar)";
+					$git = $phar->getMetadata()["gitCommitId"];
+				}else{
+					$built = date("r") . " (Source)";
+					$git = Util::getLatestGitCommitId(\iTXTech\SimpleFramework\PATH) ?? "Unknown";
 				}
 
 				Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
 					" \"" . Framework::CODENAME . "\" (API " . Framework::API_LEVEL . ")");
 				Util::println("Built: " . $built);
+				Util::println("Git CID: " . $git);
 				Util::println("Copyright (C) 2016-2018 iTX Technologies");
 				Util::println(str_repeat("-", 30));
 				Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));

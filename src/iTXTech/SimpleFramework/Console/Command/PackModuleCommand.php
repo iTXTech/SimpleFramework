@@ -22,6 +22,7 @@ use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Module\Module;
 use iTXTech\SimpleFramework\Module\ModuleInfo;
 use iTXTech\SimpleFramework\Module\ModuleManager;
+use iTXTech\SimpleFramework\Util\Util;
 
 class PackModuleCommand implements Command{
 	/** @var ModuleManager */
@@ -36,7 +37,7 @@ class PackModuleCommand implements Command{
 	}
 
 	public function getUsage() : string{
-		return "pm <Module Name> (no-gz) (no-echo)";
+		return "pm <Module Name> (no-gz) (no-echo) (no-git)";
 	}
 
 	public function getDescription() : string{
@@ -44,7 +45,7 @@ class PackModuleCommand implements Command{
 	}
 
 	public function execute(string $command, array $args) : bool{
-		$moduleName = trim(str_replace(["no-gz", "no-echo"], "", implode(" ", $args)));
+		$moduleName = trim(str_replace(["no-gz", "no-echo", "no-git"], "", implode(" ", $args)));
 
 		if($moduleName === "" or !(($module = $this->manager->getModule($moduleName)) instanceof Module)){
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
@@ -64,6 +65,10 @@ class PackModuleCommand implements Command{
 			Logger::info("Phar module already exists, overwriting...");
 			@\Phar::unlinkArchive($pharPath);
 		}
+		$git = "Unknown";
+		if(!in_array("no-git", $args)){
+			$git = Util::getLatestGitCommitId($module->getFile()) ?? "Unknown";
+		}
 		$phar = new \Phar($pharPath);
 		$phar->setMetadata([
 			"name" => $info->getName(),
@@ -73,6 +78,7 @@ class PackModuleCommand implements Command{
 			"description" => $info->getDescription(),
 			"authors" => $info->getAuthors(),
 			"generator" => Framework::PROG_NAME . " " . Framework::PROG_VERSION,
+			"gitCommitId" => $git,
 			"creationDate" => time()
 		]);
 		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');

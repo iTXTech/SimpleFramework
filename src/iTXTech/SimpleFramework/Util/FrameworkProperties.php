@@ -30,6 +30,9 @@ class FrameworkProperties{
 	public $config = [];
 
 	public function generatePath(){
+		if(StringUtil::endsWith($this->dataPath, DIRECTORY_SEPARATOR)){
+			$this->dataPath .= DIRECTORY_SEPARATOR;
+		}
 		$this->modulePath = $this->dataPath . "modules" . DIRECTORY_SEPARATOR;
 		$this->moduleDataPath = $this->dataPath . "data" . DIRECTORY_SEPARATOR;
 		$this->configPath = $this->dataPath . "config.json";
