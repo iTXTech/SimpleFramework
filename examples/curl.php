@@ -48,7 +48,7 @@ Logger::info("CustomizedCurl init result: " . ($res ? "true" : "false"));
 
 $curl = Curl::newInstance();
 $resp = $curl->setUrl("https://github.com")
-	->setHeader(["Expect:"])
+	->setHeader("Expect")
 	->setUserAgent(Framework::PROG_NAME . " " . Framework::PROG_VERSION)
 	->exec();
 
