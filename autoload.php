@@ -14,35 +14,40 @@
  *
  */
 
-const PHAR_FILENAME = "SimpleFramework.phar";
+namespace ITXTech\SimpleFramework {
 
-$workingDir = __DIR__ . DIRECTORY_SEPARATOR;
-if(file_exists($workingDir . PHAR_FILENAME)){
-	define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . PHAR_FILENAME . DIRECTORY_SEPARATOR);
-}else{
-	define("iTXTech\SimpleFramework\PATH", $workingDir);
-}
-require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
+	use iTXTech\SimpleFramework\Console\Terminal;
 
-$classLoader = new \ClassLoader();
-$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
-$classLoader->register(true);
+	const PHAR_FILENAME = "SimpleFramework.phar";
 
-abstract class Initializer{
-	public static function setSingleThread(bool $bool = false){
-		@define('iTXTech\SimpleFramework\SINGLE_THREAD', $bool);
-		if(!$bool){
-			\iTXTech\SimpleFramework\ThreadManager::init();
-		}
+	$workingDir = __DIR__ . DIRECTORY_SEPARATOR;
+	if(file_exists($workingDir . PHAR_FILENAME)){
+		define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . PHAR_FILENAME . DIRECTORY_SEPARATOR);
+	}else{
+		define("iTXTech\SimpleFramework\PATH", $workingDir);
 	}
+	require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
 
-	/**
-	 * Initiate Terminal
-	 *
-	 * @param bool|null $formattingCodes
-	 */
-	public static function initTerminal(?bool $formattingCodes = null){
-		\iTXTech\SimpleFramework\Console\Terminal::$formattingCodes = $formattingCodes;
-		\iTXTech\SimpleFramework\Console\Terminal::init();
+	$classLoader = new \ClassLoader();
+	$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
+	$classLoader->register(true);
+
+	abstract class Initializer{
+		public static function setSingleThread(bool $bool = false){
+			@define('iTXTech\SimpleFramework\SINGLE_THREAD', $bool);
+			if(!$bool){
+				ThreadManager::init();
+			}
+		}
+
+		/**
+	 	* Initiate Terminal
+	 	*
+	 	* @param bool|null $formattingCodes
+	 	*/
+		public static function initTerminal(?bool $formattingCodes = null){
+			Terminal::$formattingCodes = $formattingCodes;
+			Terminal::init();
+		}
 	}
 }

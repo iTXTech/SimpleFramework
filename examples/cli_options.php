@@ -16,6 +16,7 @@
 
 require_once "../autoload.php";
 
+use ITXTech\SimpleFramework\Initializer;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\Option\HelpFormatter;
 use iTXTech\SimpleFramework\Console\Option\OptionBuilder;

@@ -23,6 +23,7 @@
 
 require_once "../autoload.php";
 
+use ITXTech\SimpleFramework\Initializer;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Framework;
