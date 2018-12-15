@@ -1,2 +1,27 @@
-#! /bin/sh
-php ./src/iTXTech/SimpleFramework/SimpleFramework.php $@
+#! /bin/bash
+DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+cd "$DIR"
+
+if [ "$PHP_BINARY" == "" ]; then
+    if [ -f ./bin/php7/bin/php ]; then
+        PHP_BINARY="./bin/php7/bin/php"
+    elif [[ ! -z $(type php) ]]; then
+        PHP_BINARY=$(type -p php)
+    else
+        echo "Valid PHP 7 executable not found, please visit https://github.com/iTXTech/SimpleFramework"
+        exit 1
+    fi
+fi
+
+if [ "$SF_FILE" == "" ]; then
+    if [ -f ./SimpleFramework.phar ]; then
+        SF_FILE="./SimpleFramework.phar"
+    elif [ -f ./src/iTXTech/SimpleFramework/SimpleFramework.php ]; then
+        SF_FILE="./src/iTXTech/SimpleFramework/SimpleFramework.php"
+    else
+        echo "SimpleFramework executable not found, please visit https://github.com/iTXTech/SimpleFramework"
+        exit 1
+    fi
+fi
+
+exec "$PHP_BINARY" "$SF_FILE" $@

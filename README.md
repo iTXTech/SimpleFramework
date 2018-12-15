@@ -24,6 +24,16 @@ Contributions are welcomed.
 
 * [Development Roadmap](https://github.com/iTXTech/SimpleFramework/issues/3)
 
+### Command Line
+
+```powershell
+PS X:\>.\sf -h
+```
+
+```bash
+$ ./sf -h
+```
+
 ## Requirements
 
 * [PHP](https://secure.php.net/) >= 7.2 - *Note that only cli sapi is supported*
