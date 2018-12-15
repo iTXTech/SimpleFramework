@@ -14,7 +14,7 @@
  *
  */
 
-namespace ITXTech\SimpleFramework {
+namespace iTXTech\SimpleFramework {
 
 	use iTXTech\SimpleFramework\Console\Terminal;
 

@@ -16,9 +16,9 @@
 
 require_once "../autoload.php";
 
-use ITXTech\SimpleFramework\Initializer;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Framework;
+use iTXTech\SimpleFramework\Initializer;
 use iTXTech\SimpleFramework\Util\Curl\Curl;
 use iTXTech\SimpleFramework\Util\Curl\Preprocessor;
 

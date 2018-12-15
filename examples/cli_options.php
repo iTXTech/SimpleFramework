@@ -16,13 +16,13 @@
 
 require_once "../autoload.php";
 
-use ITXTech\SimpleFramework\Initializer;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\Option\HelpFormatter;
 use iTXTech\SimpleFramework\Console\Option\OptionBuilder;
 use iTXTech\SimpleFramework\Console\Option\OptionGroup;
 use iTXTech\SimpleFramework\Console\Option\Options;
 use iTXTech\SimpleFramework\Console\Option\Parser;
+use iTXTech\SimpleFramework\Initializer;
 
 Initializer::initTerminal(true);
 
