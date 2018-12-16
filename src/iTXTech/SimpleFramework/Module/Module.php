@@ -131,10 +131,19 @@ abstract class Module{
 		return $this->info->getName();
 	}
 
-	public function getResource($filename){
-		$filename = rtrim(str_replace("\\", "/", $filename), "/");
-		if(file_exists($this->file . "resources/" . $filename)){
-			return fopen($this->file . "resources/" . $filename, "rb");
+	public function getResource(string $file){
+		$file = rtrim(str_replace("\\", "/", $file), "/");
+		if(file_exists($this->file . "resources/" . $file)){
+			return fopen($this->file . "resources/" . $file, "rb");
+		}
+
+		return null;
+	}
+
+	public function getResourceAsText(string $file){
+		$file = rtrim(str_replace("\\", "/", $file), "/");
+		if(file_exists($this->file . "resources/" . $file)){
+			return file_get_contents($this->file . "resources/" . $file);
 		}
 
 		return null;
