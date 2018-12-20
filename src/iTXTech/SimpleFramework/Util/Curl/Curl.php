@@ -133,7 +133,7 @@ class Curl{
 		foreach($get as $key => $content){
 			$payload .= urlencode($key) . '=' . urlencode($content) . '&';
 		}
-		curl_setopt($this->curl, CURLOPT_URL, $this->url . substr($payload, 0, strlen($payload) - 1));
+		$this->url .= substr($payload, 0, strlen($payload) - 1);
 		return $this;
 	}
 

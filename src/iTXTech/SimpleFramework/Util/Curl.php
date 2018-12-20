@@ -45,8 +45,7 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 	}
 
 	public function setUA(string $ua){
-		parent::setUserAgent($ua);
-		return $this;
+		return parent::setUserAgent($ua);
 	}
 
 	public function setUrl(string $url){
