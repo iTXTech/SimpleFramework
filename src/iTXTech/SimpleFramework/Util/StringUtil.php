@@ -26,7 +26,7 @@ abstract class StringUtil{
 	}
 
 	public static function contains(string $str, string $s) : bool{
-		return strpos($str, $s) > 0;
+		return strpos($str, $s) !== false;
 	}
 
 	public static function between(string $string, string $after, string $before, int $offset = 0) : string{
