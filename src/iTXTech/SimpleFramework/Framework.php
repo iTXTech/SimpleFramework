@@ -199,7 +199,7 @@ class Framework implements OnCompletionListener{
 					" \"" . Framework::CODENAME . "\" (API " . Framework::API_LEVEL . ")");
 				Util::println("Built: " . $built);
 				Util::println("Git CID: " . $git);
-				Util::println("Copyright (C) 2016-2018 iTX Technologies");
+				Util::println("Copyright (C) 2016-2019 iTX Technologies");
 				Util::println(str_repeat("-", 30));
 				Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));
 				Util::println("PHP => " . PHP_VERSION);
