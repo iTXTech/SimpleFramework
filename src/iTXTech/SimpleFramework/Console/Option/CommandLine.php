@@ -60,7 +60,7 @@ class CommandLine{
 			$option = $this->resolveOption($option);
 		}
 		if($option === null){
-			return null;
+			return $defaultValue;
 		}
 
 		$values = $this->getOptionValues($option);
