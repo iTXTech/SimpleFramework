@@ -24,7 +24,7 @@ abstract class Logger implements LoggerHandler{
 	public const INFO = 1;
 	public const DEBUG = 0;
 
-	private const PREFIX = [
+	public const PREFIX = [
 		self::DEBUG => "DEBUG",
 		self::INFO => "INFO",
 		self::WARNING => "WARNING",
