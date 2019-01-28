@@ -73,9 +73,12 @@ class Curl{
 		return $this;
 	}
 
-	public function setSocks5Proxy(string $address, string $pass = ""){
-		curl_setopt($this->curl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+	public function setProxy(string $address, int $type = CURLPROXY_HTTP, string $name = "", string $pass = ""){
+		curl_setopt($this->curl, CURLOPT_PROXYTYPE, $type);
 		curl_setopt($this->curl, CURLOPT_PROXY, $address);
+		if($name !== ""){
+			curl_setopt($this->curl, CURLOPT_PROXYUSERNAME, $name);
+		}
 		if($pass !== ""){
 			curl_setopt($this->curl, CURLOPT_PROXYUSERPWD, $pass);
 		}

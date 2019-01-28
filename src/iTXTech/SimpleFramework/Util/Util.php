@@ -20,7 +20,7 @@ use iTXTech\SimpleFramework\Util\Curl\Curl;
 use iTXTech\SimpleFramework\Util\Curl\Response;
 
 abstract class Util{
-	public const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36";
+	public const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
 
 	public const OS_WINDOWS = "win";
 	public const OS_LINUX = "linux";
