@@ -1,8 +1,8 @@
 # SimpleFramework
 
 [![License](https://img.shields.io/github/license/iTXTech/SimpleFramework.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/LICENSE)
-[![Stable](https://img.shields.io/badge/stable-2.0.1(5)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/blob/11b97f52f33db05c51769c18dbb1369faf118a52/src/iTXTech/SimpleFramework/Framework.php)
-[![Developing](https://img.shields.io/badge/dev-2.1.0(6)-blue.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/src/iTXTech/SimpleFramework/Framework.php)
+[![Stable](https://img.shields.io/badge/stable-2.1.0(6)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/releases/tag/v2.1.0)
+[![Developing](https://img.shields.io/badge/dev-2.2.0(7)-blue.svg)]()
 
 __A fast, lightweighted and extensible php command line framework.__
 
