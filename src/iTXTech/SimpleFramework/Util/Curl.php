@@ -48,12 +48,6 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 		return parent::setUserAgent($ua);
 	}
 
-	public function setGet(array $get){
-		parent::setGet($get);
-		curl_setopt($this->curl, CURLOPT_URL, $this->url);
-		return $this;
-	}
-
 	public function setUrl(string $url){
 		$this->url = $url;
 		curl_setopt($this->curl, CURLOPT_URL, $url);
@@ -70,7 +64,7 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 	}
 
 	public function exec(){
-
+		curl_setopt($this->curl, CURLOPT_URL, $this->url);
 		$this->content = curl_exec($this->curl);
 		$this->reload();
 		return $this->content;
