@@ -244,6 +244,11 @@ class Framework implements OnCompletionListener{
 			if($cmd->hasOption("config")){
 				foreach($cmd->getOptionValues("config") as $value){
 					list($k, $v) = explode("=", $value, 2);
+					if(strtolower($v) == "false"){
+						$v = false;
+					}elseif(strtolower($v) == "true"){
+						$v = true;
+					}
 					if(StringUtil::contains($k, ".")){
 						list($k1, $k2) = explode(".", $k);
 						$this->properties->config[$k1][$k2] = $v;
