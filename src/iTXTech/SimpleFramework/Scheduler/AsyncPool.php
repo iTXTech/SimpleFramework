@@ -19,6 +19,7 @@ namespace iTXTech\SimpleFramework\Scheduler;
 use iTXTech\SimpleFramework\Console\Logger;
 
 class AsyncPool{
+	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
 
 	/** @var \ClassLoader */
 	private $classloader;
@@ -47,7 +48,7 @@ class AsyncPool{
 			$this->workerUsage[$i] = 0;
 			$this->workers[$i] = new AsyncWorker($i + 1);
 			$this->workers[$i]->setClassLoader($classLoader);
-			$this->workers[$i]->start();
+			$this->workers[$i]->start(self::WORKER_START_OPTIONS);
 		}
 	}
 
@@ -59,14 +60,13 @@ class AsyncPool{
 		return $this->size;
 	}
 
-	public function increaseSize($newSize){
-		$newSize = (int) $newSize;
+	public function increaseSize(int $newSize){
 		if($newSize > $this->size){
 			for($i = $this->size; $i < $newSize; ++$i){
 				$this->workerUsage[$i] = 0;
 				$this->workers[$i] = new AsyncWorker($i + 1);
 				$this->workers[$i]->setClassLoader($this->classloader);
-				$this->workers[$i]->start();
+				$this->workers[$i]->start(self::WORKER_START_OPTIONS);
 			}
 			$this->size = $newSize;
 		}
