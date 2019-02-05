@@ -43,7 +43,7 @@ $curl->setUrl("https://github.com")
 				Logger::info("Got " . count($resp->getHeaders()) . " headers");
 				Logger::info("Body len: " . strlen($resp->getBody()));
 			}else{
-				Logger::error("Cannot reach target");
+				Logger::error("Cannot reach target, errno: " . $resp->getErrno());
 			}
 			Logger::info(TextFormat::GREEN . "Request completed. CTRL-C to exit.");
 		}

@@ -57,6 +57,7 @@ class Curl{
 			curl_close($this->curl);
 		}
 		$this->curl = curl_init();
+		$this->curlOpts = [];
 
 		if(Util::getOS() === Util::OS_WINDOWS){
 			$this->verifyCert(false);

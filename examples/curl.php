@@ -59,5 +59,5 @@ if($resp->isSuccessful()){
 	Logger::info("Got " . count($resp->getHeaders()) . " headers");
 	Logger::info("Body len: " . strlen($resp->getBody()));
 }else{
-	Logger::error("Cannot reach target");
+	Logger::error("Cannot reach target, errno: " . $resp->getErrno());
 }
