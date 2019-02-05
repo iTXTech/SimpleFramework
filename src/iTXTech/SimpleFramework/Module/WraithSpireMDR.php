@@ -43,7 +43,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 	private function getModuleData(string $vendor, string $name, string $version){
 		$link = $this->database . "$vendor/$name/$version.json";
 		$i = 1;
-		while(!($result = Util::getURL($link))->isSuccessfully() and $i <= 3){
+		while(!($result = Util::getURL($link))->isSuccessful() and $i <= 3){
 			Logger::error("Obtaining module data for $vendor/$name version $version failed, retrying $i...");
 			$i++;
 		}

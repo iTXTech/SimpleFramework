@@ -19,7 +19,7 @@ namespace iTXTech\SimpleFramework\Util\Curl;
 class Response{
 	public const HTTP_HEADER_SEPARATOR = "\r\n\r\n";
 
-	private $successfully;
+	private $successful;
 
 	private $httpVersion;
 	private $httpCode;
@@ -34,10 +34,12 @@ class Response{
 	private $cookies;
 	/** @var string[] */
 	private $headers;
+	private $errno;
 
-	public function __construct($buffer, array $info){
-		$this->successfully = $buffer !== false;
-		if($this->successfully){
+	public function __construct($buffer, array $info, int $errno){
+		$this->errno = $errno;
+		$this->successful = $buffer !== false;
+		if($this->successful){
 			$headerSize = $info["header_size"];
 			$this->header = substr($buffer, 0, $headerSize);
 			$this->body = substr($buffer, $headerSize);
@@ -79,8 +81,8 @@ class Response{
 		}
 	}
 
-	public function isSuccessfully() : bool{
-		return $this->successfully;
+	public function isSuccessful() : bool{
+		return $this->successful;
 	}
 
 	public function hasMultipleHeaders() : bool{
@@ -123,8 +125,16 @@ class Response{
 		return $this->cookies[$name] ?? null;
 	}
 
+	public function getErrno() : int{
+		return $this->errno;
+	}
+
+	public function hasError(){
+		return ($this->errno === 0) ? true : false;
+	}
+
 	public function __toString(){
-		if(!$this->successfully){
+		if(!$this->successful){
 			return "";
 		}
 		return $this->header . self::HTTP_HEADER_SEPARATOR . $this->body;

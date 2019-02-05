@@ -16,10 +16,14 @@
 
 namespace iTXTech\SimpleFramework\Util\Curl;
 
+use iTXTech\SimpleFramework\Scheduler\AsyncTask;
+use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
+use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Util;
 
 class Curl{
 	protected $curl;
+	protected $curlOpts;
 
 	protected $headers = [];
 	public $url;
@@ -53,11 +57,12 @@ class Curl{
 			curl_close($this->curl);
 		}
 		$this->curl = curl_init();
+
 		if(Util::getOS() === Util::OS_WINDOWS){
-			$this->certVerify(false);
+			$this->verifyCert(false);
 		}
-		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($this->curl, CURLOPT_HEADER, 1);
+		$this->setOpt(CURLOPT_RETURNTRANSFER, 1);
+		$this->setOpt(CURLOPT_HEADER, 1);
 		$this->setTimeout(10);
 		return $this;
 	}
@@ -67,20 +72,20 @@ class Curl{
 		return $this;
 	}
 
-	public function certVerify(bool $enable){
-		curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, $enable ? 1 : 0);
-		curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, $enable ? 1 : 0);
+	public function verifyCert(bool $enable){
+		$this->setOpt(CURLOPT_SSL_VERIFYHOST, $enable ? 1 : 0);
+		$this->setOpt(CURLOPT_SSL_VERIFYPEER, $enable ? 1 : 0);
 		return $this;
 	}
 
 	public function setProxy(string $address, int $type = CURLPROXY_HTTP, string $name = "", string $pass = ""){
-		curl_setopt($this->curl, CURLOPT_PROXYTYPE, $type);
-		curl_setopt($this->curl, CURLOPT_PROXY, $address);
+		$this->setOpt(CURLOPT_PROXYTYPE, $type);
+		$this->setOpt(CURLOPT_PROXY, $address);
 		if($name !== ""){
-			curl_setopt($this->curl, CURLOPT_PROXYUSERNAME, $name);
+			$this->setOpt(CURLOPT_PROXYUSERNAME, $name);
 		}
 		if($pass !== ""){
-			curl_setopt($this->curl, CURLOPT_PROXYUSERPWD, $pass);
+			$this->setOpt(CURLOPT_PROXYUSERPWD, $pass);
 		}
 		return $this;
 	}
@@ -94,7 +99,7 @@ class Curl{
 	}
 
 	public function setUserAgent(string $ua){
-		curl_setopt($this->curl, CURLOPT_USERAGENT, $ua);
+		$this->setOpt(CURLOPT_USERAGENT, $ua);
 		return $this;
 	}
 
@@ -115,19 +120,24 @@ class Curl{
 		return $this;
 	}
 
+
+	/**
+	 * @param Cookie[] $cookies
+	 *
+	 * @return $this
+	 */
 	public function setCookies(array $cookies){
-		/** @var Cookie[] $cookies */
 		$payload = "";
 		foreach($cookies as $cookie){
 			$payload .= $cookie->getName() . "=" . $cookie->getValue() . "; ";
 		}
 		$payload = substr($payload, 0, strlen($payload) - 2);
-		curl_setopt($this->curl, CURLOPT_COOKIE, $payload);
+		$this->setOpt(CURLOPT_COOKIE, $payload);
 		return $this;
 	}
 
 	public function setReferer(string $referer){
-		curl_setopt($this->curl, CURLOPT_REFERER, $referer);
+		$this->setOpt(CURLOPT_REFERER, $referer);
 		return $this;
 	}
 
@@ -145,29 +155,29 @@ class Curl{
 		foreach($post as $key => $content){
 			$payload .= urlencode($key) . '=' . urlencode($content) . '&';
 		}
-		curl_setopt($this->curl, CURLOPT_POST, 1);
-		curl_setopt($this->curl, CURLOPT_POSTFIELDS, substr($payload, 0, strlen($payload) - 1));
+		$this->setOpt(CURLOPT_POST, 1);
+		$this->setOpt(CURLOPT_POSTFIELDS, substr($payload, 0, strlen($payload) - 1));
 		return $this;
 	}
 
 	public function setEncPost($post){
-		curl_setopt($this->curl, CURLOPT_POST, 1);
-		curl_setopt($this->curl, CURLOPT_POSTFIELDS, $post);
+		$this->setOpt(CURLOPT_POST, 1);
+		$this->setOpt(CURLOPT_POSTFIELDS, $post);
 		return $this;
 	}
 
 	public function setTimeout(int $timeout){
-		curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $timeout);
-		curl_setopt($this->curl, CURLOPT_TIMEOUT, $timeout);
+		$this->setOpt(CURLOPT_CONNECTTIMEOUT, $timeout);
+		$this->setOpt(CURLOPT_TIMEOUT, $timeout);
 		return $this;
 	}
 
 	public function setOpt(int $option, $value){
-		curl_setopt($this->curl, $option, $value);
+		$this->curlOpts[$option] = $value;
 		return $this;
 	}
 
-	public function exec(){
+	protected function buildRequest(){
 		if($this->preprocessor !== null){
 			$this->preprocessor->process($this);
 		}
@@ -175,19 +185,50 @@ class Curl{
 		foreach($this->headers as $k => $v){
 			$headers[] = $k . ": " . $v;
 		}
-		curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
-		curl_setopt($this->curl, CURLOPT_URL, $this->url);
-		$this->response = new Response(curl_exec($this->curl), curl_getinfo($this->curl));
+		$this->setOpt(CURLOPT_HTTPHEADER, $headers);
+		$this->setOpt(CURLOPT_URL, $this->url);
+	}
+
+	public function exec(){
+		$this->buildRequest();
+		curl_setopt_array($this->curl, $this->curlOpts);
+		$this->response = new Response(curl_exec($this->curl), curl_getinfo($this->curl), curl_errno($this->curl));
 		$this->reload();
 		return $this->response;
 	}
 
-	public function hasError(){
-		return (curl_errno($this->curl)) ? true : false;
+	public function execAsync(Scheduler $scheduler, Callback $callback){
+		$this->buildRequest();
+		$scheduler->scheduleAsyncTask(new class($this->curlOpts, $callback) extends AsyncTask{
+			private const CALLBACK = "cb";
+
+			private $opts;
+			private $buffer;
+			private $info;
+			private $errno;
+
+			public function __construct(array $opts, Callback $callback){
+				$this->opts = serialize($opts);
+				$this->saveToThreadStore(self::CALLBACK, $callback);
+			}
+
+			public function onRun(){
+				$curl = curl_init();
+				curl_setopt_array($curl, unserialize($this->opts));
+				$this->buffer = curl_exec($curl);
+				$this->info = serialize(curl_getinfo($curl));
+				$this->errno = curl_errno($curl);
+			}
+
+			public function onCompletion(OnCompletionListener $listener){
+				$this->getFromThreadStore(self::CALLBACK)
+					->onResponse(new Response($this->buffer, unserialize($this->info), $this->errno));
+			}
+		});
 	}
 
 	public function uploadFile(array $assoc = [], array $files = [],
-	                           string $fileType = "application/octet-stream"){
+							   string $fileType = "application/octet-stream"){
 		$body = [];
 		// invalid characters for "name" and "filename"
 		$disallow = ["\0", "\"", "\r", "\n"];
@@ -236,13 +277,9 @@ class Curl{
 		$body[] = "--{$boundary}--";
 		$body[] = "";
 
-		// set options
-		@curl_setopt_array($this->curl, [
-			CURLOPT_POST => true,
-			CURLOPT_POSTFIELDS => implode("\r\n", $body)
-		]);
 
-		return $this->setHeader("Expect", "")
+		return $this->setEncPost(implode("\r\n", $body))
+			->setHeader("Expect", "")
 			->setHeader("Content-Type", "multipart/form-data; boundary={$boundary}");
 	}
 }

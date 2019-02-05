@@ -92,7 +92,7 @@ abstract class Util{
 			->setOpt(CURLOPT_BUFFERSIZE, 20971520)
 			->exec();
 
-		if($response->isSuccessfully()){
+		if($response->isSuccessful()){
 			file_put_contents($file, $response->getBody(), FILE_BINARY);
 			return true;
 		}

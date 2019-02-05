@@ -53,7 +53,7 @@ $resp = $curl->setUrl("https://github.com")
 	->setUserAgent(Framework::PROG_NAME . " " . Framework::PROG_VERSION)
 	->exec();
 
-if($resp->isSuccessfully()){
+if($resp->isSuccessful()){
 	Logger::info("Code: " . $resp->getHttpCode());
 	Logger::info("Got " . count($resp->getCookies()) . " cookies");
 	Logger::info("Got " . count($resp->getHeaders()) . " headers");
