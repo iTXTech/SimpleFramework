@@ -18,21 +18,38 @@ namespace iTXTech\SimpleFramework {
 
 	use iTXTech\SimpleFramework\Console\Terminal;
 
-	const PHAR_FILENAME = "SimpleFramework.phar";
+	if(!defined("iTXTech\SimpleFramework\DISABLE_AUTO_INIT")){
+		Initializer::loadSimpleFramework();
+		Initializer::initClassLoader();
 
-	$workingDir = __DIR__ . DIRECTORY_SEPARATOR;
-	if(file_exists($workingDir . PHAR_FILENAME)){
-		define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . PHAR_FILENAME . DIRECTORY_SEPARATOR);
-	}else{
-		define("iTXTech\SimpleFramework\PATH", $workingDir);
+		//backward compatibility
+		$classLoader = Initializer::getClassLoader();
 	}
-	require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
-
-	$classLoader = new \ClassLoader();
-	$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
-	$classLoader->register(true);
 
 	abstract class Initializer{
+		/** @var \ClassLoader */
+		private static $classLoader;
+
+		public static function loadSimpleFramework(string $phar = "SimpleFramework.phar"){
+			$workingDir = __DIR__ . DIRECTORY_SEPARATOR;
+			if(file_exists($workingDir . $phar)){
+				define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . $phar . DIRECTORY_SEPARATOR);
+			}else{
+				define("iTXTech\SimpleFramework\PATH", $workingDir);
+			}
+			require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
+		}
+
+		public static function initClassLoader(){
+			self::$classLoader = new \ClassLoader();
+			self::$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
+			self::$classLoader->register(true);
+		}
+
+		public static function getClassLoader() : \ClassLoader{
+			return self::$classLoader;
+		}
+
 		public static function setSingleThread(bool $bool = false){
 			@define('iTXTech\SimpleFramework\SINGLE_THREAD', $bool);
 			if(!$bool){
