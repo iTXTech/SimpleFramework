@@ -159,7 +159,7 @@ class Config{
 		return $this->correct === true;
 	}
 
-	public function save(?string $option = null): bool{
+	public function save(?int $option = null) : bool{
 		if($this->correct === true){
 			try{
 				$content = null;
