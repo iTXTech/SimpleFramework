@@ -25,12 +25,12 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 	protected $content;
 
 	public function returnHeader(bool $bool){
-		curl_setopt($this->curl, CURLOPT_HEADER, $bool ? 1 : 0);
+		$this->setOpt(CURLOPT_HEADER, $bool ? 1 : 0);
 		return $this;
 	}
 
 	public function returnBody(bool $bool){
-		curl_setopt($this->curl, CURLOPT_NOBODY, $bool ? 0 : 1);
+		$this->setOpt(CURLOPT_NOBODY, $bool ? 0 : 1);
 		return $this;
 	}
 
@@ -64,6 +64,7 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 	}
 
 	public function exec(){
+		curl_setopt_array($this->curl, $this->curlOpts);
 		curl_setopt($this->curl, CURLOPT_URL, $this->url);
 		$this->content = curl_exec($this->curl);
 		$this->reload();
@@ -84,8 +85,8 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 	}
 
 	public function uploadFile(array $assoc = [], array $files = [],
-	                           string $fileType = "application/octet-stream",
-	                           array $extraHeaders = []){
+							   string $fileType = "application/octet-stream",
+							   array $extraHeaders = []){
 		$body = [];
 		// invalid characters for "name" and "filename"
 		$disallow = ["\0", "\"", "\r", "\n"];
@@ -126,7 +127,7 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 		}while(preg_grep("/{$boundary}/", $body));
 
 		// add boundary for each parameters
-		array_walk($body, function(&$part) use ($boundary){
+		array_walk($body, function (&$part) use ($boundary){
 			$part = "--{$boundary}\r\n{$part}";
 		});
 
