@@ -17,6 +17,7 @@ Here are some features:
 * AsyncTask and Thread support
 * Network & Configuration utilities
 * All APIs can be used in a single script - *See examples*
+* Module HotPatch
 
 Contributions are welcomed.
 
@@ -26,18 +27,23 @@ Contributions are welcomed.
 
 ### Command Line
 
-```powershell
-PS X:\>.\sf -h
-```
+`./sf -h`
 
-```bash
-$ ./sf -h
+### Module HotPatch
+
+```php
+//only support this code style!
+public function foo(string $arg0, int $arg1) : int{
+    echo $arg0;
+    return $arg1++;
+}
 ```
 
 ## Requirements
 
 * [PHP](https://secure.php.net/) >= 7.2 - *Note that only cli sapi is supported*
 * [pthreads](https://github.com/krakjoe/pthreads) - *Highly Recommended*
+* [runkit](https://github.com/runkit7/runkit7) - *Module HotPatch*
 
 ### Integrated support
 

@@ -18,6 +18,7 @@ namespace iTXTech\SimpleFramework\Module;
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Framework;
+use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
 abstract class Module{
@@ -197,5 +198,25 @@ abstract class Module{
 
 	public function getFile() : string{
 		return $this->file;
+	}
+
+	protected function onHotPatch(){
+
+	}
+
+	public function doHotPatch(){
+		$indexes = $this->getInfo()->getHotPatch();
+		foreach($indexes as $index){
+			$thread = new HotPatchThread($index["class"], $index["method"], $this->manager->getClassLoader());
+			$thread->start(PTHREADS_INHERIT_NONE);
+			while($thread->getCode() == null) ;//wait until thread is finished
+			$codes = explode(PHP_EOL, $thread->getCode());
+			$args = StringUtil::between($codes[0], "(", ")");
+			unset($codes[count($codes) - 1]);
+			unset($codes[count($codes) - 1]);
+			unset($codes[0]);
+			$code = implode(PHP_EOL, $codes);
+			\runkit_method_redefine($index["class"], $index["method"], $args, $code);
+		}
 	}
 }

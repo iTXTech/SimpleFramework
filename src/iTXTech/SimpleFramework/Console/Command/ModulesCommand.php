@@ -19,6 +19,7 @@ namespace iTXTech\SimpleFramework\Console\Command;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\ModuleManager;
+use iTXTech\SimpleFramework\Util\Timer;
 
 class ModulesCommand implements Command{
 	/** @var ModuleManager */
@@ -33,7 +34,7 @@ class ModulesCommand implements Command{
 	}
 
 	public function getUsage() : string{
-		return "modules <list|load|unload|read> <ModuleName or File/Folder Name>";
+		return "modules <list|load|unload|read|hotpatch> <ModuleName or File/Folder Name>";
 	}
 
 	public function getDescription() : string{
@@ -89,6 +90,22 @@ class ModulesCommand implements Command{
 						return true;
 					}
 					$this->manager->tryLoadModule($this->manager->getModulePath() . $file);
+					return true;
+				}else{
+					return false;
+				}
+			case "hotpatch":
+				if(count($args) > 1){
+					$name = $args[1];
+					if(isset($modules[$name])){
+						$module = $modules[$name];
+						$timer = new Timer();
+						$timer->start();
+						$module->doHotPatch();
+						Logger::info("HotPatch for $name took " . $timer->stop() . " s");
+					}else{
+						Logger::info(TextFormat::RED . "Module $name is not installed.");
+					}
 					return true;
 				}else{
 					return false;

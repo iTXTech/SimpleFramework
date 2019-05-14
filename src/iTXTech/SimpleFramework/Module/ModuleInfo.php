@@ -35,6 +35,7 @@ class ModuleInfo{
 	private $loadOrder = self::LOAD_ORDER_DEFAULT;
 	private $dependencies = [];
 	private $extensions = [];
+	private $hotPatch = [];
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -47,6 +48,7 @@ class ModuleInfo{
 		$this->version = $info["version"];
 		$this->main = $info["main"];
 		$this->api = $info["api"];
+		$this->hotPatch = $info["hotPatch"] ?? [];
 
 		$this->description = $info["description"] ?? null;
 		$this->authors = [];
@@ -111,5 +113,9 @@ class ModuleInfo{
 
 	public function getExtensions(): array{
 		return $this->extensions;
+	}
+
+	public function getHotPatch() : array{
+		return $this->hotPatch;
 	}
 }

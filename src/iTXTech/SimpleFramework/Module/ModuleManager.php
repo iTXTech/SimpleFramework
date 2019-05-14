@@ -184,4 +184,8 @@ class ModuleManager{
 	public function getModuleDependencyResolver(){
 		return $this->moduleDependencyResolver;
 	}
+
+	public function getClassLoader() : \ClassLoader{
+		return $this->classLoader;
+	}
 }
