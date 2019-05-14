@@ -192,7 +192,7 @@ class Framework implements OnCompletionListener{
 					$git = $phar->getMetadata()["gitCommitId"];
 				}else{
 					$built = date("r") . " (Source)";
-					$git = Util::getLatestGitCommitId(\iTXTech\SimpleFramework\PATH) ?? "Unknown";
+					$git = Util::getLatestGitCommitId(PATH) ?? "Unknown";
 				}
 
 				Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
@@ -203,7 +203,7 @@ class Framework implements OnCompletionListener{
 				Util::println(str_repeat("-", 30));
 				Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));
 				Util::println("PHP => " . PHP_VERSION);
-				foreach(["curl", "Phar", "pthreads", "yaml", "swoole"] as $ext){
+				foreach(["curl", "Phar", "pthreads", "yaml", "swoole", "swoole_async"] as $ext){
 					Util::println(Util::generateExtensionInfo($ext));
 				}
 				exit(0);
@@ -300,7 +300,7 @@ class Framework implements OnCompletionListener{
 					$this->properties->modulePath, $this->properties->moduleDataPath);
 			}
 
-			if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
+			if(!SINGLE_THREAD){
 				Logger::info("Starting ConsoleReader...");
 				$this->console = new ConsoleReader();
 			}
@@ -390,7 +390,7 @@ class Framework implements OnCompletionListener{
 	}
 
 	public static function getUptime(){
-		return Util::formatTime(microtime(true) - \iTXTech\SimpleFramework\START_TIME);
+		return Util::formatTime(microtime(true) - START_TIME);
 	}
 
 	private function checkConsole(){

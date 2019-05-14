@@ -27,10 +27,10 @@ namespace iTXTech\SimpleFramework {
 		@define('iTXTech\SimpleFramework\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
-	require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
+	require_once(PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
 
 	$classLoader = new \ClassLoader();
-	$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
+	$classLoader->addPath(PATH . "src");
 	$classLoader->register(true);
 
 	Terminal::init();
@@ -50,13 +50,13 @@ namespace iTXTech\SimpleFramework {
 		@define('iTXTech\SimpleFramework\SINGLE_THREAD', false);
 	}
 
-	if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
+	if(!SINGLE_THREAD){
 		ThreadManager::init();
 	}
 	$framework = new Framework($classLoader);
 	$framework->start(true, $argv);
 
-	if(!\iTXTech\SimpleFramework\SINGLE_THREAD){
+	if(!SINGLE_THREAD){
 		Logger::info("Stopping other threads");
 
 		foreach(ThreadManager::getInstance()->getAll() as $id => $thread){

@@ -37,12 +37,12 @@ namespace iTXTech\SimpleFramework {
 			}else{
 				define("iTXTech\SimpleFramework\PATH", $workingDir);
 			}
-			require_once(\iTXTech\SimpleFramework\PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
+			require_once(PATH . "src/iTXTech/SimpleFramework/Util/ClassLoader.php");
 		}
 
 		public static function initClassLoader(){
 			self::$classLoader = new \ClassLoader();
-			self::$classLoader->addPath(\iTXTech\SimpleFramework\PATH . "src");
+			self::$classLoader->addPath(PATH . "src");
 			self::$classLoader->register(true);
 		}
 

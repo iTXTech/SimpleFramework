@@ -42,7 +42,7 @@ $ ./sf -h
 ### Integrated support
 
 * [php-yaml](https://github.com/php/pecl-file_formats-yaml) - `Config`
-* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler`
+* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler` - Require [swoole_async](https://github.com/swoole/ext_async) extension
 
 ## Get SimpleFramework
 
