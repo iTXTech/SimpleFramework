@@ -200,10 +200,11 @@ class Framework implements OnCompletionListener{
 				Util::println("Built: " . $built);
 				Util::println("Git CID: " . $git);
 				Util::println("Copyright (C) 2016-2019 iTX Technologies");
-				Util::println(str_repeat("-", 30));
+				Util::println("https://github.com/iTXTech/SimpleFramework");
+				Util::println(str_repeat("-", 50));
 				Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));
 				Util::println("PHP => " . PHP_VERSION);
-				foreach(["curl", "Phar", "pthreads", "yaml", "swoole", "swoole_async"] as $ext){
+				foreach(["curl", "Phar", "pthreads", "runkit", "swoole", "swoole_async", "yaml"] as $ext){
 					Util::println(Util::generateExtensionInfo($ext));
 				}
 				exit(0);

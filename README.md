@@ -4,7 +4,7 @@
 [![Stable](https://img.shields.io/badge/stable-2.1.0(6)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/releases/tag/v2.1.0)
 [![Developing](https://img.shields.io/badge/dev-2.2.0(7)-blue.svg)]()
 
-__A fast, lightweighted and extensible php command line framework.__
+__Efficient, lightweighted and extensible php command line framework.__
 
 ## Introduction
 
@@ -31,12 +31,43 @@ Contributions are welcomed.
 
 ### Module HotPatch
 
+```json
+{
+  "name": "Example",
+  "version": "1.0",
+  "api": 6,
+  "description": "Just an example",
+  "author": "iTX Technologies",
+  "main": "Example\\Main",
+  "order": 0,
+  "website": "https://itxtech.org",
+  "dependency": [
+    {
+      "name": "Example/ExampleModule",
+      "version": "1.0.0"
+    }
+  ],
+  "hotPatch": [
+    {
+      "class": "Example\\Main",
+      "method": "foo"
+    }
+  ]
+}
+```
+
 ```php
 //only support this code style!
 public function foo(string $arg0, int $arg1) : int{
     echo $arg0;
     return $arg1++;
 }
+```
+
+```bash
+> module hotpatch Example
+
+HotPatch for Example took 0.001 s
 ```
 
 ## Requirements
