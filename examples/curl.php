@@ -39,7 +39,8 @@ class CustomizedCurl extends Curl{
 	}
 
 	public function __construct(){
-		parent::__construct()->setPreprocessor(self::$processor);
+		parent::__construct();
+		$this->setPreprocessor(self::$processor);
 	}
 }
 

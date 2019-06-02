@@ -30,8 +30,8 @@ namespace iTXTech\SimpleFramework {
 		/** @var \ClassLoader */
 		private static $classLoader;
 
-		public static function loadSimpleFramework(string $phar = "SimpleFramework.phar"){
-			$workingDir = __DIR__ . DIRECTORY_SEPARATOR;
+		public static function loadSimpleFramework(string $phar = "SimpleFramework.phar",
+												   string $workingDir = __DIR__ . DIRECTORY_SEPARATOR){
 			if(file_exists($workingDir . $phar)){
 				define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . $phar . DIRECTORY_SEPARATOR);
 			}else{
