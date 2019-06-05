@@ -20,6 +20,7 @@ use iTXTech\SimpleFramework\Scheduler\AsyncTask;
 use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Util;
+use Swoole\Runtime;
 
 class Curl{
 	protected $curl;
@@ -37,6 +38,12 @@ class Curl{
 
 	public static function newInstance() : Curl{
 		return new self::$CURL_CLASS;
+	}
+
+	//require Swoole 4.4+
+	public static function enableSwooleCoroutine(){
+		Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
+		Runtime::enableCoroutine(SWOOLE_HOOK_CURL);
 	}
 
 	public static function setCurlClass(string $class) : bool{
@@ -269,7 +276,7 @@ class Curl{
 		}while(preg_grep("/{$boundary}/", $body));
 
 		// add boundary for each parameters
-		array_walk($body, function(&$part) use ($boundary){
+		array_walk($body, function (&$part) use ($boundary){
 			$part = "--{$boundary}\r\n{$part}";
 		});
 
