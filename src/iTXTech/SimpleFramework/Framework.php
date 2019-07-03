@@ -198,7 +198,7 @@ class Framework implements OnCompletionListener{
 				Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
 					" \"" . Framework::CODENAME . "\" (API " . Framework::API_LEVEL . ")");
 				Util::println("Built: " . $built);
-				Util::println("Git CID: " . $git);
+				Util::println("Revision: " . $git);
 				Util::println("Copyright (C) 2016-2019 iTX Technologies");
 				Util::println("https://github.com/iTXTech/SimpleFramework");
 				Util::println(str_repeat("-", 50));
