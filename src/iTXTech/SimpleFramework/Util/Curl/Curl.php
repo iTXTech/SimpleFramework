@@ -184,6 +184,13 @@ class Curl{
 		return $this;
 	}
 
+	/**
+	 * If you are experiencing incomplete response, try this.
+	 */
+	public function fixIncompleteResponse(){
+		return $this->setOpt(CURLOPT_ENCODING, "");
+	}
+
 	protected function buildRequest(){
 		if($this->preprocessor !== null){
 			$this->preprocessor->process($this);
