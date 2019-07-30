@@ -17,6 +17,7 @@
 namespace iTXTech\SimpleFramework\Module;
 
 use iTXTech\SimpleFramework\Console\Logger;
+use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
@@ -152,7 +153,7 @@ abstract class Module{
 
 	/**
 	 * @param string $filename
-	 * @param bool $replace
+	 * @param bool   $replace
 	 *
 	 * @return bool
 	 */
@@ -200,23 +201,122 @@ abstract class Module{
 		return $this->file;
 	}
 
-	protected function onHotPatch(){
-
+	protected function onHotPatch() : bool{
+		return true;
 	}
 
 	public function doHotPatch(){
-		$indexes = $this->getInfo()->getHotPatch();
-		foreach($indexes as $index){
-			$thread = new HotPatchThread($index["class"], $index["method"], $this->manager->getClassLoader());
-			$thread->start(PTHREADS_INHERIT_NONE);
-			while($thread->getCode() == null) ;//wait until thread is finished
-			$codes = explode(PHP_EOL, $thread->getCode());
-			$args = StringUtil::between($codes[0], "(", ")");
-			unset($codes[count($codes) - 1]);
-			unset($codes[count($codes) - 1]);
-			unset($codes[0]);
-			$code = implode(PHP_EOL, $codes);
-			\runkit_method_redefine($index["class"], $index["method"], $args, $code);
+		if($this->onHotPatch()){
+			$indexes = $this->getInfo()->getHotPatch();
+			foreach($indexes as $index){
+				$thread = new HotPatchThread($index["class"], $index["method"], $this->manager->getClassLoader());
+				$thread->start(PTHREADS_INHERIT_NONE);
+				while($thread->getCode() == null) ;//wait until thread is finished
+				$codes = explode(PHP_EOL, $thread->getCode());
+				$args = StringUtil::between($codes[0], "(", ")");
+				unset($codes[count($codes) - 1]);
+				unset($codes[count($codes) - 1]);
+				unset($codes[0]);
+				$code = implode(PHP_EOL, $codes);
+				\runkit_method_redefine($index["class"], $index["method"], $args, $code);
+			}
 		}
+	}
+
+	public function pack(string $path, string $filename = null, bool $includeGitInfo = true, bool $compress = true, bool $log = false) : bool{
+		$info = $this->getInfo();
+
+		if(!($info->getLoadMethod() == ModuleInfo::LOAD_METHOD_SOURCE)){
+			if($log){
+				Logger::error(TextFormat::RED . "Module " . $info->getName() . " is not in folder structure.");
+			}
+			return false;
+		}
+
+		@mkdir($path);
+		$pharPath = $path . ($filename ?? $info->getName() . "_v" . $info->getVersion() . ".phar");
+		if(file_exists($pharPath)){
+			if($log){
+				Logger::debug("Phar module already exists, overwriting...");
+			}
+			@\Phar::unlinkArchive($pharPath);
+		}
+		$git = "Unknown";
+		if($includeGitInfo){
+			$git = Util::getLatestGitCommitId($this->getFile()) ?? "Unknown";
+		}
+		$phar = new \Phar($pharPath);
+		$phar->setMetadata([
+			"name" => $info->getName(),
+			"version" => $info->getVersion(),
+			"main" => $info->getMain(),
+			"api" => $info->getApi(),
+			"description" => $info->getDescription(),
+			"authors" => $info->getAuthors(),
+			"generator" => Framework::PROG_NAME . " " . Framework::PROG_VERSION,
+			"gitCommitId" => $git,
+			"creationDate" => time()
+		]);
+		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
+		$phar->setSignatureAlgorithm(\Phar::SHA1);
+		$filePath = rtrim(str_replace("\\", "/", $this->getFile()), "/") . "/";
+		$phar->startBuffering();
+		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filePath)) as $file){
+			$path = ltrim(str_replace(["\\", $filePath], ["/", ""], $file), "/");
+			if($path{0} === "." or strpos($path, "/.") !== false){
+				continue;
+			}
+			$phar->addFile($file, $path);
+			if($log){
+				Logger::info("Adding $path");
+			}
+		}
+
+		foreach($phar as $file => $finfo){
+			/** @var \PharFileInfo $finfo */
+			if($finfo->getSize() > (1024 * 512)){
+				$finfo->compress(\Phar::GZ);
+			}
+		}
+		if($compress){
+			$phar->compressFiles(\Phar::GZ);
+		}
+		$phar->stopBuffering();
+		if($log){
+			Logger::info("Phar module " . $info->getName() . " v" . $info->getVersion() . " has been created in " . $pharPath);
+		}
+		return true;
+	}
+
+	public function unpack(string $path, string $folderName = null, bool $log = false) : bool{
+		$info = $this->getInfo();
+
+		if(!($info->getLoadMethod() == ModuleInfo::LOAD_METHOD_PACKAGE)){
+			if($log){
+				Logger::error(TextFormat::RED . "Module " . $info->getName() . " is not in Phar structure.");
+			}
+			return false;
+		}
+
+		$folderPath = $path . ($folderName ?? $info->getName() . "_v" . $info->getVersion() . DIRECTORY_SEPARATOR);
+		if(file_exists($folderPath)){
+			if($log){
+				Logger::debug("Module files already exist, overwriting...");
+			}
+		}else{
+			@mkdir($folderPath);
+		}
+
+		$pharPath = str_replace("\\", "/", rtrim($this->getFile(), "\\/"));
+
+		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pharPath)) as $fInfo){
+			$path = $fInfo->getPathname();
+			@mkdir(dirname($folderPath . str_replace($pharPath, "", $path)), 0755, true);
+			file_put_contents($folderPath . str_replace($pharPath, "", $path), file_get_contents($path));
+		}
+		if($log){
+			Logger::info("Module " . $info->getName() . " v" . $info->getVersion() . " has been unpacked into " . $folderPath);
+		}
+		return true;
 	}
 }

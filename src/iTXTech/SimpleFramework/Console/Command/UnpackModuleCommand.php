@@ -19,7 +19,6 @@ namespace iTXTech\SimpleFramework\Console\Command;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\Module;
-use iTXTech\SimpleFramework\Module\ModuleInfo;
 use iTXTech\SimpleFramework\Module\ModuleManager;
 
 class UnpackModuleCommand implements Command{
@@ -48,29 +47,8 @@ class UnpackModuleCommand implements Command{
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
-		$info = $module->getInfo();
 
-		if(!($info->getLoadMethod() == ModuleInfo::LOAD_METHOD_PACKAGE)){
-			Logger::info(TextFormat::RED . "Module " . $info->getName() . " is not in Phar structure.");
-			return true;
-		}
-
-		$outputDir = $this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
-		$folderPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . DIRECTORY_SEPARATOR;
-		if(file_exists($folderPath)){
-			Logger::info("Module files already exist, overwriting...");
-		}else{
-			@mkdir($folderPath);
-		}
-
-		$pharPath = str_replace("\\", "/", rtrim($module->getFile(), "\\/"));
-
-		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($pharPath)) as $fInfo){
-			$path = $fInfo->getPathname();
-			@mkdir(dirname($folderPath . str_replace($pharPath, "", $path)), 0755, true);
-			file_put_contents($folderPath . str_replace($pharPath, "", $path), file_get_contents($path));
-		}
-		Logger::info("Module " . $info->getName() . " v" . $info->getVersion() . " has been unpacked into " . $folderPath);
+		$module->unpack($this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR, null, true);
 		return true;
 	}
 }

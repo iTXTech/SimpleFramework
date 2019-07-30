@@ -18,11 +18,8 @@ namespace iTXTech\SimpleFramework\Console\Command;
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
-use iTXTech\SimpleFramework\Framework;
 use iTXTech\SimpleFramework\Module\Module;
-use iTXTech\SimpleFramework\Module\ModuleInfo;
 use iTXTech\SimpleFramework\Module\ModuleManager;
-use iTXTech\SimpleFramework\Util\Util;
 
 class PackModuleCommand implements Command{
 	/** @var ModuleManager */
@@ -51,62 +48,8 @@ class PackModuleCommand implements Command{
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
-		$info = $module->getInfo();
-
-		if(!($info->getLoadMethod() == ModuleInfo::LOAD_METHOD_SOURCE)){
-			Logger::info(TextFormat::RED . "Module " . $info->getName() . " is not in folder structure.");
-			return true;
-		}
-
-		$outputDir = $this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR;
-		@mkdir($outputDir);
-		$pharPath = $outputDir . $info->getName() . "_v" . $info->getVersion() . ".phar";
-		if(file_exists($pharPath)){
-			Logger::info("Phar module already exists, overwriting...");
-			@\Phar::unlinkArchive($pharPath);
-		}
-		$git = "Unknown";
-		if(!in_array("no-git", $args)){
-			$git = Util::getLatestGitCommitId($module->getFile()) ?? "Unknown";
-		}
-		$phar = new \Phar($pharPath);
-		$phar->setMetadata([
-			"name" => $info->getName(),
-			"version" => $info->getVersion(),
-			"main" => $info->getMain(),
-			"api" => $info->getApi(),
-			"description" => $info->getDescription(),
-			"authors" => $info->getAuthors(),
-			"generator" => Framework::PROG_NAME . " " . Framework::PROG_VERSION,
-			"gitCommitId" => $git,
-			"creationDate" => time()
-		]);
-		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
-		$phar->setSignatureAlgorithm(\Phar::SHA1);
-		$filePath = rtrim(str_replace("\\", "/", $module->getFile()), "/") . "/";
-		$phar->startBuffering();
-		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filePath)) as $file){
-			$path = ltrim(str_replace(["\\", $filePath], ["/", ""], $file), "/");
-			if($path{0} === "." or strpos($path, "/.") !== false){
-				continue;
-			}
-			$phar->addFile($file, $path);
-			if(!in_array("no-echo", $args)){
-				Logger::info("Adding $path");
-			}
-		}
-
-		foreach($phar as $file => $finfo){
-			/** @var \PharFileInfo $finfo */
-			if($finfo->getSize() > (1024 * 512)){
-				$finfo->compress(\Phar::GZ);
-			}
-		}
-		if(!in_array("no-gz", $args)){
-			$phar->compressFiles(\Phar::GZ);
-		}
-		$phar->stopBuffering();
-		Logger::info("Phar module " . $info->getName() . " v" . $info->getVersion() . " has been created in " . $pharPath);
+		$module->pack($this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR, null,
+			!in_array("no-git", $args), !in_array("no-gz", $args), !in_array("no-echo", $args));
 		return true;
 	}
 }
