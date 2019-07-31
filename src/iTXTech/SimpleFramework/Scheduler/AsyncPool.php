@@ -19,7 +19,7 @@ namespace iTXTech\SimpleFramework\Scheduler;
 use iTXTech\SimpleFramework\Console\Logger;
 
 class AsyncPool{
-	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
+	public const WORKER_START_OPTIONS = PTHREADS_INHERIT_ALL;
 
 	/** @var \ClassLoader */
 	private $classloader;
