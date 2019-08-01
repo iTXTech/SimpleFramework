@@ -218,7 +218,7 @@ abstract class Module{
 				unset($codes[count($codes) - 1]);
 				unset($codes[0]);
 				$code = implode(PHP_EOL, $codes);
-				\runkit_method_redefine($index["class"], $index["method"], $args, $code);
+				\runkit7_method_redefine($index["class"], $index["method"], $args, $code);
 			}
 		}
 	}

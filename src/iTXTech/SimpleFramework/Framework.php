@@ -204,7 +204,7 @@ class Framework implements OnCompletionListener{
 				Util::println(str_repeat("-", 50));
 				Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));
 				Util::println("PHP => " . PHP_VERSION);
-				foreach(["curl", "Phar", "pthreads", "runkit", "swoole", "swoole_async", "yaml"] as $ext){
+				foreach(["curl", "Phar", "pthreads", "runkit7", "swoole", "swoole_async", "yaml"] as $ext){
 					Util::println(Util::generateExtensionInfo($ext));
 				}
 				exit(0);
