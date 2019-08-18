@@ -214,6 +214,10 @@ class Curl{
 		}
 		$this->setOpt(CURLOPT_HTTPHEADER, $headers);
 		$this->setOpt(CURLOPT_URL, $this->url);
+
+		if(($interface = InterfaceSelector::select()) !== ""){
+			$this->setOpt(CURLOPT_INTERFACE, $interface);
+		}
 	}
 
 	public function exec(){

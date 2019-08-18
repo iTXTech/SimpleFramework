@@ -140,7 +140,6 @@ class Framework implements OnCompletionListener{
 
 	private function registerDefaultOptions(){
 		//FREE SWITCHES
-		//d
 		//i, j, k
 		//p, q
 		//t, u, w, x, y, z

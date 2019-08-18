@@ -304,7 +304,7 @@ class Parser{
 					$this->handleOption($this->options->getOption($opt));
 					$this->currentOption->addValueForProcessing(substr($t, strlen($opt)));
 					$this->currentOption = null;
-				}elseif($this->isJavaProperty($t)){
+				}elseif($opt !== null and $this->isJavaProperty($t)){
 					$this->handleOption($this->options->getOption($opt{0}));
 					$this->currentOption->addValueForProcessing(substr($t, 1));
 					$this->currentOption = null;

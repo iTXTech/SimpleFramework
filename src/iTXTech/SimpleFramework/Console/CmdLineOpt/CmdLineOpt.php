@@ -37,7 +37,7 @@ abstract class CmdLineOpt{
 		self::reg(FrameworkInfo::class);
 		self::reg(LoggerSwitches::class);
 		self::reg(Properties::class);
-		self::reg(CurlProxy::class);
+		self::reg(CurlOpts::class);
 	}
 
 	public static function init(Options $option){

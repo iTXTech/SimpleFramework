@@ -28,13 +28,13 @@ class Properties extends CmdLineOpt{
 			->desc("Overwrite specified config property")->hasArg()->argName("prop")->build());
 
 		$options->addOption((new OptionBuilder("l"))->longOpt("data-path")
-			->desc("Specify SimpleFramework data path")->hasArg()->argName("path")->build());
+			->desc("Specify data path")->hasArg()->argName("path")->build());
 		$options->addOption((new OptionBuilder("m"))->longOpt("module-path")
-			->desc("Specify SimpleFramework module path")->hasArg()->argName("path")->build());
+			->desc("Specify module path")->hasArg()->argName("path")->build());
 		$options->addOption((new OptionBuilder("n"))->longOpt("module-data-path")
-			->desc("Specify SimpleFramework module data path")->hasArg()->argName("path")->build());
+			->desc("Specify module data path")->hasArg()->argName("path")->build());
 		$options->addOption((new OptionBuilder("o"))->longOpt("config-path")
-			->desc("Specify SimpleFramework config file")->hasArg()->argName("path")->build());
+			->desc("Specify config file")->hasArg()->argName("path")->build());
 
 
 		$options->addOption((new OptionBuilder("r"))->longOpt("load-module")->hasArg()
