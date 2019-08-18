@@ -23,6 +23,8 @@ use iTXTech\SimpleFramework\Util\Util;
 use Swoole\Runtime;
 
 class Curl{
+	public static $GLOBAL_PROXY = "";
+
 	protected $curl;
 	protected $curlOpts;
 
@@ -56,6 +58,17 @@ class Curl{
 
 	public function __construct(){
 		$this->reload();
+		if(self::$GLOBAL_PROXY !== ""){
+			$url = parse_url(self::$GLOBAL_PROXY);
+			$schemes = [
+				"http" => CURLPROXY_HTTP,
+				"https" => CURLPROXY_HTTPS,
+				"socks4" => CURLPROXY_SOCKS4,
+				"socks5" => CURLPROXY_SOCKS5
+			];
+			$this->setProxy($url["host"] . ":" . $url["port"], $schemes[$url["scheme"] ?? ""] ?? "",
+				$url["user"] ?? "", $url["pass"] ?? "");
+		}
 	}
 
 	public function reload(){
@@ -242,7 +255,7 @@ class Curl{
 	}
 
 	public function uploadFile(array $assoc = [], array $files = [],
-							   string $fileType = "application/octet-stream"){
+	                           string $fileType = "application/octet-stream"){
 		$body = [];
 		// invalid characters for "name" and "filename"
 		$disallow = ["\0", "\"", "\r", "\n"];
@@ -262,7 +275,7 @@ class Curl{
 				case false === $v = realpath(filter_var($v)):
 				case !is_file($v):
 				case !is_readable($v):
-					continue;
+					continue 2;
 			}
 			$data = file_get_contents($v);
 			$v = explode(DIRECTORY_SEPARATOR, $v);
@@ -283,7 +296,7 @@ class Curl{
 		}while(preg_grep("/{$boundary}/", $body));
 
 		// add boundary for each parameters
-		array_walk($body, function (&$part) use ($boundary){
+		array_walk($body, function(&$part) use ($boundary){
 			$part = "--{$boundary}\r\n{$part}";
 		});
 

@@ -16,14 +16,13 @@
 
 namespace iTXTech\SimpleFramework;
 
+use iTXTech\SimpleFramework\Console\CmdLineOpt\CmdLineOpt;
 use iTXTech\SimpleFramework\Console\CommandProcessor;
 use iTXTech\SimpleFramework\Console\ConsoleReader;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\Option\HelpFormatter;
-use iTXTech\SimpleFramework\Console\Option\OptionBuilder;
 use iTXTech\SimpleFramework\Console\Option\Options;
 use iTXTech\SimpleFramework\Console\Option\Parser;
-use iTXTech\SimpleFramework\Console\Terminal;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\ModuleManager;
 use iTXTech\SimpleFramework\Module\WraithSpireMDR;
@@ -31,7 +30,6 @@ use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Config;
 use iTXTech\SimpleFramework\Util\FrameworkProperties;
-use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
 class Framework implements OnCompletionListener{
@@ -141,123 +139,28 @@ class Framework implements OnCompletionListener{
 	}
 
 	private function registerDefaultOptions(){
-		$this->options->addOption((new OptionBuilder("h"))->longOpt("help")
-			->desc("Display this help message")->build());
-		$this->options->addOption((new OptionBuilder("v"))->longOpt("version")
-			->desc("Display version of SimpleFramework")->build());
-
-		$this->options->addOption((new OptionBuilder("a"))->longOpt("ansi")
-			->desc("Enable or disable ANSI")->hasArg()->argName("yes|no")->build());
-		$this->options->addOption((new OptionBuilder("b"))->longOpt("config")
-			->desc("Overwrite specified config property")->hasArg()->argName("prop")->build());
-		//c, d
-
-		$this->options->addOption((new OptionBuilder("e"))->longOpt("disable-logger")
-			->desc("Disable Logger output")->build());
-		$this->options->addOption((new OptionBuilder("f"))->longOpt("disable-logger-class")
-			->desc("Disable Logger Class detection")->build());
-		$this->options->addOption((new OptionBuilder("g"))->longOpt("without-prefix")
-			->desc("Do not print prefix when printing log")->build());
+		//FREE SWITCHES
+		//d
 		//i, j, k
-
-		$this->options->addOption((new OptionBuilder("l"))->longOpt("data-path")
-			->desc("Specify SimpleFramework data path")->hasArg()->argName("path")->build());
-		$this->options->addOption((new OptionBuilder("m"))->longOpt("module-path")
-			->desc("Specify SimpleFramework module path")->hasArg()->argName("path")->build());
-		$this->options->addOption((new OptionBuilder("n"))->longOpt("module-data-path")
-			->desc("Specify SimpleFramework module data path")->hasArg()->argName("path")->build());
-		$this->options->addOption((new OptionBuilder("o"))->longOpt("config-path")
-			->desc("Specify SimpleFramework config file")->hasArg()->argName("path")->build());
 		//p, q
-
-		$this->options->addOption((new OptionBuilder("r"))->longOpt("load-module")->hasArg()
-			->desc("Load the specified module")->argName("path")->build());
-		$this->options->addOption((new OptionBuilder("s"))->longOpt("run-command")->hasArg()
-			->desc("Execute the specified command")->argName("command")->build());
 		//t, u, w, x, y, z
+		CmdLineOpt::regAll();
 	}
 
 	private function processCommandLineOptions(array $argv){
 		try{
+			array_shift($argv);//start script
+			if(isset($argv[0]) and $argv[0]{0} == "@"){
+				$preload = explode(";", substr(array_shift($argv), 1));
+				foreach($preload as $pr){
+					if(file_exists($pr)){
+						require_once $pr;
+					}
+				}
+			}
+			CmdLineOpt::init($this->options);
 			$cmd = (new Parser())->parse($this->options, $argv);
-			if($cmd->hasOption("help")){
-				$t = (new HelpFormatter())->generateHelp("sf", $this->options);
-				echo $t;
-				exit(0);
-			}
-			if($cmd->hasOption("version")){
-				if(($phar = \Phar::running(true)) !== ""){
-					$phar = new \Phar($phar);
-					$built = date("r", $phar->getMetadata()["creationDate"]) . " (Phar)";
-					$git = $phar->getMetadata()["gitCommitId"];
-				}else{
-					$built = date("r") . " (Source)";
-					$git = Util::getLatestGitCommitId(PATH) ?? "Unknown";
-				}
-
-				Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
-					" \"" . Framework::CODENAME . "\" (API " . Framework::API_LEVEL . ")");
-				Util::println("Built: " . $built);
-				Util::println("Revision: " . $git);
-				Util::println("Copyright (C) 2016-2019 iTX Technologies");
-				Util::println("https://github.com/iTXTech/SimpleFramework");
-				Util::println(str_repeat("-", 50));
-				Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));
-				Util::println("PHP => " . PHP_VERSION);
-				foreach(["curl", "Phar", "pthreads", "runkit7", "swoole", "swoole_async", "yaml"] as $ext){
-					Util::println(Util::generateExtensionInfo($ext));
-				}
-				exit(0);
-			}
-			if($cmd->hasOption("disable-logger")){
-				Logger::$disableOutput = true;
-			}
-			if($cmd->hasOption("disable-logger-class")){
-				Logger::$disableClass = true;
-			}
-			if($cmd->hasOption("without-prefix")){
-				Logger::$hasPrefix = false;
-			}
-			if($cmd->hasOption("ansi")){
-				Terminal::$formattingCodes = Util::getCliOptBool($cmd->getOptionValue("ansi"));
-				Terminal::init();
-			}
-			if($cmd->hasOption("load-module")){
-				foreach($cmd->getOptionValues("load-module") as $value){
-					$this->properties->additionalModules[] = $value;
-				}
-			}
-			if($cmd->hasOption("run-command")){
-				foreach($cmd->getOptionValues("run-command") as $value){
-					$this->properties->commands[] = $value;
-				}
-			}
-			if($cmd->hasOption("data-path")){
-				$this->properties->dataPath = $cmd->getOptionValue("data-path");
-				$this->properties->generatePath();
-			}
-			if($cmd->hasOption("module-path")){
-				$this->properties->modulePath = $cmd->getOptionValue("module-path");
-			}
-			if($cmd->hasOption("module-data-path")){
-				$this->properties->moduleDataPath = $cmd->getOptionValue("module-data-path");
-			}
-			if($cmd->hasOption("config")){
-				foreach($cmd->getOptionValues("config") as $value){
-					list($k, $v) = explode("=", $value, 2);
-					if(strtolower($v) == "false"){
-						$v = false;
-					}elseif(strtolower($v) == "true"){
-						$v = true;
-					}
-					if(StringUtil::contains($k, ".")){
-						list($k1, $k2) = explode(".", $k);
-						$this->properties->config[$k1][$k2] = $v;
-					}else{
-						$this->properties->config[$k] = $v;
-					}
-				}
-			}
+			CmdLineOpt::processAll($cmd, $this->options);
 		}catch(\Throwable $e){
 			Util::println($e->getMessage());
 			$t = (new HelpFormatter())->generateHelp("sf", $this->options);
