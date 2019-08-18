@@ -72,18 +72,24 @@ HotPatch for Example took 0.001 s
 
 ## Requirements
 
-* [PHP](https://secure.php.net/) >= 7.2 - *Note that only cli sapi is supported*
-* [pthreads](https://github.com/krakjoe/pthreads) - *Highly Recommended*
-* [runkit](https://github.com/runkit7/runkit7) - *Module HotPatch*
+[Build PHP for SimpleFramework](https://github.com/iTXTech/php-build-scripts)
+
+* [PHP](https://secure.php.net/) >= 7.2
+* [pthreads](https://github.com/krakjoe/pthreads) - *Multi-threading library for PHP. Highly Recommended*
+* [runkit7](https://github.com/runkit7/runkit7) - *Module HotPatch*
 
 ### Integrated support
 
 * [php-yaml](https://github.com/php/pecl-file_formats-yaml) - `Config`
-* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler` - Require [swoole_async](https://github.com/swoole/ext_async) extension
+* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler` - Require [swoole_async](https://github.com/swoole/ext-async) extension
 
 ## Get SimpleFramework
 
-* __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__
+* __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__ - Stable release, PHAR packed
+
+or
+
+* `$ git clone https://github.com/iTXTech/SimpleFramework.git` - Get latest development environment for **FUN**
 
 ## Modules
 
