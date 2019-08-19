@@ -22,4 +22,6 @@ interface ModuleDependencyResolver{
 	 * @return bool
 	 */
 	public function resolveDependencies(Module $module): bool;
+
+	public function init();
 }

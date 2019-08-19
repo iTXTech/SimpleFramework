@@ -14,10 +14,10 @@
  *
  */
 
-// .\sf @example\preload.php -h
-// and see if have -d option
+// .\sf p=example\preload.php -h
+// and see if -d option has been modified
 
-// .\sf @phar://modules/SomeModule.phar/src/Somebody/Preload.php;phar://modules/AA.phar/src/BB/CC.php
+// .\sf p=phar://modules/A.phar/src/B/Preload.php p=phar://modules/AA.phar/preload.php p=p.php
 
 use iTXTech\SimpleFramework\Console\CmdLineOpt\CmdLineOpt;
 use iTXTech\SimpleFramework\Console\Option\CommandLine;

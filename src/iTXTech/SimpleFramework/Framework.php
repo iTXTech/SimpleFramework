@@ -22,7 +22,6 @@ use iTXTech\SimpleFramework\Console\ConsoleReader;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\Option\HelpFormatter;
 use iTXTech\SimpleFramework\Console\Option\Options;
-use iTXTech\SimpleFramework\Console\Option\Parser;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\ModuleManager;
 use iTXTech\SimpleFramework\Module\WraithSpireMDR;
@@ -30,6 +29,7 @@ use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Config;
 use iTXTech\SimpleFramework\Util\FrameworkProperties;
+use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
 class Framework implements OnCompletionListener{
@@ -146,20 +146,10 @@ class Framework implements OnCompletionListener{
 		CmdLineOpt::regAll();
 	}
 
-	private function processCommandLineOptions(array $argv){
+	public function processCommandLineOptions(array $argv){
 		try{
-			array_shift($argv);//start script
-			if(isset($argv[0]) and $argv[0]{0} == "@"){
-				$preload = explode(";", substr(array_shift($argv), 1));
-				foreach($preload as $pr){
-					if(file_exists($pr)){
-						require_once $pr;
-					}
-				}
-			}
 			CmdLineOpt::init($this->options);
-			$cmd = (new Parser())->parse($this->options, $argv);
-			CmdLineOpt::processAll($cmd, $this->options);
+			CmdLineOpt::processAll($argv, $this->options);
 		}catch(\Throwable $e){
 			Util::println($e->getMessage());
 			$t = (new HelpFormatter())->generateHelp("sf", $this->options);
@@ -168,9 +158,19 @@ class Framework implements OnCompletionListener{
 		}
 	}
 
-	public function start(bool $useMainThreadTick = true, array $argv = []){
+	public function processPreload(array $argv) : array{
+		array_shift($argv);//start script
+		while(isset($argv[0]) and StringUtil::startsWith($argv[0], "p=")){
+			$preload = substr(array_shift($argv), strlen("p="));
+			if(file_exists($preload)){
+				require_once $preload;
+			}
+		}
+		return $argv;
+	}
+
+	public function start(bool $useMainThreadTick = true){
 		try{
-			$this->processCommandLineOptions($argv);
 			$this->properties->mkdirDirs();
 
 			set_exception_handler("\\iTXTech\\SimpleFramework\\Console\\Logger::logException");
@@ -229,8 +229,7 @@ class Framework implements OnCompletionListener{
 
 			$this->displayTitle = $this->config->get("display-title", true);
 
-			if(($mdr = $this->moduleManager->getModuleDependencyResolver()) instanceof WraithSpireMDR){
-				/** @var WraithSpireMDR $mdr */
+			if(($mdr = $this->moduleManager->getModuleDependencyResolver()) != null){
 				$mdr->init();
 			}
 

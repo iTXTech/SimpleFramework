@@ -18,6 +18,7 @@ namespace iTXTech\SimpleFramework\Console\CmdLineOpt;
 
 use iTXTech\SimpleFramework\Console\Option\CommandLine;
 use iTXTech\SimpleFramework\Console\Option\Options;
+use iTXTech\SimpleFramework\Console\Option\Parser;
 
 abstract class CmdLineOpt{
 	/** @var CmdLineOpt[] */
@@ -40,13 +41,14 @@ abstract class CmdLineOpt{
 		self::reg(CurlOpts::class);
 	}
 
-	public static function init(Options $option){
+	public static function init(Options $options){
 		foreach(self::$registeredOpts as $opt){
-			$opt::register($option);
+			$opt::register($options);
 		}
 	}
 
-	public static function processAll(CommandLine $cmd, Options $options){
+	public static function processAll(array $argv, Options $options){
+		$cmd = (new Parser())->parse($options, $argv);
 		foreach(self::$registeredOpts as $opt){
 			$opt::process($cmd, $options);
 		}
