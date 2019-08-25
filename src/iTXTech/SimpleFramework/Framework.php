@@ -43,7 +43,7 @@ class Framework implements OnCompletionListener{
 
 	private static $tickInterval = 50000;
 
-	//Objects
+	private $startEntry;
 	/** @var ConsoleReader */
 	private $console;
 	/** @var CommandProcessor */
@@ -138,6 +138,10 @@ class Framework implements OnCompletionListener{
 		return $this->moduleManager;
 	}
 
+	public function getStartEntry() : string{
+		return $this->startEntry;
+	}
+
 	private function registerDefaultOptions(){
 		//FREE SWITCHES
 		//i, j, k
@@ -159,7 +163,7 @@ class Framework implements OnCompletionListener{
 	}
 
 	public function processPreload(array $argv) : array{
-		array_shift($argv);//start script
+		$this->startEntry = array_shift($argv);
 		while(isset($argv[0]) and StringUtil::startsWith($argv[0], "p=")){
 			$preload = substr(array_shift($argv), strlen("p="));
 			if(file_exists($preload)){
@@ -197,7 +201,6 @@ class Framework implements OnCompletionListener{
 				self::PROG_VERSION . TextFormat::GREEN . " [" . self::CODENAME . "]");
 			Logger::info(TextFormat::GOLD . "Licensed under GNU General Public License v3.0");
 
-			//TODO: preload plugins before initialize
 			if($this->moduleManager === null){
 				$this->moduleManager = new ModuleManager($this->classLoader,
 					$this->properties->modulePath, $this->properties->moduleDataPath);
@@ -278,7 +281,7 @@ class Framework implements OnCompletionListener{
 	}
 
 	public function stop(){
-		Logger::info("Stopping SimpleFramework...");
+		Logger::info("Stopping " . self::PROG_NAME . "...");
 		foreach($this->moduleManager->getModules() as $module){
 			if($module->isLoaded()){
 				$this->moduleManager->unloadModule($module);
@@ -313,7 +316,7 @@ class Framework implements OnCompletionListener{
 			foreach($this->titleQueue as $prop => $contents){
 				$message .= " | " . $prop . " " . $contents;
 			}
-			self::displayTitle("SimpleFramework" . $message);
+			self::displayTitle(self::PROG_NAME . $message);
 		}
 		$this->titleQueue = [];
 	}

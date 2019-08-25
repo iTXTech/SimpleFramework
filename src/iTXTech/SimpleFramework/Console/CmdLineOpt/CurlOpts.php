@@ -27,7 +27,7 @@ use iTXTech\SimpleFramework\Util\StringUtil;
 class CurlOpts extends CmdLineOpt{
 	public static function register(Options $options){
 		$options->addOption((new OptionBuilder("c"))->longOpt("curl-proxy")
-			->desc("Set global proxy for CURL")->hasArg()->argName("prop")->build());
+			->desc("Set global proxy for CURL")->hasArg()->argName("proxy")->build());
 		$options->addOption((new OptionBuilder("d"))->longOpt("curl-interface")
 			->desc("Set global interface(s) for CURL")->hasArgs()->argName("interface")->build());
 	}
