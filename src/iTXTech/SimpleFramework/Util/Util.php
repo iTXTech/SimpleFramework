@@ -20,7 +20,7 @@ use iTXTech\SimpleFramework\Util\Curl\Curl;
 use iTXTech\SimpleFramework\Util\Curl\Response;
 
 abstract class Util{
-	public const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
+	public const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36";
 
 	public const OS_WINDOWS = "win";
 	public const OS_LINUX = "linux";
@@ -157,20 +157,13 @@ abstract class Util{
 
 	public static function compareVersion(string $version, string $targetVer) : bool{
 		$version = explode(".", $version);
-		if(count($version) != 3){
-			return true;
-		}
-
 		$targetVersion = explode(".", $targetVer);
-		if(count($targetVersion) != 3){
-			return true;
-		}
 
 		if($version[0] != $targetVersion[0]){
 			return true;
-		}elseif($version[1] > $targetVersion[1]){
+		}elseif(count($version) > 1 and ($version[1] > $targetVersion[1])){
 			return true;
-		}elseif($version[1] == $targetVersion[1] and $version[2] > $targetVersion[2]){
+		}elseif(count($version) > 2 and ($version[1] == $targetVersion[1] and $version[2] > $targetVersion[2])){
 			return true;
 		}
 
