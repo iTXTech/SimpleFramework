@@ -87,7 +87,9 @@ abstract class Module{
 			if($error == true){
 				Logger::error("Module " . '"' . $this->getName() . '"' . " requires module " . '"' . $name . '"' .
 					" version " . ($dependency["version"] ?? "Unspecified"));
-				return false;
+				if(!($dependency["optional"] ?? false)){
+					return false;
+				}
 			}
 		}
 		return true;

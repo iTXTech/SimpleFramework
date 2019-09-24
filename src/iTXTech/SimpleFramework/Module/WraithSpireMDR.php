@@ -109,7 +109,8 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 			}
 			if($error == true){
 				Logger::info(TextFormat::GOLD . "Resolving dependency " . $name . " version " . $dependency["version"] . " @ " . $moduleName);
-				if(!$this->downloadDependency($moduleName, $dependency["name"], $dependency["version"])){
+				if(!$this->downloadDependency($moduleName, $dependency["name"], $dependency["version"])
+					and !($dependency["optional"] ?? false)){
 					return false;
 				}
 			}
