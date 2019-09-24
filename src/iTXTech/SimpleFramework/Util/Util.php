@@ -159,7 +159,8 @@ abstract class Util{
 		$version = explode(".", $version);
 		$targetVersion = explode(".", $targetVer);
 
-		if($version[0] != $targetVersion[0]){
+		if((count($version) > 1 and $version[0] != $targetVersion[0])
+			and (count($version) == 1 and $version[0] > $targetVersion[0])){
 			return true;
 		}elseif(count($version) > 1 and ($version[1] > $targetVersion[1])){
 			return true;
