@@ -66,5 +66,10 @@ namespace iTXTech\SimpleFramework {
 			Terminal::$formattingCodes = $formattingCodes;
 			Terminal::init();
 		}
+
+		public static function loadCli(){
+			global $argv;
+			require_once PATH . "src/iTXTech/SimpleFramework/SimpleFramework.php";
+		}
 	}
 }
