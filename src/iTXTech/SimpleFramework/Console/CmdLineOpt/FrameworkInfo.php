@@ -41,7 +41,7 @@ class FrameworkInfo extends CmdLineOpt{
 			if(($phar = \Phar::running(true)) !== ""){
 				$phar = new \Phar($phar);
 				$built = date("r", $phar->getMetadata()["creationDate"]) . " (Phar)";
-				$git = $phar->getMetadata()["gitCommitId"];
+				$git = $phar->getMetadata()["revision"];
 			}else{
 				$built = date("r") . " (Source)";
 				$git = Util::getLatestGitCommitId(\iTXTech\SimpleFramework\PATH) ?? "Unknown";

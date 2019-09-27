@@ -256,10 +256,14 @@ abstract class Module{
 			"description" => $info->getDescription(),
 			"authors" => $info->getAuthors(),
 			"generator" => Framework::PROG_NAME . " " . Framework::PROG_VERSION,
-			"gitCommitId" => $git,
+			"revision" => $git,
 			"creationDate" => time()
 		]);
-		$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
+		if(file_exists($stub = $this->file . $info->getStub())){
+			$phar->setStub(file_get_contents($stub));
+		}else{
+			$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
+		}
 		$phar->setSignatureAlgorithm(\Phar::SHA1);
 		$filePath = rtrim(str_replace("\\", "/", $this->getFile()), "/") . "/";
 		$phar->startBuffering();
@@ -268,10 +272,15 @@ abstract class Module{
 			if($path{0} === "." or strpos($path, "/.") !== false){
 				continue;
 			}
-			$phar->addFile($file, $path);
-			if($log){
-				Logger::info("Adding $path");
+			if($path != $info->getStub()){
+				$phar->addFile($file, $path);
+				if($log){
+					Logger::info("Adding $path");
+				}
 			}
+		}
+		if($info->bundleSfLoader() and file_exists($sfloader = \iTXTech\SimpleFramework\PATH . "sfloader.php")){
+			$phar->addFile($sfloader, "sfloader.php");
 		}
 
 		foreach($phar as $file => $finfo){

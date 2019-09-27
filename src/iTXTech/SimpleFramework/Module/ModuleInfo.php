@@ -36,6 +36,8 @@ class ModuleInfo{
 	private $dependencies = [];
 	private $extensions = [];
 	private $hotPatch = [];
+	private $stub;
+	private $sfloader;
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -50,7 +52,7 @@ class ModuleInfo{
 		$this->api = $info["api"];
 		$this->hotPatch = $info["hotPatch"] ?? [];
 
-		$this->description = $info["description"] ?? null;
+		$this->description = $info["description"] ?? "";
 		$this->authors = [];
 		$this->authors[] = $info["author"] ?? [];
 		if(isset($info["authors"])){
@@ -69,29 +71,31 @@ class ModuleInfo{
 		}
 
 		$this->extensions = $info["extensions"] ?? [];
+		$this->stub = $info["stub"] ?? "";
+		$this->sfloader = $info["sfloader"] ?? false;
 	}
 
-	public function getDependencies(): array{
+	public function getDependencies() : array{
 		return $this->dependencies;
 	}
 
-	public function getLoadMethod(): int{
+	public function getLoadMethod() : int{
 		return $this->loadMethod;
 	}
 
-	public function getName(): string{
+	public function getName() : string{
 		return $this->name;
 	}
 
-	public function getVersion(): string{
+	public function getVersion() : string{
 		return $this->version;
 	}
 
-	public function getDescription(): string{
+	public function getDescription() : string{
 		return $this->description;
 	}
 
-	public function getAuthors(): array{
+	public function getAuthors() : array{
 		return $this->authors;
 	}
 
@@ -99,23 +103,31 @@ class ModuleInfo{
 		return $this->api;
 	}
 
-	public function getMain(){
+	public function getMain() : ?string{
 		return $this->main;
 	}
 
-	public function getLoadOrder(): int{
+	public function getLoadOrder() : int{
 		return $this->loadOrder;
 	}
 
-	public function getWebsite(): string{
+	public function getWebsite() : string{
 		return $this->website;
 	}
 
-	public function getExtensions(): array{
+	public function getExtensions() : array{
 		return $this->extensions;
 	}
 
 	public function getHotPatch() : array{
 		return $this->hotPatch;
+	}
+
+	public function getStub() : ?string{
+		return $this->stub;
+	}
+
+	public function bundleSfLoader() : bool{
+		return $this->sfloader;
 	}
 }

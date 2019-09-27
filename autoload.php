@@ -32,7 +32,10 @@ namespace iTXTech\SimpleFramework {
 
 		public static function loadSimpleFramework(string $phar = "SimpleFramework.phar",
 												   string $workingDir = __DIR__ . DIRECTORY_SEPARATOR){
-			if(file_exists($workingDir . $phar)){
+			if(\Phar::running(true) !== ""
+				and (new \Phar(\Phar::running()))->getMetadata()["name"] == "SimpleFramework"){
+				define("iTXTech\SimpleFramework\PATH", \Phar::running(true) . "/");
+			}elseif(file_exists($workingDir . $phar)){
 				define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . $phar . DIRECTORY_SEPARATOR);
 			}else{
 				define("iTXTech\SimpleFramework\PATH", $workingDir);

@@ -51,7 +51,7 @@ class PackSFCommand implements Command{
 			"name" => $framework->getName(),
 			"version" => $framework->getVersion(),
 			"api" => $framework->getApi(),
-			"gitCommitId" => $git,
+			"revision" => $git,
 			"creationDate" => time()
 		]);
 		$phar->setStub('<?php define("iTXTech\\\\SimpleFramework\\\\PATH", "phar://". __FILE__ ."/"); require_once("phar://". __FILE__ ."/src/iTXTech/SimpleFramework/SimpleFramework.php");  __HALT_COMPILER();');
@@ -69,6 +69,9 @@ class PackSFCommand implements Command{
 			if(!in_array("no-echo", $args)){
 				Logger::info("Adding $path");
 			}
+		}
+		foreach(["autoload.php", "sfloader.php"] as $extra){
+			$phar->addFile(\iTXTech\SimpleFramework\PATH . $extra, $extra);
 		}
 		foreach($phar as $file => $finfo){
 			/** @var \PharFileInfo $finfo */
