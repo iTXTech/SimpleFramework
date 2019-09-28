@@ -15,14 +15,16 @@
  */
 
 //disable autoload.php
-define("iTXTech\SimpleFramework\DISABLE_AUTO_INIT", true);
+define("SF_LOADER_AUTO_INIT", false);
 
 require_once "../autoload.php";
 
 use iTXTech\SimpleFramework\Console\Logger;
+use iTXTech\SimpleFramework\Console\Terminal;
 use iTXTech\SimpleFramework\Initializer;
 
 Initializer::loadSimpleFramework("sf.phar");
 Initializer::initClassLoader();
 
-Logger::info("Succ");
+Terminal::init();
+Logger::info("SimpleFramework Location: " . iTXTech\SimpleFramework\PATH);

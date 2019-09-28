@@ -18,7 +18,7 @@ namespace iTXTech\SimpleFramework {
 
 	use iTXTech\SimpleFramework\Console\Terminal;
 
-	if(!defined("iTXTech\SimpleFramework\DISABLE_AUTO_INIT")){
+	if(!defined("SF_LOADER_AUTO_INIT") or SF_LOADER_AUTO_INIT){
 		Initializer::loadSimpleFramework();
 		Initializer::initClassLoader();
 
@@ -31,10 +31,13 @@ namespace iTXTech\SimpleFramework {
 		private static $classLoader;
 
 		public static function loadSimpleFramework(string $phar = "SimpleFramework.phar",
-												   string $workingDir = __DIR__ . DIRECTORY_SEPARATOR){
+		                                           string $workingDir = __DIR__){
+			$workingDir .= DIRECTORY_SEPARATOR;
 			if(\Phar::running(true) !== ""
 				and (new \Phar(\Phar::running()))->getMetadata()["name"] == "SimpleFramework"){
 				define("iTXTech\SimpleFramework\PATH", \Phar::running(true) . "/");
+			}elseif(file_exists($phar)){
+				define("iTXTech\SimpleFramework\PATH", "phar://" . $phar . DIRECTORY_SEPARATOR);
 			}elseif(file_exists($workingDir . $phar)){
 				define("iTXTech\SimpleFramework\PATH", "phar://" . $workingDir . $phar . DIRECTORY_SEPARATOR);
 			}else{
