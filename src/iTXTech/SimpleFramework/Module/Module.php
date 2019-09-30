@@ -259,7 +259,7 @@ abstract class Module{
 			"revision" => $git,
 			"creationDate" => time()
 		]);
-		if(file_exists($stub = $this->file . $info->getStub())){
+		if($info->getStub() != "" and file_exists($stub = $this->file . $info->getStub())){
 			$phar->setStub(file_get_contents($stub));
 		}else{
 			$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
