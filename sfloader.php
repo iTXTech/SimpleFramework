@@ -14,6 +14,8 @@
  *
  */
 
+const SF = "SimpleFramework.phar";
+
 if(isset($argv[1]) and substr($argv[1], 0, 2) == "sf"){
 	$f = explode("=", $argv[1], 2)[1];
 	array_splice($argv, 1, 1);
@@ -27,7 +29,8 @@ if(isset($argv[1]) and substr($argv[1], 0, 2) == "sf"){
 	}else{
 		require_once $f . DIRECTORY_SEPARATOR . "autoload.php";
 	}
-}elseif(file_exists($f = __DIR__ . DIRECTORY_SEPARATOR . "SimpleFramework.phar")){
+}elseif(Phar::running() == "" and file_exists($f = __DIR__ . DIRECTORY_SEPARATOR . SF) or
+	Phar::running() != "" and file_exists($f = getcwd() . DIRECTORY_SEPARATOR . SF)){
 	require_once "phar://" . $f . DIRECTORY_SEPARATOR . "autoload.php";
 }elseif(file_exists($f = __DIR__ . DIRECTORY_SEPARATOR . "autoload.php")){
 	require_once $f;
