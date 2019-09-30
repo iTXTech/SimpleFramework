@@ -38,6 +38,7 @@ class ModuleInfo{
 	private $hotPatch = [];
 	private $stub;
 	private $sfloader;
+	private $packer;
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -71,8 +72,9 @@ class ModuleInfo{
 		}
 
 		$this->extensions = $info["extensions"] ?? [];
-		$this->stub = $info["stub"] ?? "";
+		$this->stub = $info["stub"] ?? null;
 		$this->sfloader = $info["sfloader"] ?? false;
+		$this->packer = $info["packer"] ?? null;
 	}
 
 	public function getDependencies() : array{
@@ -129,5 +131,9 @@ class ModuleInfo{
 
 	public function bundleSfLoader() : bool{
 		return $this->sfloader;
+	}
+
+	public function getPacker() : ?string{
+		return $this->packer;
 	}
 }

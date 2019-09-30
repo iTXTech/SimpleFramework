@@ -227,6 +227,13 @@ abstract class Module{
 
 	public function pack(string $path, string $filename = null, bool $includeGitInfo = true, bool $compress = true, bool $log = false) : bool{
 		$info = $this->getInfo();
+		$packer = $info->getPacker();
+		if($packer != null){
+			$class = new \ReflectionClass($packer);
+			if(is_a($packer, Packer::class, true) and !$class->isAbstract()){
+				$packer = new $packer();
+			}
+		}
 
 		if(!($info->getLoadMethod() == ModuleInfo::LOAD_METHOD_SOURCE)){
 			if($log){
@@ -259,7 +266,7 @@ abstract class Module{
 			"revision" => $git,
 			"creationDate" => time()
 		]);
-		if($info->getStub() != "" and file_exists($stub = $this->file . $info->getStub())){
+		if($info->getStub() != null and file_exists($stub = $this->file . $info->getStub())){
 			$phar->setStub(file_get_contents($stub));
 		}else{
 			$phar->setStub('<?php echo "' . Framework::PROG_NAME . ' module ' . $info->getName() . ' v' . $info->getVersion() . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
@@ -273,9 +280,13 @@ abstract class Module{
 				continue;
 			}
 			if($path != $info->getStub()){
-				$phar->addFile($file, $path);
-				if($log){
-					Logger::info("Adding $path");
+				if($packer instanceof Packer){
+					$packer->processFile($phar, $file, $path);
+				}else{
+					$phar->addFile($file, $path);
+					if($log){
+						Logger::info("Adding $path");
+					}
 				}
 			}
 		}
@@ -283,14 +294,11 @@ abstract class Module{
 			$phar->addFile($sfloader, "sfloader.php");
 		}
 
-		foreach($phar as $file => $finfo){
-			/** @var \PharFileInfo $finfo */
-			if($finfo->getSize() > (1024 * 512)){
-				$finfo->compress(\Phar::GZ);
-			}
-		}
 		if($compress){
 			$phar->compressFiles(\Phar::GZ);
+		}
+		if($packer instanceof Packer){
+			$packer->end($phar);
 		}
 		$phar->stopBuffering();
 		if($log){
