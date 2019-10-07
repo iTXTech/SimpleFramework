@@ -106,7 +106,7 @@ class Curl extends \iTXTech\SimpleFramework\Util\Curl\Curl{
 				case false === $v = realpath(filter_var($v)):
 				case !is_file($v):
 				case !is_readable($v):
-					continue;
+					continue 2;
 			}
 			$data = file_get_contents($v);
 			$v = explode(DIRECTORY_SEPARATOR, $v);

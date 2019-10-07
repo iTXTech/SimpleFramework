@@ -78,6 +78,8 @@ HotPatch for Example took 0.001 s
 * [pthreads](https://github.com/krakjoe/pthreads) - *Multi-threading library for PHP. Highly Recommended*
 * [runkit7](https://github.com/runkit7/runkit7) - *Module HotPatch*
 
+**Note that now swoole will break pthreads, do not use them together.**
+
 ### Integrated support
 
 * [php-yaml](https://github.com/php/pecl-file_formats-yaml) - `Config`
@@ -90,14 +92,6 @@ HotPatch for Example took 0.001 s
 or
 
 * `$ git clone https://github.com/iTXTech/SimpleFramework.git` - Get latest development environment for **FUN**
-
-## Modules
-
-* __[SimpleGUI](https://github.com/PeratX/SimpleGUI)__ - The GUI SDK based on [php-gui](https://github.com/gabrielrcouto/php-gui) for SimpleFramework(CLI).
-* __[TesseractBridge](https://github.com/PeratX/TesseractBridge)__ - The bridge between Tesseract-OCR and SimpleFramework.
-* __[SFQRCode](https://github.com/PeratX/SFQRCode)__ - PHPQRCode port to SimpleFramework.
-* __[SimpleHtmlDom](https://github.com/PeratX/SimpleHtmlDom)__ - Simple HTML DOM Parser port to SimpleFramework, optimized for pages which cannot be correctly parsed by DOMDocument.
-* __[LeetQQ](https://github.com/PhQAgent/LeetQQ)__ - SmartQQ bot framework for PHP and SimpleFramework.
 
 ## License
 
