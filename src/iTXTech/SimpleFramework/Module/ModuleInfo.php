@@ -17,6 +17,8 @@
 namespace iTXTech\SimpleFramework\Module;
 
 class ModuleInfo{
+	const ACCEPTABLE_MANIFEST_FILENAME = ["sf.json", "info.json"];
+
 	const LOAD_METHOD_PACKAGE = 0;
 	const LOAD_METHOD_SOURCE = 1;
 

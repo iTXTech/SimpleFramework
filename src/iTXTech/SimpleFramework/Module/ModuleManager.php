@@ -38,19 +38,19 @@ class ModuleManager{
 		$this->moduleDataPath = $moduleDataPath;
 	}
 
-	public function setModulePath(string $modulePath): void{
+	public function setModulePath(string $modulePath) : void{
 		$this->modulePath = $modulePath;
 	}
 
-	public function setModuleDataPath(string $moduleDataPath): void{
+	public function setModuleDataPath(string $moduleDataPath) : void{
 		$this->moduleDataPath = $moduleDataPath;
 	}
 
-	public function getModulePath(): string{
+	public function getModulePath() : string{
 		return $this->modulePath;
 	}
 
-	public function getModuleDataPath(): string{
+	public function getModuleDataPath() : string{
 		return $this->moduleDataPath;
 	}
 
@@ -116,7 +116,7 @@ class ModuleManager{
 		}
 	}
 
-	public function tryLoadModule(string $file): bool{
+	public function tryLoadModule(string $file) : bool{
 		$modules = [];
 		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
 			$modules[$i] = [];
@@ -134,13 +134,18 @@ class ModuleManager{
 		return false;
 	}
 
-	public function tryLoadPackageModule(string $file, array &$modules): bool{
+	public function tryLoadPackageModule(string $file, array &$modules) : bool{
 		if(pathinfo($file, PATHINFO_EXTENSION) != "phar"){
 			return false;
 		}
 		$phar = new \Phar($file);
-		if(isset($phar["info.json"])){
-			$info = $phar["info.json"];
+		foreach(ModuleInfo::ACCEPTABLE_MANIFEST_FILENAME as $name){
+			if(isset($phar[$name])){
+				break;
+			}
+		}
+		if(isset($phar[$name])){
+			$info = $phar[$name];
 			if($info instanceof \PharFileInfo){
 				$file = "phar://$file";
 				$info = new ModuleInfo($info->getContent(), ModuleInfo::LOAD_METHOD_PACKAGE);
@@ -157,10 +162,15 @@ class ModuleManager{
 		return false;
 	}
 
-	public function tryLoadSourceModule(string $file, array &$modules): bool{
-		if(is_dir($file) and file_exists($file . "/info.json") and file_exists($file . "/src/")){
-			if(is_dir($file) and file_exists($file . "/info.json")){
-				$info = @file_get_contents($file . "/info.json");
+	public function tryLoadSourceModule(string $file, array &$modules) : bool{
+		if(is_dir($file)){
+			foreach(ModuleInfo::ACCEPTABLE_MANIFEST_FILENAME as $name){
+				if(file_exists($file . "/" . $name)){
+					break;
+				}
+			}
+			if(file_exists($file . "/" . $name)){
+				$info = @file_get_contents($file . "/" . $name);
 				if($info != ""){
 					$info = new ModuleInfo($info, ModuleInfo::LOAD_METHOD_SOURCE);
 					$className = $info->getMain();
