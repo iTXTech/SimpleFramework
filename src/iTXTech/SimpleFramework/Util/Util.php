@@ -242,4 +242,25 @@ abstract class Util{
 		}
 		return null;
 	}
+
+	public static function depResolve($item, array $items, array $resolved, array $unresolved){
+		array_push($unresolved, $item);
+		foreach($items[$item] as $dep){
+			if(!in_array($dep, $resolved)){
+				if(!in_array($dep, $unresolved)){
+					array_push($unresolved, $dep);
+					list($resolved, $unresolved) = self::depResolve($dep, $items, $resolved, $unresolved);
+				}else{
+					throw new \RuntimeException("Circular dependency: $item -> $dep");
+				}
+			}
+		}
+		if(!in_array($item, $resolved)){
+			array_push($resolved, $item);
+		}
+		while(($index = array_search($item, $unresolved)) !== false){
+			unset($unresolved[$index]);
+		}
+		return [$resolved, $unresolved];
+	}
 }

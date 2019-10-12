@@ -18,6 +18,7 @@ namespace iTXTech\SimpleFramework\Module;
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
+use iTXTech\SimpleFramework\Util\Util;
 
 class ModuleManager{
 	/** @var Module[] */
@@ -92,10 +93,8 @@ class ModuleManager{
 	}
 
 	public function loadModules(){
+		/** @var Module[] $modules */
 		$modules = [];
-		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
-			$modules[$i] = [];
-		}
 		foreach(new \RegexIterator(new \DirectoryIterator($this->modulePath), "/\\.phar$/i") as $file){
 			if($file === "." or $file === ".."){
 				continue;
@@ -108,30 +107,52 @@ class ModuleManager{
 			}
 			$this->tryLoadSourceModule($this->modulePath . $file, $modules);
 		}
-		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
-			foreach($modules[$i] as $module){
-				$this->modules[$module[0]] = $module[1];
-				$this->loadModule($module[1]);
-			}
+		foreach(self::sortModule($modules) as $module){
+			$this->modules[$module->getInfo()->getName()] = $module;
+			$this->loadModule($module);
 		}
 	}
 
 	public function tryLoadModule(string $file) : bool{
+		/** @var Module[] $modules */
 		$modules = [];
-		for($i = ModuleInfo::LOAD_ORDER_MIN; $i <= ModuleInfo::LOAD_ORDER_MAX; $i++){
-			$modules[$i] = [];
-		}
 		if(!$this->tryLoadSourceModule($file, $modules)){
 			$this->tryLoadPackageModule($file, $modules);
 		}
-		foreach($modules as $order){
-			foreach($order as $module){
-				$this->modules[$module[0]] = $module[1];
-				$this->loadModule($module[1]);
-				return true;
-			}
+		foreach(self::sortModule($modules) as $module){
+			$this->modules[$module->getInfo()->getName()] = $module;
+			$this->loadModule($module);
+			return true;
 		}
 		return false;
+	}
+
+	private static function sortModule(array $modules) : array{
+		/** @var Module[] $modules */
+		$m = [];
+		foreach($modules as $module){
+			$d = [];
+			foreach($module->getInfo()->getDependencies() as $dependency){
+				$n = explode("/", $dependency["name"]);
+				$n = end($n);
+				$d[] = $n;
+			}
+			$m[$module->getName()] = $d;
+		}
+		$resolved = [];
+		$unresolved = [];
+		foreach(array_keys($m) as $table){
+			try{
+				list ($resolved, $unresolved) = Util::depResolve($table, $m, $resolved, $unresolved);
+			}catch(\Throwable $e){
+				Logger::logException($e);
+			}
+		}
+		$m = [];
+		foreach($resolved as $name){
+			$m[$name] = $modules[$name];
+		}
+		return $m;
 	}
 
 	public function tryLoadPackageModule(string $file, array &$modules) : bool{
@@ -154,7 +175,7 @@ class ModuleManager{
 				$class = new \ReflectionClass($className);
 				if(is_a($className, Module::class, true) and !$class->isAbstract()){
 					$module = new $className($this, $info, $file);
-					$modules[$info->getLoadOrder()][] = [$info->getName(), $module];
+					$modules[$info->getName()] = $module;
 					return true;
 				}
 			}
@@ -178,7 +199,7 @@ class ModuleManager{
 					$class = new \ReflectionClass($className);
 					if(is_a($className, Module::class, true) and !$class->isAbstract()){
 						$module = new $className($this, $info, $file);
-						$modules[$info->getLoadOrder()][] = [$info->getName(), $module];
+						$modules[$info->getName()] = $module;
 						return true;
 					}
 				}

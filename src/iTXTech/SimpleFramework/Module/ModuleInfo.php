@@ -22,10 +22,6 @@ class ModuleInfo{
 	const LOAD_METHOD_PACKAGE = 0;
 	const LOAD_METHOD_SOURCE = 1;
 
-	const LOAD_ORDER_MIN = -1;
-	const LOAD_ORDER_MAX = 9;
-	const LOAD_ORDER_DEFAULT = 0;
-
 	private $name;
 	private $main;
 	private $api;
@@ -34,7 +30,6 @@ class ModuleInfo{
 	private $authors = [];
 	private $website = null;
 	private $loadMethod;
-	private $loadOrder = self::LOAD_ORDER_DEFAULT;
 	private $dependencies = [];
 	private $extensions = [];
 	private $hotPatch = [];
@@ -62,9 +57,6 @@ class ModuleInfo{
 			foreach($info["authors"] as $author){
 				$this->authors[] = $author;
 			}
-		}
-		if(isset($info["order"])){
-			$this->loadOrder = min(self::LOAD_ORDER_MAX, max(self::LOAD_ORDER_MIN, (int) $info["order"]));
 		}
 		$this->website = $info["website"] ?? null;
 
@@ -109,10 +101,6 @@ class ModuleInfo{
 
 	public function getMain() : ?string{
 		return $this->main;
-	}
-
-	public function getLoadOrder() : int{
-		return $this->loadOrder;
 	}
 
 	public function getWebsite() : string{
