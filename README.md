@@ -39,12 +39,12 @@ Contributions are welcomed.
   "description": "Just an example",
   "author": "iTX Technologies",
   "main": "Example\\Main",
-  "order": 0,
   "website": "https://itxtech.org",
   "dependency": [
     {
       "name": "Example/ExampleModule",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "optional": true
     }
   ],
   "hotPatch": [
