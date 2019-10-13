@@ -245,7 +245,7 @@ abstract class Util{
 
 	public static function depResolve($item, array $items, array $resolved, array $unresolved){
 		array_push($unresolved, $item);
-		foreach($items[$item] as $dep){
+		foreach($items[$item] ?? [] as $dep){
 			if(!in_array($dep, $resolved)){
 				if(!in_array($dep, $unresolved)){
 					array_push($unresolved, $dep);

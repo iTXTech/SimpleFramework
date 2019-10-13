@@ -150,7 +150,9 @@ class ModuleManager{
 		}
 		$m = [];
 		foreach($resolved as $name){
-			$m[$name] = $modules[$name];
+			if(isset($modules[$name])){
+				$m[$name] = $modules[$name];
+			}
 		}
 		return $m;
 	}
