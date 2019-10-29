@@ -62,10 +62,22 @@ abstract class Module{
 			return false;
 		}
 		if($this->checkExtensions()){
-			return (($resolver = $this->manager->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ?
-				$resolver->resolveDependencies($this) : $this->checkDependencies();
+			if((($resolver = $this->manager->getModuleDependencyResolver()) instanceof ModuleDependencyResolver) ?
+				$resolver->resolveDependencies($this) : $this->checkDependencies()){
+				if($this->getInfo()->composer()){
+					$this->loadComposer();
+				}
+				return true;
+			}
 		}
 		return false;
+	}
+
+	protected function loadComposer(){
+		$autoload = $this->getFile() . "vendor/autoload.php";
+		if(file_exists($autoload)){
+			require_once $autoload;
+		}
 	}
 
 	protected function checkDependencies() : bool{
@@ -225,7 +237,8 @@ abstract class Module{
 		}
 	}
 
-	public function pack(string $path, string $filename = null, bool $includeGitInfo = true, bool $compress = true, bool $log = false) : bool{
+	public function pack(int $variant, string $path, string $filename = null,
+	                     bool $includeGitInfo = true, bool $compress = true, bool $log = false) : bool{
 		$info = $this->getInfo();
 		$packer = $info->getPacker();
 		if($packer != null){
@@ -281,7 +294,7 @@ abstract class Module{
 			}
 			if($path != $info->getStub()){
 				if($packer instanceof Packer){
-					$packer->processFile($phar, $file, $path);
+					$packer->processFile($variant, $phar, $file, $path);
 				}else{
 					$phar->addFile($file, $path);
 					if($log){

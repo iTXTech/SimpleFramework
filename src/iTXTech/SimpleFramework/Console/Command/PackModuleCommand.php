@@ -20,6 +20,7 @@ use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Console\TextFormat;
 use iTXTech\SimpleFramework\Module\Module;
 use iTXTech\SimpleFramework\Module\ModuleManager;
+use iTXTech\SimpleFramework\Module\Packer;
 
 class PackModuleCommand implements Command{
 	/** @var ModuleManager */
@@ -48,8 +49,13 @@ class PackModuleCommand implements Command{
 			Logger::info(TextFormat::RED . "Invalid module name, check the name case.");
 			return true;
 		}
-		$module->pack($this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR, null,
-			!in_array("no-git", $args), !in_array("no-gz", $args), !in_array("no-echo", $args));
+		$module->pack(Packer::VARIANT_TYPICAL, $this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR,
+			null, !in_array("no-git", $args), !in_array("no-gz", $args), !in_array("no-echo", $args));
+		if($module->getInfo()->composer()){
+			$module->pack(Packer::VARIANT_TYPICAL, $this->manager->getModuleDataPath() . "module" . DIRECTORY_SEPARATOR,
+				$module->getName() . "_v" . $module->getInfo()->getVersion() . "_composer.phar",
+				!in_array("no-git", $args), !in_array("no-gz", $args), !in_array("no-echo", $args));
+		}
 		return true;
 	}
 }

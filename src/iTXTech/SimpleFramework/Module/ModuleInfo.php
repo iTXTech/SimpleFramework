@@ -36,6 +36,7 @@ class ModuleInfo{
 	private $stub;
 	private $sfloader;
 	private $packer;
+	private $composer;
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -69,6 +70,11 @@ class ModuleInfo{
 		$this->stub = $info["stub"] ?? null;
 		$this->sfloader = $info["sfloader"] ?? false;
 		$this->packer = $info["packer"] ?? null;
+		$this->composer = $info["composer"] ?? false;
+	}
+
+	public function composer() : bool{
+		return $this->composer;
 	}
 
 	public function getDependencies() : array{

@@ -16,9 +16,20 @@
 
 namespace iTXTech\SimpleFramework\Module;
 
+use iTXTech\SimpleFramework\Util\StringUtil;
+
 abstract class Packer{
-	public function processFile(\Phar $phar, string $file, string $path){
-		$phar->addFile($file, $path);
+	public const VARIANT_TYPICAL = 0;
+	public const VARIANT_COMPOSER = 1;
+
+	public function processFile(int $variant, \Phar $phar, string $file, string $path){
+		if($variant == self::VARIANT_COMPOSER or
+			($variant == self::VARIANT_TYPICAL
+				and !StringUtil::startsWith($path, "vendor")
+				and !StringUtil::endsWith($path, "composer.lock")
+				and !StringUtil::endsWith($path, "composer.json"))){
+			$phar->addFile($file, $path);
+		}
 	}
 
 	public function end(\Phar $phar){
