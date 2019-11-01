@@ -78,7 +78,7 @@ class WraithSpireMDR implements ModuleDependencyResolver{
 			rename($file, $file . ".old");
 			Logger::info(TextFormat::AQUA . "You must restart this program after resolved dependencies.");
 		}
-		if(($data = $this->getModuleData($vendor, $name, $version)) !== false){
+		if(($data = $this->getModuleData($vendor, $name, $version)) !== false and ($data !== null)){
 			if($data["api"] > Framework::API_LEVEL){
 				Logger::info("$vendor/$name version $version requires API: " . $data["api"] . " Current API: " . Framework::API_LEVEL . ". Module may not work properly.");
 			}
