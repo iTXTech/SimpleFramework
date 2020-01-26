@@ -54,7 +54,7 @@ class ModuleInfo{
 		}
 		$this->name = str_replace(" ", "_", $this->name);
 		$this->version = $info["version"];
-		$this->main = $info["main"];
+		$this->main = $info["main"] ?? "";
 		$this->api = $info["api"];
 		$this->hotPatch = $info["hotPatch"] ?? [];
 

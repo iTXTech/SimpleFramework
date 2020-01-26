@@ -177,16 +177,8 @@ class ModuleManager{
 		if(isset($phar[$name])){
 			$info = $phar[$name];
 			if($info instanceof \PharFileInfo){
-				$file = "phar://$file";
-				$info = new ModuleInfo($info->getContent(), ModuleInfo::LOAD_METHOD_PACKAGE);
-				$className = $info->getMain();
-				$this->classLoader->addPath($file . "/src");
-				$class = new \ReflectionClass($className);
-				if(is_a($className, Module::class, true) and !$class->isAbstract()){
-					$module = new $className($this, $info, $file);
-					$modules[$info->getName()] = $module;
-					return true;
-				}
+				$this->loadModuleInternal($info->getContent(), ModuleInfo::LOAD_METHOD_PACKAGE, "phar://$file", $modules);
+				return true;
 			}
 		}
 		return false;
@@ -202,19 +194,24 @@ class ModuleManager{
 			if(file_exists($file . "/" . $name)){
 				$info = @file_get_contents($file . "/" . $name);
 				if($info != ""){
-					$info = new ModuleInfo($info, ModuleInfo::LOAD_METHOD_SOURCE);
-					$className = $info->getMain();
-					$this->classLoader->addPath($file . "/src");
-					$class = new \ReflectionClass($className);
-					if(is_a($className, Module::class, true) and !$class->isAbstract()){
-						$module = new $className($this, $info, $file);
-						$modules[$info->getName()] = $module;
-						return true;
-					}
+					$this->loadModuleInternal($info, ModuleInfo::LOAD_METHOD_SOURCE, $file, $modules);
 				}
 			}
 		}
 		return false;
+	}
+
+	private function loadModuleInternal(string $info, int $method, string $file, array &$modules){
+		$info = new ModuleInfo($info, $method);
+		$className = $info->getMain();
+		$this->classLoader->addPath($file . "/src");
+		if(is_a($className, Module::class, true) and
+			class_exists($className, true) and !(new \ReflectionClass($className))->isAbstract()){
+			$module = new $className($this, $info, $file);
+		}else{
+			$module = new FallbackLoader($this, $info, $file);
+		}
+		$modules[$info->getName()] = $module;
 	}
 
 	public function registerModuleDependencyResolver(ModuleDependencyResolver $resolver){
