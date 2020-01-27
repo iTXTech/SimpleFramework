@@ -51,6 +51,10 @@ abstract class Module{
 		$this->dataFolder = $manager->getModuleDataPath() . $info->getName() . DIRECTORY_SEPARATOR;
 	}
 
+	public function getManager() : ModuleManager{
+		return $this->manager;
+	}
+
 	public function getDataFolder() : string{
 		return $this->dataFolder;
 	}
