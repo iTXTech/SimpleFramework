@@ -108,12 +108,9 @@ abstract class Util{
 
 	public static function getTrace($start = 0, $trace = null){
 		if($trace === null){
-			if(function_exists("xdebug_get_function_stack")){
-				$trace = array_reverse(xdebug_get_function_stack());
-			}else{
 				$e = new \Exception();
 				$trace = $e->getTrace();
-			}
+
 		}
 
 		$messages = [];

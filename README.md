@@ -1,97 +1,23 @@
-# SimpleFramework
+# SimpleFramework for [PeachPie](https://github.com/peachpiecompiler/peachpie/)
 
 [![License](https://img.shields.io/github/license/iTXTech/SimpleFramework.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/LICENSE)
-[![Stable](https://img.shields.io/badge/stable-2.1.0(6)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/releases/tag/v2.1.0)
-[![Developing](https://img.shields.io/badge/dev-2.2.0(7)-blue.svg)]()
 
 __Efficient, lightweighted and extensible php command line framework.__
 
 ## Introduction
 
-SimpleFramework is a php command line framework.
+This branch of SimpleFramework can be compiled by PeachPie, with Module support.
 
-Here are some features:
+Supports:
 
-* Module dependency resolver
-* Console & Command support
-* AsyncTask and Thread support
-* Network & Configuration utilities
-* All APIs can be used in a single script - *See examples*
-* Module HotPatch
-
-Contributions are welcomed.
-
-### See also
-
-* [Development Roadmap](https://github.com/iTXTech/SimpleFramework/issues/3)
-
-### Command Line
-
-`./sf -h`
-
-### Module HotPatch
-
-```json
-{
-  "name": "Example",
-  "version": "1.0",
-  "api": 6,
-  "description": "Just an example",
-  "author": "iTX Technologies",
-  "main": "Example\\Main",
-  "website": "https://itxtech.org",
-  "dependency": [
-    {
-      "name": "Example/ExampleModule",
-      "version": "1.0.0",
-      "optional": true
-    }
-  ],
-  "hotPatch": [
-    {
-      "class": "Example\\Main",
-      "method": "foo"
-    }
-  ]
-}
-```
-
-```php
-//only support this code style!
-public function foo(string $arg0, int $arg1) : int{
-    echo $arg0;
-    return $arg1++;
-}
-```
-
-```bash
-> module hotpatch Example
-
-HotPatch for Example took 0.001 s
-```
+1. Terminal
+1. Module (Without Resource support)
+1. Curl
+1. Some Utilities 
 
 ## Requirements
 
-[Build PHP for SimpleFramework](https://github.com/iTXTech/php-build-scripts)
-
-* [PHP](https://secure.php.net/) >= 7.2
-* [pthreads](https://github.com/krakjoe/pthreads) - *Multi-threading library for PHP. Highly Recommended*
-* [runkit7](https://github.com/runkit7/runkit7) - *Module HotPatch*
-
-**Note that now swoole will break pthreads, do not use them together.**
-
-### Integrated support
-
-* [php-yaml](https://github.com/php/pecl-file_formats-yaml) - `Config`
-* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler` - Require [swoole_async](https://github.com/swoole/ext-async) extension
-
-## Get SimpleFramework
-
-* __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__ - Stable release, PHAR packed
-
-or
-
-* `$ git clone https://github.com/iTXTech/SimpleFramework.git` - Get latest development environment for **FUN**
+* [PHP 7.2](https://php.net) or [PeachPie](https://github.com/peachpiecompiler/peachpie/)
 
 ## License
 

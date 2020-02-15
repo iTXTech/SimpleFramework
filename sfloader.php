@@ -36,9 +36,6 @@ if(isset($argv[1]) and substr($argv[1], 0, 2) == "sf"){
 	}else{
 		require_once $f . DIRECTORY_SEPARATOR . "autoload.php";
 	}
-}elseif(Phar::running() == "" and file_exists($f = __DIR__ . DIRECTORY_SEPARATOR . SF) or
-	Phar::running() != "" and file_exists($f = getcwd() . DIRECTORY_SEPARATOR . SF)){
-	require_once "phar://" . $f . DIRECTORY_SEPARATOR . "autoload.php";
 }elseif(file_exists($f = __DIR__ . DIRECTORY_SEPARATOR . "autoload.php")){
 	require_once $f;
 }elseif(file_exists($f = __DIR__ . DIRECTORY_SEPARATOR . "sf") and is_dir($f)){

@@ -56,8 +56,7 @@ abstract class Terminal{
 	public static function hasFormattingCodes(){
 		if(self::$formattingCodes === null){
 			if((Util::getOS() !== Util::OS_WINDOWS and getenv("TERM") != "" and
-					(!function_exists("posix_ttyname") or !defined("STDOUT")
-						or posix_ttyname(STDOUT) !== false)) or
+					(!function_exists("posix_ttyname") or !defined("STDOUT"))) or
 				(Util::getOS() === Util::OS_WINDOWS and php_uname("r") >= 10)){
 				self::$formattingCodes = true;
 			}

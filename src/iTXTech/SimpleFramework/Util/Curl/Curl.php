@@ -27,7 +27,6 @@ use iTXTech\SimpleFramework\Scheduler\AsyncTask;
 use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Util;
-use Swoole\Runtime;
 
 class Curl{
 	public static $GLOBAL_PROXY = "";
@@ -49,11 +48,6 @@ class Curl{
 		return new self::$CURL_CLASS;
 	}
 
-	//require Swoole 4.4+
-	public static function enableSwooleCoroutine(){
-		Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
-		Runtime::enableCoroutine(SWOOLE_HOOK_CURL);
-	}
 
 	public static function setCurlClass(string $class) : bool{
 		if(is_a($class, Curl::class, true)){
@@ -233,36 +227,6 @@ class Curl{
 		$this->response = new Response(curl_exec($this->curl), curl_getinfo($this->curl), curl_errno($this->curl));
 		$this->reload();
 		return $this->response;
-	}
-
-	public function execAsync(Scheduler $scheduler, Callback $callback){
-		$this->buildRequest();
-		$scheduler->scheduleAsyncTask(new class($this->curlOpts, $callback) extends AsyncTask{
-			private const CALLBACK = "cb";
-
-			private $opts;
-			private $buffer;
-			private $info;
-			private $errno;
-
-			public function __construct(array $opts, Callback $callback){
-				$this->opts = serialize($opts);
-				$this->saveToThreadStore(self::CALLBACK, $callback);
-			}
-
-			public function onRun(){
-				$curl = curl_init();
-				curl_setopt_array($curl, unserialize($this->opts));
-				$this->buffer = curl_exec($curl);
-				$this->info = serialize(curl_getinfo($curl));
-				$this->errno = curl_errno($curl);
-			}
-
-			public function onCompletion(OnCompletionListener $listener){
-				$this->getFromThreadStore(self::CALLBACK)
-					->onResponse(new Response($this->buffer, unserialize($this->info), $this->errno));
-			}
-		});
 	}
 
 	public function uploadFile(array $assoc = [], array $files = [],

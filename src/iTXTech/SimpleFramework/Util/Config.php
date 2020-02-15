@@ -133,10 +133,6 @@ class Config{
 					case Config::JSON:
 						$this->config = json_decode($content, true);
 						break;
-					case Config::YAML:
-						$content = self::fixYAMLIndexes($content);
-						$this->config = yaml_parse($content);
-						break;
 					case Config::SERIALIZED:
 						$this->config = unserialize($content);
 						break;
@@ -177,9 +173,6 @@ class Config{
 						break;
 					case Config::JSON:
 						$content = json_encode($this->config, $option ?? (JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING));
-						break;
-					case Config::YAML:
-						$content = yaml_emit($this->config, $option ?? YAML_UTF8_ENCODING);
 						break;
 					case Config::SERIALIZED:
 						$content = serialize($this->config);
