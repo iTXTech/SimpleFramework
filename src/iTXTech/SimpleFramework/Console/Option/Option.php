@@ -174,7 +174,7 @@ class Option{
 	 * @return string
 	 */
 	public function getArgName() : string{
-		return $this->argName;
+		return $this->argName ?? "arg";
 	}
 
 	/**
@@ -302,7 +302,7 @@ class Option{
 	 *
 	 * @return string
 	 */
-	public function getValue(int $index = 0) : string{
+	public function getValue(int $index = 0) : ?string{
 		return $this->hasNoValues() ? null : $this->values[$index];
 	}
 

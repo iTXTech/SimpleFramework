@@ -146,7 +146,8 @@ abstract class Logger implements LoggerHandler{
 			$now = time();
 			$class = "Console";
 			if(!self::$disableClass){
-				$class = @end(explode("\\", debug_backtrace()[2]['class']));
+				$array = explode("\\", debug_backtrace()[2]['class']);
+				$class = end($array);
 				if(strlen($class) > 20){
 					$class = substr($class, 0, 20);
 				}

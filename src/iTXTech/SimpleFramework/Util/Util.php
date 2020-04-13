@@ -178,7 +178,7 @@ abstract class Util{
 		return false;
 	}
 
-	public static function stripLeadingHyphens(string $str) : string{
+	public static function stripLeadingHyphens(string $str) : ?string{
 		if($str == null){
 			return null;
 		}
