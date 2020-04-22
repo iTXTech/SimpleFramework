@@ -23,48 +23,39 @@
 
 namespace iTXTech\SimpleFramework\Console;
 
-use Swoole\Channel;
-use Swoole\Process;
+use Swoole\Coroutine\Channel;
+use function Co\run;
 
 abstract class SwooleLoggerHandler implements LoggerHandler{
-	/** @var Process */
-	private static $proc;
 	/** @var Channel */
 	private static $channel;
 
-	public static function shutdown(){
-		if(self::$proc instanceof Process){
-			self::$proc->close();
-		}
-	}
-
 	public static function init(){
-		if(!self::$channel instanceof Channel){
-			$channel = new Channel(1024 * 1024 * 32);
-			self::$channel = $channel;
-		}else{
-			$channel = self::$channel;
-		}
-		self::$proc = new Process(function(Process $process) use ($channel){
-			go(function() use ($channel){
-				while(true){
-					while(($line = $channel->pop()) !== false){
-						echo $line . PHP_EOL;
-					}
-					\co::sleep(0.01);
+		run(function(){
+			if(!self::$channel instanceof Channel){
+				$channel = new Channel(1024 * 1024 * 32);
+				self::$channel = $channel;
+			}else{
+				$channel = self::$channel;
+			}
+			while(true){
+				while(($line = $channel->pop()) !== false){
+					echo $line . PHP_EOL;
 				}
-			});
+				\co::sleep(0.01);
+			}
 		});
-		self::$proc->start();
 	}
 
 	public static function println(string $message){
-		$cleanMessage = TextFormat::clean($message);
+		go(function() use ($message){
+			$cleanMessage = TextFormat::clean($message);
 
-		if(!Terminal::hasFormattingCodes()){
-			self::$channel->push($cleanMessage);
-		}else{
-			self::$channel->push($message);
-		}
+			if(!Terminal::hasFormattingCodes()){
+				self::$channel->push($cleanMessage);
+			}else{
+				self::$channel->push($message);
+			}
+		});
 	}
 }
