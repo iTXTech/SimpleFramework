@@ -39,16 +39,16 @@ abstract class OptionValidator{
 
 		// handle the single character opt
 		if(strlen($opt) == 1){
-			$ch = $opt{0};
+			$ch = $opt[0];
 
 			if(!self::isValidOpt($ch)){
 				throw new \InvalidArgumentException("Illegal option name '" . $ch . "'");
 			}
 		}else{
 			for($i = 0; $i < strlen($opt); $i++){
-				if(!self::isValidChar($opt{$i})){
+				if(!self::isValidChar($opt[$i])){
 					throw new \InvalidArgumentException("The option '" . $opt .
-						"' contains an illegal character : '" . $opt{$i} . "'");
+						"' contains an illegal character : '" . $opt[$i] . "'");
 				}
 			}
 		}

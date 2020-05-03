@@ -186,7 +186,7 @@ class Parser{
 			return true;
 		}
 
-		return strlen($optName) > 1 and $this->options->hasShortOption($optName{0});
+		return strlen($optName) > 1 and $this->options->hasShortOption($optName[0]);
 	}
 
 	private function isLongOption(string $token) : bool{
@@ -312,7 +312,7 @@ class Parser{
 					$this->currentOption->addValueForProcessing(substr($t, strlen($opt)));
 					$this->currentOption = null;
 				}elseif($opt !== null and $this->isJavaProperty($t)){
-					$this->handleOption($this->options->getOption($opt{0}));
+					$this->handleOption($this->options->getOption($opt[0]));
 					$this->currentOption->addValueForProcessing(substr($t, 1));
 					$this->currentOption = null;
 				}else{
@@ -332,7 +332,7 @@ class Parser{
 					$this->handleUnknownToken($t);
 				}
 			}elseif($this->isJavaProperty($opt)){
-				$this->handleOption($this->options->getOption($opt{0}));
+				$this->handleOption($this->options->getOption($opt[0]));
 				$this->currentOption->addValueForProcessing(substr($opt, 1));
 				$this->currentOption->addValueForProcessing($value);
 				$this->currentOption = null;
@@ -357,7 +357,7 @@ class Parser{
 	}
 
 	private function isJavaProperty(string $token){
-		$opt = $token{0};
+		$opt = $token[0];
 		$option = $this->options->getOption($opt);
 
 		return $option !== null && ($option->getArgs() >= 2 or $option->getArgs() === Option::UNLIMITED_VALUES);
@@ -423,7 +423,7 @@ class Parser{
 	 */
 	protected function handleConcatenatedOptions(string $token){
 		for($i = 1; $i < strlen($token) - 1; $i++){
-			$c = $token{$i};
+			$c = $token[$i];
 			if($this->options->hasOption($c)){
 				$this->handleOption($this->options->getOption($c));
 				if($this->currentOption !== null and strlen($token) != $i + 1){

@@ -87,7 +87,7 @@ class Option{
 	 * @return int
 	 */
 	public function getId() : int{
-		return ord($this->getKey(){0});
+		return ord($this->getKey()[0]);
 	}
 
 	/**

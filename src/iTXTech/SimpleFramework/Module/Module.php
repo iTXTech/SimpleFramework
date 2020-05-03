@@ -300,7 +300,7 @@ abstract class Module{
 		$phar->startBuffering();
 		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filePath)) as $file){
 			$path = ltrim(str_replace(["\\", $filePath], ["/", ""], $file), "/");
-			if($path{0} === "." or strpos($path, "/.") !== false){
+			if($path[0] === "." or strpos($path, "/.") !== false){
 				continue;
 			}
 			if($path != $info->getStub()){
