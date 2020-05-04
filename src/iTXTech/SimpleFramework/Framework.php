@@ -89,6 +89,11 @@ class Framework implements OnCompletionListener{
 		$this->properties->generatePath();
 	}
 
+	public static function registerExceptionHandler(){
+		set_exception_handler([Logger::class, "logException"]);
+		set_error_handler([Logger::class, "errorExceptionHandler"]);
+	}
+
 	public function getProperties() : FrameworkProperties{
 		return $this->properties;
 	}
@@ -184,7 +189,7 @@ class Framework implements OnCompletionListener{
 		try{
 			$this->properties->mkdirDirs();
 
-			set_exception_handler("\\iTXTech\\SimpleFramework\\Console\\Logger::logException");
+			self::registerExceptionHandler();
 
 			$this->config = new Config($this->properties->configPath, Config::JSON, [
 				"auto-load-modules" => true,

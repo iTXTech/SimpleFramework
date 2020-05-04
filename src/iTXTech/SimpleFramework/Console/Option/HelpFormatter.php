@@ -549,7 +549,7 @@ class HelpFormatter{
 
 		// look for the last whitespace character before startPos+width
 		for($pos = $startPos + $width; $pos >= $startPos; --$pos){
-			$c = $text{$pos};
+			$c = $text[$pos];
 			if($c == ' ' || $c == '\n' || $c == '\r'){
 				break;
 			}

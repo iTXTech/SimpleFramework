@@ -38,7 +38,7 @@ abstract class Logger implements LoggerHandler{
 		self::ERROR => "ERROR"
 	];
 
-	public static $logLevel = self::INFO;
+	public static $logLevel = self::DEBUG;
 	public static $hasPrefix = true;
 	public static $disableOutput = false;
 	public static $disableClass = false;
@@ -76,6 +76,13 @@ abstract class Logger implements LoggerHandler{
 
 	public static function debug(string $message){
 		self::send($message, self::DEBUG, TextFormat::GRAY);
+	}
+
+	public static function errorExceptionHandler(int $severity, string $message, string $file, int $line) : bool{
+		if((error_reporting() & $severity) !== 0){
+			self::logException(new \ErrorException($message, 0, $severity, $file, $line));
+		}
+		return true;
 	}
 
 	public static function logException(\Throwable $e){
@@ -146,7 +153,7 @@ abstract class Logger implements LoggerHandler{
 			$now = time();
 			$class = "Console";
 			if(!self::$disableClass){
-				$array = explode("\\", debug_backtrace()[2]['class']);
+				$array = @explode("\\", debug_backtrace()[2]['class']);
 				$class = end($array);
 				if(strlen($class) > 20){
 					$class = substr($class, 0, 20);

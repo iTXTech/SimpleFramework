@@ -45,6 +45,11 @@ class FrameworkInfo extends CmdLineOpt{
 			exit(0);
 		}
 		if($cmd->hasOption("version")){
+			$info = Framework::PROG_NAME . " " . Framework::PROG_VERSION .
+				" \"" . Framework::CODENAME . "\" (API " . Framework::API_LEVEL . ")";
+			if(\iTXTech\SimpleFramework\SINGLE_THREAD){
+				$info .= " [Single Thread]";
+			}
 			if(($phar = \Phar::running(true)) !== ""){
 				$phar = new \Phar($phar);
 				$built = date("r", $phar->getMetadata()["creationDate"]) . " (Phar)";
@@ -54,8 +59,7 @@ class FrameworkInfo extends CmdLineOpt{
 				$git = Util::getLatestGitCommitId(\iTXTech\SimpleFramework\PATH) ?? "Unknown";
 			}
 
-			Util::println(Framework::PROG_NAME . " " . Framework::PROG_VERSION .
-				" \"" . Framework::CODENAME . "\" (API " . Framework::API_LEVEL . ")");
+			Util::println($info);
 			Util::println("Built: " . $built);
 			Util::println("Revision: " . $git);
 			Util::println("Copyright (C) 2016-2020 iTX Technologies");
