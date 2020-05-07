@@ -23,6 +23,7 @@
 
 namespace iTXTech\SimpleFramework\Util;
 
+use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Util\Curl\Curl;
 use iTXTech\SimpleFramework\Util\Curl\Response;
 
@@ -224,19 +225,19 @@ abstract class Util{
 	 * @throws \ReflectionException
 	 */
 	public static function generateExtensionInfo(string $ext) : string{
-		$info = $ext . " => ";
+		return $ext . " => " . self::getExtensionVersion($ext) ?? "not installed";
+	}
+
+	public static function getExtensionVersion(string $ext) : ?string{
 		if(extension_loaded($ext)){
 			$extension = new \ReflectionExtension($ext);
-			$info .= $extension->getVersion();
-		}else{
-			$info .= "not installed";
+			return $extension->getVersion();
 		}
-
-		return $info;
+		return null;
 	}
 
 	/**
-	 * @param string $dir Should be ended with a DIRECTORY_SEPARATOR
+	 * @param string $dir Should end with a DIRECTORY_SEPARATOR
 	 *
 	 * @return string|null
 	 */
@@ -269,5 +270,47 @@ abstract class Util{
 			unset($unresolved[$index]);
 		}
 		return [$resolved, $unresolved];
+	}
+
+	public static function verifyScriptRequirements(string $content, ?string $file = null) : bool{
+		$data = trim(StringUtil::between($content, "SF_SCRIPT_REQUIREMENTS_STARTS",
+			"SF_SCRIPT_REQUIREMENTS_ENDS"));
+		if($data === ""){
+			return true;
+		}
+		$r = json_decode($data, true);
+		if($r === null){
+			Logger::error("Invalid Script Requirements Information in file \"" . $file ?? "Unknown" . "\".");
+			throw new \JsonException(json_last_error_msg());
+		}
+		$result = true;
+		if(isset($r["php"]) && version_compare($r["php"], PHP_VERSION) > 0){
+			$result = false;
+			Logger::error("PHP version \"" . PHP_VERSION . "\" does not meet the script's requirement \"{$r["php"]}\".");
+		}
+		if(isset($r["os"]) && self::getOS() != $r["os"]){
+			$result = false;
+			Logger::error("The script requires OS \"{$r["os"]}\", currently \"" . self::getOS() . "\".");
+		}
+		foreach($r["exts"] ?? [] as $name => $ver){
+			if($name === 0){
+				$name = $ver;
+				$ver = null;
+			}
+			if(!extension_loaded($name)){
+				$result = false;
+				Logger::error("The script requires PHP extension \"$name\".");
+			}elseif($ver != null && version_compare($ver, self::getExtensionVersion($name)) > 0){
+				$result = false;
+				Logger::error("The script requires PHP extension \"$name\" version >$ver.");
+			}
+		}
+		if(!$result){
+			if(isset($r["info"])){
+				Logger::error("Info from the script: " . $r["info"]);
+			}
+			throw new \RuntimeException("Current runtime environment cannot run " . ($file ?? "the script") . ".");
+		}
+		return $result;
 	}
 }

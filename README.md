@@ -4,7 +4,7 @@
 [![Stable](https://img.shields.io/badge/stable-2.1.0(6)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/releases/tag/v2.1.0)
 [![Developing](https://img.shields.io/badge/dev-2.2.0(7)-blue.svg)]()
 
-__Efficient, lightweighted and extensible php command line framework.__
+__Powerful, lightweight and extensible php command line framework.__
 
 ## Introduction
 
@@ -12,14 +12,17 @@ SimpleFramework is a php command line framework.
 
 Here are some features:
 
-* Module dependency resolver
-* Console & Command support
-* AsyncTask and Thread support
-* Network & Configuration utilities
+* Module Dependency Resolver (`composer` is also compatible)
+* Built-in Console and Commands
+* AsyncTask Scheduler and Multi-threading
+* Network and Configuration Utilities
 * All APIs can be used in a single script - *See examples*
-* Module HotPatch
+* Module HotPatch (Requires `runkit7`)
+* Command Line Options
+* Coroutine Swoole Logger (Requires `Swoole 4.4+`)
+* OS Integrations (Some Requires `PHP 7.4` and `FFI`)
 
-Contributions are welcomed.
+Contributions are welcome.
 
 ### See also
 
@@ -83,7 +86,7 @@ HotPatch for Example took 0.001 s
 ### Integrated support
 
 * [php-yaml](https://github.com/php/pecl-file_formats-yaml) - `Config`
-* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler` - Require [swoole_async](https://github.com/swoole/ext-async) extension
+* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler`
 
 ## Get SimpleFramework
 

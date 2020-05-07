@@ -28,6 +28,7 @@ namespace iTXTech\SimpleFramework {
 	if(!defined("SF_LOADER_AUTO_INIT") or SF_LOADER_AUTO_INIT){
 		Initializer::loadSimpleFramework();
 		Initializer::initClassLoader();
+		Framework::init();
 
 		//backward compatibility
 		$classLoader = Initializer::getClassLoader();

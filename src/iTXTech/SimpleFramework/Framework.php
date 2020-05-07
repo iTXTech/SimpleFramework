@@ -36,6 +36,7 @@ use iTXTech\SimpleFramework\Scheduler\OnCompletionListener;
 use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Config;
 use iTXTech\SimpleFramework\Util\FrameworkProperties;
+use iTXTech\SimpleFramework\Util\Platform\Platform;
 use iTXTech\SimpleFramework\Util\StringUtil;
 use iTXTech\SimpleFramework\Util\Util;
 
@@ -142,6 +143,11 @@ class Framework implements OnCompletionListener{
 		return self::$instance !== null;
 	}
 
+	public static function init(){
+		Platform::init();
+		self::registerExceptionHandler();
+	}
+
 	public function getScheduler() : ?Scheduler{
 		return $this->scheduler;
 	}
@@ -188,8 +194,6 @@ class Framework implements OnCompletionListener{
 	public function start(bool $useMainThreadTick = true){
 		try{
 			$this->properties->mkdirDirs();
-
-			self::registerExceptionHandler();
 
 			$this->config = new Config($this->properties->configPath, Config::JSON, [
 				"auto-load-modules" => true,
