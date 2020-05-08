@@ -26,7 +26,6 @@ namespace iTXTech\SimpleFramework\Util\Platform;
 use iTXTech\SimpleFramework\Util\Util;
 
 abstract class Platform{
-
 	public static function checkExtension(){
 		if(!extension_loaded("ffi")){
 			throw new \RuntimeException("FFI extension is not available, which requires PHP 7.4+.");
@@ -39,10 +38,16 @@ abstract class Platform{
 		}
 	}
 
-	public static function getPlatform() : Platform{
-		switch(Util::getOS()){
-			case Util::OS_WINDOWS:
-				return new WindowsPlatform();
+	public static function newStr(string $str) : \FFI\CData{
+		$d = \FFI::new("char[" . (strlen($str) + 1) . "]", false);
+		for($i = 0; $i < strlen($str); $i++){
+			$d[$i] = $str[$i];
 		}
+		$d[$i] = "\0";
+		return $d;
+	}
+
+	public static function isSupported() : bool{
+		return in_array(Util::getOS(), [Util::OS_WINDOWS]);
 	}
 }

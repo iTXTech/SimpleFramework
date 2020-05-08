@@ -55,9 +55,13 @@ run("MessageBox",
 	fn() => WindowsPlatform::messageBox("Hello from Win32 native!", "SimpleFramework", 0x01 | 0x40)
 );
 run("SetBackgroundImage",
-	fn() => WindowsPlatform::setSystemParametersInfo(0x14, 0, "D:\\1.jpg", 0x1 | 0x2),
+	fn() => WindowsPlatform::setSystemParametersInfo(0x14, 0, "D:\\1.png", 0x1 | 0x2),
 	fn($result) => WindowsPlatform::messageBox("Result of Last Operation: $result", "SimpleFramework")
 );
+run("SetSystemProxy",
+	fn() => WindowsPlatform::setSystemProxyOptions(false, "http://localhost:531", "local"),
+	// TODO: get
+	fn() => WindowsPlatform::setSystemProxyOptions(true)
+);
 
-//$a = WindowsPlatform::getSystemProxyOptions();
-//WindowsPlatform::setSystemProxyOptions(false, "gg.cn", true);
+Logger::info("Script End.");

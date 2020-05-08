@@ -280,7 +280,7 @@ abstract class Util{
 		}
 		$r = json_decode($data, true);
 		if($r === null){
-			Logger::error("Invalid Script Requirements Information in file \"" . $file ?? "Unknown" . "\".");
+			Logger::error("Invalid Script Requirements Information in file \"" . ($file ?? "Unknown") . "\".");
 			throw new \JsonException(json_last_error_msg());
 		}
 		$result = true;
