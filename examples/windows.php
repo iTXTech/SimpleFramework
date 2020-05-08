@@ -33,6 +33,7 @@ SF_SCRIPT_REQUIREMENTS_STARTS
 SF_SCRIPT_REQUIREMENTS_ENDS
  */
 
+use FFI\CData;
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Initializer;
 use iTXTech\SimpleFramework\Util\Platform\Platform;
@@ -51,6 +52,27 @@ function run(string $name, callable ...$funcs){
 	}
 	Logger::info("$name result is " . implode(", ", $results));
 }
+
+run("RegistryReadKey",
+	fn() => var_dump(WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+		"DigitalProductId", 0xffff)),
+	fn() => "Version: " . WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE,
+			"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+			"CurrentVersion", 0xffff),
+	fn($ver) => $ver . ", MajorVer: " . WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE,
+			"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentMajorVersionNumber", 0xffff),
+	fn($ver) => PHP_EOL . $ver . ", Edition: " . WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE,
+			"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "EditionID", 0xffff)
+);
+
+run("RegistryOperation",
+	fn() => WindowsPlatform::regOpenKey(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion"),
+	function($key){
+		if($key instanceof CData){
+			WindowsPlatform::regCloseKey($key);
+		}
+	}
+);
 
 run("MessageBox",
 	fn() => WindowsPlatform::messageBox("Hello from Win32 native!", "SimpleFramework", 0x01 | 0x40)

@@ -35,6 +35,31 @@ class WindowsPlatform extends Platform{
 	public const HKEY_USERS = 0x80000003;
 	public const HKEY_CURRENT_CONFIG = 0x80000005;
 
+	public const RRF_RT_REG_NONE = 0x00000001;
+	public const RRF_RT_REG_SZ = 0x00000002;
+	public const RRF_RT_REG_EXPAND_SZ = 0x00000004;
+	public const RRF_RT_REG_BINARY = 0x00000008;
+	public const RRF_RT_REG_DWORD = 0x00000010;
+	public const RRF_RT_REG_MULTI_SZ = 0x00000020;
+	public const RRF_RT_REG_QWORD = 0x00000040;
+	public const RRF_RT_DWORD = self::RRF_RT_REG_BINARY | self::RRF_RT_REG_DWORD;
+	public const RRF_RT_QWORD = self::RRF_RT_REG_BINARY | self::RRF_RT_REG_QWORD;
+	public const RRF_RT_ANY = 0x0000ffff;
+
+	public const REG_NONE = 0;
+	public const REG_SZ = 1;
+	public const REG_EXPAND_SZ = 2;
+	public const REG_BINARY = 3;
+	public const REG_DWORD = 4;
+	public const REG_DWORD_BIG_ENDIAN = 5;
+	public const REG_LINK = 6;
+	public const REG_MULTI_SZ = 7;
+	public const REG_QWORD = 11;
+	// Waiting for who is interested in this stuff
+	public const REG_RESOURCE_LIST = 8;
+	public const REG_FULL_RESOURCE_DESCRIPTOR = 9;
+	public const REG_RESOURCE_REQUIREMENTS_LIST = 10;
+
 	private static FFI $user; // User32.dll
 	private static FFI $kernel; // Kernel32.dll
 	private static FFI $wininet; // WinInet.dll
@@ -238,6 +263,64 @@ EOL, "Shell32.dll");
 			$key = $key->cdata;
 		}
 		return self::$advapi->RegFlushKey($key);
+	}
+
+	/**
+	 * @param int $key
+	 * @param string $sub
+	 * @param string $name
+	 * @param int $flags
+	 * @param int|null $type
+	 * @param int|null $length
+	 *
+	 * @return array|bool|string|int REG_BINARY => ByteArray, REG_SZ => string, Others => int, Failed => false
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-reggetvaluea
+	 *
+	 */
+	public static function regGetValue(int $key, string $sub, string $name, int $flags = self::RRF_RT_ANY,
+	                                   ?int &$type = null, ?int &$length = null){
+		$t = self::$advapi->new("DWORD");
+		$len = self::$advapi->new("DWORD");
+		if($type == null or $length == null){
+			self::$advapi->RegGetValueA($key, $sub, $name, $flags, FFI::addr($t), null, FFI::addr($len));
+			$type = $t->cdata;
+			$length = $len->cdata;
+		}
+		$str = false;
+		$arr = false;
+		switch($type){
+			case self::REG_SZ:
+			case self::REG_EXPAND_SZ:
+			case self::REG_LINK:
+			case self::REG_MULTI_SZ:
+				$str = true;
+				$buffer = self::$advapi->new("char[$length]");
+				break;
+			case self::REG_QWORD:
+				$buffer = self::$advapi->new("uint64_t");
+				break;
+			case self::REG_BINARY:
+				$arr = true;
+				$buffer = self::$advapi->new("unsigned char[$length]");
+				break;
+			case self::REG_DWORD:
+			case self::REG_DWORD_BIG_ENDIAN:
+			default:
+				$buffer = self::$advapi->new("DWORD");
+		}
+		$result = self::$advapi->RegGetValueA($key, $sub, $name, $flags, null, FFI::addr($buffer), FFI::addr($len));
+		if($result !== 0){
+			return false;
+		}elseif($str){
+			return FFI::string($buffer);
+		}elseif($arr){
+			$a = [];
+			foreach($buffer as $v){
+				$a[] = $v;
+			}
+			return $a;
+		}
+		return $buffer->cdata;
 	}
 
 	// Advapi functions ends
