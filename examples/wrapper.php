@@ -27,22 +27,31 @@
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Initializer;
+use iTXTech\SimpleFramework\Util\Platform\WindowsPlatform;
 use iTXTech\SimpleFramework\Util\Util;
 
 require_once "../autoload.php";
+
+// a for admin
 
 Initializer::initTerminal(true);
 
 $file = $argv[1] ?? null;
 if($file == null){
 	Logger::error("Missing the script to run.");
-	Logger::info("Usage: php wrapper.php <script>");
+	Logger::info("Usage: php wrapper.php <script> [a]");
 }elseif(!file_exists($file)){
 	Logger::error("Script \"$file\" does not exist.");
 }else{
 	try{
 		if(Util::verifyScriptRequirements(file_get_contents($file), $file)){
-			require_once $file;
+			if(Util::getOS() == Util::OS_WINDOWS and isset($argv[2]) and $argv[2] == "a"){
+				if(WindowsPlatform::shellExecute(PHP_BINARY, [$argv[1]]) == 0){
+					Logger::error("Please grant permission request to execute the script.");
+				}
+			}else{
+				require_once $file;
+			}
 		}
 	}catch(Exception $e){
 		Logger::$logLevel = Logger::INFO; // Sometimes we don't need to know everything :)

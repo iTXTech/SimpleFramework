@@ -23,6 +23,7 @@
 
 namespace iTXTech\SimpleFramework\Util\Platform;
 
+use FFI;
 use iTXTech\SimpleFramework\Util\Util;
 
 abstract class Platform{
@@ -39,7 +40,7 @@ abstract class Platform{
 	}
 
 	public static function newStr(string $str) : \FFI\CData{
-		$d = \FFI::new("char[" . (strlen($str) + 1) . "]", false);
+		$d = FFI::new("char[" . (strlen($str) + 1) . "]", false);
 		for($i = 0; $i < strlen($str); $i++){
 			$d[$i] = $str[$i];
 		}

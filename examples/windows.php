@@ -35,6 +35,7 @@ SF_SCRIPT_REQUIREMENTS_ENDS
 
 use iTXTech\SimpleFramework\Console\Logger;
 use iTXTech\SimpleFramework\Initializer;
+use iTXTech\SimpleFramework\Util\Platform\Platform;
 use iTXTech\SimpleFramework\Util\Platform\WindowsPlatform;
 
 require_once "../autoload.php";
@@ -45,8 +46,8 @@ function run(string $name, callable ...$funcs){
 	$lastResult = null;
 	$results = [];
 	foreach($funcs as $func){
-		$results[] = $lastResult = (($lastResult == null) ? $func() : $func($lastResult)) .
-			(" / " . WindowsPlatform::getLastError());
+		$lastResult = ($lastResult == null) ? $func() : $func($lastResult);
+		@$results[] = $lastResult . " / " . WindowsPlatform::getLastError();
 	}
 	Logger::info("$name result is " . implode(", ", $results));
 }
@@ -55,13 +56,23 @@ run("MessageBox",
 	fn() => WindowsPlatform::messageBox("Hello from Win32 native!", "SimpleFramework", 0x01 | 0x40)
 );
 run("SetBackgroundImage",
-	fn() => WindowsPlatform::setSystemParametersInfo(0x14, 0, "D:\\1.png", 0x1 | 0x2),
+	fn() => WindowsPlatform::systemParametersInfo(0x14, 0, "D:\\1.png", 0x1 | 0x2),
+	function(){
+		$str = Platform::newStr("");
+		WindowsPlatform::systemParametersInfo(0x73, 260, FFI::addr($str), 0); //0x73 = SPI_GETDESKWALLPAPER, 260 = MAX_PATH
+		return FFI::string($str);
+	},
 	fn($result) => WindowsPlatform::messageBox("Result of Last Operation: $result", "SimpleFramework")
 );
 run("SetSystemProxy",
 	fn() => WindowsPlatform::setSystemProxyOptions(false, "http://localhost:531", "local"),
-	// TODO: get
-	fn() => WindowsPlatform::setSystemProxyOptions(true)
+	fn() => WindowsPlatform::getSystemProxyOptions(),
+	function($result){
+		WindowsPlatform::messageBox("Get Proxy Info: " . $result[1], "SimpleFramework");
+		return WindowsPlatform::setSystemProxyOptions(true);
+	}
 );
 
 Logger::info("Script End.");
+
+while(true) ;
