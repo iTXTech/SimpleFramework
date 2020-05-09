@@ -97,6 +97,7 @@ run("RegistryOperation",
 		if($key instanceof CData){
 			WindowsPlatform::regCloseKey($key);
 			WindowsPlatform::regDeleteKey(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\iTXTech\\SimpleFramework");
+			WindowsPlatform::regDeleteKey(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\iTXTech");
 		}
 	}
 );
