@@ -25,6 +25,10 @@
  * CAUTION: This example will change your desktop background image.
  * This example shows how to interact with Microsoft Windows APIs.
  * For more APIs and definitions, see https://docs.microsoft.com
+ *
+ * Try:
+ * php .\wrapper.php .\windows.php
+ * php .\wrapper.php .\windows.php a
  */
 
 /*
@@ -47,7 +51,7 @@ function run(string $name, callable ...$funcs){
 	$lastResult = null;
 	$results = [];
 	foreach($funcs as $func){
-		$lastResult = ($lastResult == null) ? $func() : $func($lastResult);
+		$lastResult = $func($lastResult);
 		@$results[] = $lastResult . " / " . WindowsPlatform::getLastError();
 	}
 	Logger::info("$name result is " . implode(", ", $results));
@@ -66,10 +70,33 @@ run("RegistryReadKey",
 );
 
 run("RegistryOperation",
-	fn() => WindowsPlatform::regOpenKey(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion"),
+	fn() => WindowsPlatform::regCreateKey(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\iTXTech\\SimpleFramework"),
+	function($arr){
+		if(is_array($arr)){
+			$k = $arr[0];
+			WindowsPlatform::regSetValue($k, "TestStr", WindowsPlatform::REG_SZ, "wdnmd");
+			WindowsPlatform::regSetValue($k, "TestDWORD", WindowsPlatform::REG_DWORD, 233);
+			return $arr[0];
+		}
+		return 0;
+	},
+	function($k){
+		WindowsPlatform::messageBox("Check your Registry: HKLM\\SOFTWARE\\iTXTech\\SimpleFramework", "SimpleFramework");
+		return $k;
+	},
+	function($k){
+		WindowsPlatform::regDeleteValue($k, "TestStr");
+		WindowsPlatform::regDeleteValue($k, "TestDWORD");
+		return $k;
+	},
+	function($k){
+		WindowsPlatform::messageBox("Now check again: HKLM\\SOFTWARE\\iTXTech\\SimpleFramework", "SimpleFramework");
+		return $k;
+	},
 	function($key){
 		if($key instanceof CData){
 			WindowsPlatform::regCloseKey($key);
+			WindowsPlatform::regDeleteKey(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\iTXTech\\SimpleFramework");
 		}
 	}
 );
@@ -95,6 +122,6 @@ run("SetSystemProxy",
 	}
 );
 
-Logger::info("Script End.");
+Logger::info("Script End. Ctrl+C to exit.");
 
 while(true) ;

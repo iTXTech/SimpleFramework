@@ -286,7 +286,7 @@ abstract class Util{
 		$result = true;
 		if(isset($r["php"]) && version_compare($r["php"], PHP_VERSION) > 0){
 			$result = false;
-			Logger::error("The script requires PHP version \"" . PHP_VERSION . "\", currently \"{$r["php"]}\".");
+			Logger::error("The script requires PHP version \"{$r["php"]}\", currently \"" . PHP_VERSION . "\".");
 		}
 		if(isset($r["os"]) && self::getOS() != $r["os"]){
 			$result = false;

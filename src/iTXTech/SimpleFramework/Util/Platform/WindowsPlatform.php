@@ -55,16 +55,16 @@ class WindowsPlatform extends Platform{
 	public const REG_LINK = 6;
 	public const REG_MULTI_SZ = 7;
 	public const REG_QWORD = 11;
-	// Waiting for who is interested in this stuff
+	// Waiting for someone who is interested in this stuff
 	public const REG_RESOURCE_LIST = 8;
 	public const REG_FULL_RESOURCE_DESCRIPTOR = 9;
 	public const REG_RESOURCE_REQUIREMENTS_LIST = 10;
 
-	private static FFI $user; // User32.dll
-	private static FFI $kernel; // Kernel32.dll
-	private static FFI $wininet; // WinInet.dll
-	private static FFI $advapi; // Advapi32.dll
-	private static FFI $shell; // Shell32.dll
+	public static FFI $user; // User32.dll
+	public static FFI $kernel; // Kernel32.dll
+	public static FFI $wininet; // WinInet.dll
+	public static FFI $advapi; // Advapi32.dll
+	public static FFI $shell; // Shell32.dll
 
 	public static function init(){
 		self::checkExtension();
@@ -100,11 +100,21 @@ BOOL InternetQueryOptionA(void* hInternet, DWORD dwOption, void* lpBuffer, DWORD
 EOL, "Wininet.dll");
 		self::$advapi = FFI::cdef(<<<EOL
 typedef unsigned long DWORD;
-DWORD RegOpenKeyExA(DWORD hKey, const char* lpSubKey, DWORD ulOptions, DWORD samDesired, DWORD* phkResult);
+typedef struct _SECURITY_ATTRIBUTES {
+  DWORD  nLength;
+  void* lpSecurityDescriptor;
+  int   bInheritHandle;
+} SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
+DWORD RegOpenKeyExA(DWORD hKey, char* lpSubKey, DWORD ulOptions, DWORD samDesired, DWORD* phkResult);
 DWORD RegCloseKey(DWORD hKey);
 DWORD RegFlushKey(DWORD hKey);
-DWORD RegGetValueA(DWORD hkey, const char* lpSubKey, const char* lpValue, DWORD dwFlags, 
+DWORD RegGetValueA(DWORD hkey, char* lpSubKey, char* lpValue, DWORD dwFlags, 
 DWORD* pdwType, void* pvData, DWORD* pcbData);
+DWORD RegCreateKeyExA(DWORD hKey, char* lpSubKey, DWORD Reserved, char* lpClass, DWORD dwOptions, 
+DWORD samDesired, const LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD* phkResult, DWORD* lpdwDisposition);
+DWORD RegDeleteKeyExA(DWORD hKey, char* lpSubKey, DWORD samDesired, DWORD Reserved);
+DWORD RegSetValueExA(DWORD hKey, char* lpValueName, DWORD Reserved, DWORD dwType, void* lpData, DWORD cbData);
+DWORD RegDeleteValueA(DWORD hKey, char* lpValueName);
 EOL, "Advapi32.dll");
 		self::$shell = FFI::cdef(<<<EOL
 typedef unsigned long DWORD;
@@ -112,14 +122,14 @@ typedef struct {
   DWORD     cbSize;
   DWORD     fMask;
   void*      hwnd;
-  const char*    lpVerb;
-  const char*    lpFile;
-  const char*    lpParameters;
-  const char*    lpDirectory;
+  char*    lpVerb;
+  char*    lpFile;
+  char*    lpParameters;
+  char*    lpDirectory;
   int       nShow;
   void* hInstApp;
   void* lpIDList;
-  const char*    lpClass;
+  char*    lpClass;
   void*      hkeyClass;
   DWORD     dwHotKey;
   union {
@@ -159,6 +169,9 @@ EOL, "Shell32.dll");
 	// Kernel32 functions ends
 
 	// WinInet functions starts
+	/**
+	 * @return array [0] => Proxy Enabled, [1] => Proxy Address, [2] => Proxy Bypass
+	 */
 	public static function getSystemProxyOptions() : array{
 		$list = self::$wininet->new("INTERNET_PER_CONN_OPTION_LISTA");
 		$list->dwSize = FFI::sizeof($list);
@@ -243,12 +256,91 @@ EOL, "Shell32.dll");
 	 */
 	public static function regOpenKey(int $key, string $sub, int $perm = 0x02){
 		$handler = FFI::new("uint32_t");
-		$ptr = FFI::addr($handler);
-		$r = self::$advapi->RegOpenKeyExA($key, $sub, 0, $perm, $ptr);
+		$r = self::$advapi->RegOpenKeyExA($key, $sub, 0, $perm, FFI::addr($handler));
 		if($r === 0){
 			return $handler;
 		}
 		return $r;
+	}
+
+	/**
+	 * @param int|CData $key
+	 * @param string $sub
+	 * @param int $option
+	 * @param int $perm
+	 *
+	 * @return CData[]|int Failed => int, Succ => CData[0] => [HKEY, Disposition]
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regcreatekeyexa
+	 */
+	public static function regCreateKey($key, string $sub, int $option = 0, int $perm = 0x02){
+		if($key instanceof CData){
+			$key = $key->cdata;
+		}
+		$handler = FFI::new("uint32_t");
+		$op = FFI::new("uint32_t");
+		$r = self::$advapi->RegCreateKeyExA($key, $sub, 0, null, $option, $perm, null, FFI::addr($handler),
+			FFI::addr($op));
+		if($r === 0){
+			return [$handler, $op];
+		}
+		return $r;
+	}
+
+	public static function regDeleteKey($key, string $sub, int $sam = 0x0100){
+		if($key instanceof CData){
+			$key = $key->cdata;
+		}
+		return self::$advapi->RegDeleteKeyExA($key, $sub, $sam, 0);
+	}
+
+	/**
+	 * @param int|CData $key
+	 * @param string $value
+	 * @param int $type
+	 * @param int|array|string $data
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regsetvalueexa
+	 */
+	public static function regSetValue($key, string $value, int $type, $data = 0) : int{
+		switch($type){
+			case self::REG_SZ:
+			case self::REG_EXPAND_SZ:
+			case self::REG_LINK:
+				$buffer = self::newStr($data);
+				$len = strlen($data) + 1;
+				break;
+			case self::REG_MULTI_SZ:
+				$buffer = self::newStr($data, 2);
+				$len = strlen($data) + 2;
+				break;
+			case self::REG_QWORD:
+				$buffer = self::$advapi->new("uint64_t");
+				$buffer->cdata = $data;
+				$len = 8;
+				break;
+			case self::REG_BINARY:
+				$buffer = self::newArr("unsigned char", $data);
+				$len = count($data);
+				break;
+			case self::REG_DWORD:
+			case self::REG_DWORD_BIG_ENDIAN:
+			default:
+				$buffer = self::$advapi->new("DWORD");
+				$buffer->cdata = $data;
+				$len = 4;
+		}
+		if($key instanceof CData){
+			$key = $key->cdata;
+		}
+		return self::$advapi->RegSetValueExA($key, $value, 0, $type, FFI::addr($buffer), $len);
+	}
+
+	public static function regDeleteValue($key, string $value){
+		if($key instanceof CData){
+			$key = $key->cdata;
+		}
+		return self::$advapi->RegDeleteValueA($key, $value);
 	}
 
 	public static function regCloseKey($key) : int{

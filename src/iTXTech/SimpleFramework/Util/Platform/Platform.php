@@ -24,6 +24,7 @@
 namespace iTXTech\SimpleFramework\Util\Platform;
 
 use FFI;
+use FFI\CData;
 use iTXTech\SimpleFramework\Util\Util;
 
 abstract class Platform{
@@ -39,12 +40,22 @@ abstract class Platform{
 		}
 	}
 
-	public static function newStr(string $str) : \FFI\CData{
-		$d = FFI::new("char[" . (strlen($str) + 1) . "]", false);
+	public static function newStr(string $str, int $nulls = 1, string $type = "char") : CData{
+		$d = FFI::new("{$type}[" . (strlen($str) + $nulls) . "]", false);
 		for($i = 0; $i < strlen($str); $i++){
 			$d[$i] = $str[$i];
 		}
-		$d[$i] = "\0";
+		for($j = $i; $j < $i + $nulls; $j++){
+			$d[$j] = "\0";
+		}
+		return $d;
+	}
+
+	public static function newArr(string $type, array $arr) : CData{
+		$d = FFI::new("{$type}[" . count($arr) . "]", false);
+		for($i = 0; $i < count($arr); $i++){
+			$d[$i] = $arr[$i];
+		}
 		return $d;
 	}
 
