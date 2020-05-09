@@ -225,7 +225,7 @@ abstract class Util{
 	 * @throws \ReflectionException
 	 */
 	public static function generateExtensionInfo(string $ext) : string{
-		return $ext . " => " . self::getExtensionVersion($ext) ?? "not installed";
+		return $ext . " => " . (self::getExtensionVersion($ext) ?? "not installed");
 	}
 
 	public static function getExtensionVersion(string $ext) : ?string{

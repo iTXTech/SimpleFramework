@@ -2,10 +2,14 @@
 title SimpleFramework
 cd /d %~dp0
 
-if exist bin\php\php.exe (
-    set PHP_BINARY=bin\php\php.exe
-) else (
-    set PHP_BINARY=php
+REM For Powershell users, do '$env:PHP_BINARY="phpxx"' to set php binary path.
+REM For CMD users, do "set PHP_BINARY=phpxx" to set php binary path.
+if not defined PHP_BINARY (
+    if exist bin\php\php.exe (
+        set PHP_BINARY=bin\php\php.exe
+    ) else (
+        set PHP_BINARY=php
+    )
 )
 
 if exist SimpleFramework.phar (
