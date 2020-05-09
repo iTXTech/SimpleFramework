@@ -48,21 +48,22 @@ require_once "../autoload.php";
 Initializer::initTerminal(true);
 
 function run(string $name, callable ...$funcs){
-	$lastResult = null;
-	$results = [];
-	foreach($funcs as $func){
-		$lastResult = $func($lastResult);
-		@$results[] = $lastResult . " / " . WindowsPlatform::getLastError();
+	if(WindowsPlatform::messageBox("Run Test $name ?", "SimpleFramework", 0x01 | 0x40) == 1){
+		$lastResult = null;
+		$results = [];
+		foreach($funcs as $func){
+			$lastResult = $func($lastResult);
+			@$results[] = $lastResult . " / " . WindowsPlatform::getLastError();
+		}
+		Logger::info("$name result is " . implode(", ", $results));
 	}
-	Logger::info("$name result is " . implode(", ", $results));
 }
 
 run("RegistryReadKey",
 	fn() => var_dump(WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
 		"DigitalProductId", 0xffff)),
 	fn() => "Version: " . WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE,
-			"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
-			"CurrentVersion", 0xffff),
+			"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentVersion", 0xffff),
 	fn($ver) => $ver . ", MajorVer: " . WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE,
 			"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "CurrentMajorVersionNumber", 0xffff),
 	fn($ver) => PHP_EOL . $ver . ", Edition: " . WindowsPlatform::regGetValue(WindowsPlatform::HKEY_LOCAL_MACHINE,
@@ -100,10 +101,6 @@ run("RegistryOperation",
 			WindowsPlatform::regDeleteKey(WindowsPlatform::HKEY_LOCAL_MACHINE, "SOFTWARE\\iTXTech");
 		}
 	}
-);
-
-run("MessageBox",
-	fn() => WindowsPlatform::messageBox("Hello from Win32 native!", "SimpleFramework", 0x01 | 0x40)
 );
 run("SetBackgroundImage",
 	fn() => WindowsPlatform::systemParametersInfo(0x14, 0, "D:\\1.png", 0x1 | 0x2),

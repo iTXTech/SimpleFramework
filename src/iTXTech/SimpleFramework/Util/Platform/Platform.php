@@ -59,6 +59,10 @@ abstract class Platform{
 		return $d;
 	}
 
+	public static function data($d){
+		return ($d instanceof CData) ? $d->cdata : $d;
+	}
+
 	public static function isSupported() : bool{
 		return in_array(Util::getOS(), [Util::OS_WINDOWS]);
 	}

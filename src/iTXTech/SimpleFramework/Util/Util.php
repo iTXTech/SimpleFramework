@@ -281,7 +281,7 @@ abstract class Util{
 		$r = json_decode($data, true);
 		if($r === null){
 			Logger::error("Invalid Script Requirements Information in file \"" . ($file ?? "Unknown") . "\".");
-			throw new \JsonException(json_last_error_msg());
+			throw new \Exception(json_last_error_msg()); // support from 7.2
 		}
 		$result = true;
 		if(isset($r["php"]) && version_compare($r["php"], PHP_VERSION) > 0){

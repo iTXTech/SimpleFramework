@@ -143,6 +143,15 @@ EOL, "Shell32.dll");
 	}
 
 	//User32 functions starts
+
+	/**
+	 * @param string $text
+	 * @param string $caption
+	 * @param int $type
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxa
+	 */
 	public static function messageBox(string $text, string $caption, int $type = 0) : int{
 		return self::$user->MessageBoxA(null, $text, $caption, $type);
 	}
@@ -163,14 +172,21 @@ EOL, "Shell32.dll");
 	// User32 functions ends
 
 	// Kernel32 functions starts
+
+	/**
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror
+	 */
 	public static function getLastError() : int{
 		return self::$kernel->GetLastError();
 	}
 	// Kernel32 functions ends
 
 	// WinInet functions starts
+
 	/**
 	 * @return array [0] => Proxy Enabled, [1] => Proxy Address, [2] => Proxy Bypass
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-internetqueryoptiona
 	 */
 	public static function getSystemProxyOptions() : array{
 		$list = self::$wininet->new("INTERNET_PER_CONN_OPTION_LISTA");
@@ -193,6 +209,13 @@ EOL, "Shell32.dll");
 			FFI::string($opt[2]->Value->pszValue)];
 	}
 
+	/**
+	 * @param bool $direct
+	 * @param string|null $proxy
+	 * @param string $bypass
+	 *
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-internetsetoptiona
+	 */
 	public static function setSystemProxyOptions(bool $direct, ?string $proxy = null, string $bypass = ""){
 		$list = self::$wininet->new("INTERNET_PER_CONN_OPTION_LISTA");
 		$list->dwSize = FFI::sizeof($list);
@@ -216,9 +239,20 @@ EOL, "Shell32.dll");
 		self::$wininet->InternetSetOptionA(null, 75, FFI::addr($list), $list->dwSize);
 		self::$wininet->InternetSetOptionA(null, 95, null, 0);//refresh
 	}
+
 	// WinInet functions ends
 
 	// Shell functions begins
+
+	/**
+	 * @param string $file
+	 * @param array $params
+	 * @param string $verb
+	 * @param int $show
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecuteexa
+	 */
 	public static function shellExecute(string $file, array $params, string $verb = "runas", int $show = 1) : int{
 		$proc = FFI::new("int");
 		$info = self::$shell->new("SHELLEXECUTEINFOA");
@@ -240,6 +274,7 @@ EOL, "Shell32.dll");
 		$info->hProcess = FFI::addr($proc);
 		return self::$shell->ShellExecuteExA(FFI::addr($info));
 	}
+
 	// Shell functions ends
 
 	// Advapi functions begins
@@ -273,9 +308,7 @@ EOL, "Shell32.dll");
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regcreatekeyexa
 	 */
 	public static function regCreateKey($key, string $sub, int $option = 0, int $perm = 0x02){
-		if($key instanceof CData){
-			$key = $key->cdata;
-		}
+		$key = self::data($key);
 		$handler = FFI::new("uint32_t");
 		$op = FFI::new("uint32_t");
 		$r = self::$advapi->RegCreateKeyExA($key, $sub, 0, null, $option, $perm, null, FFI::addr($handler),
@@ -286,10 +319,16 @@ EOL, "Shell32.dll");
 		return $r;
 	}
 
-	public static function regDeleteKey($key, string $sub, int $sam = 0x0100){
-		if($key instanceof CData){
-			$key = $key->cdata;
-		}
+	/**
+	 * @param int|CData $key
+	 * @param string $sub
+	 * @param int $sam
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regdeletekeyexa
+	 */
+	public static function regDeleteKey($key, string $sub, int $sam = 0x0100) : int{
+		$key = self::data($key);
 		return self::$advapi->RegDeleteKeyExA($key, $sub, $sam, 0);
 	}
 
@@ -330,30 +369,41 @@ EOL, "Shell32.dll");
 				$buffer->cdata = $data;
 				$len = 4;
 		}
-		if($key instanceof CData){
-			$key = $key->cdata;
-		}
+		$key = self::data($key);
 		return self::$advapi->RegSetValueExA($key, $value, 0, $type, FFI::addr($buffer), $len);
 	}
 
-	public static function regDeleteValue($key, string $value){
-		if($key instanceof CData){
-			$key = $key->cdata;
-		}
+	/**
+	 * @param int|CData $key
+	 * @param string $value
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regdeletevaluea
+	 */
+	public static function regDeleteValue($key, string $value) : int{
+		$key = self::data($key);
 		return self::$advapi->RegDeleteValueA($key, $value);
 	}
 
+	/**
+	 * @param int|CData $key
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regclosekey
+	 */
 	public static function regCloseKey($key) : int{
-		if($key instanceof CData){
-			$key = $key->cdata;
-		}
+		$key = self::data($key);
 		return self::$advapi->RegCloseKey($key);
 	}
 
+	/**
+	 * @param int|CData $key
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regflushkey
+	 */
 	public static function regFlushKey($key) : int{
-		if($key instanceof CData){
-			$key = $key->cdata;
-		}
+		$key = self::data($key);
 		return self::$advapi->RegFlushKey($key);
 	}
 
