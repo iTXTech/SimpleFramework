@@ -22,7 +22,6 @@
  */
 
 /*
- * CAUTION: This example will change your desktop background image.
  * This example shows how to interact with Microsoft Windows APIs.
  * For more APIs and definitions, see https://docs.microsoft.com
  *
@@ -49,10 +48,9 @@ Initializer::initTerminal(true);
 
 function run(string $name, callable ...$funcs){
 	if(WindowsPlatform::messageBox("Run Test $name ?", "SimpleFramework", 0x01 | 0x40) == 1){
-		$lastResult = null;
 		$results = [];
 		foreach($funcs as $func){
-			$lastResult = $func($lastResult);
+			$lastResult = $func($lastResult ?? null);
 			@$results[] = $lastResult . " / " . WindowsPlatform::getLastError();
 		}
 		Logger::info("$name result is " . implode(", ", $results));
@@ -102,7 +100,7 @@ run("RegistryOperation",
 		}
 	}
 );
-run("SetBackgroundImage",
+run("SetWallpaper",
 	fn() => WindowsPlatform::systemParametersInfo(0x14, 0, "D:\\1.png", 0x1 | 0x2),
 	function(){
 		$str = Platform::newStr("");

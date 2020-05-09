@@ -8,8 +8,6 @@ __Powerful, lightweight and extensible php command line framework.__
 
 ## Introduction
 
-SimpleFramework is a php command line framework.
-
 Here are some features:
 
 * Module Dependency Resolver (`composer` is also compatible)
@@ -24,54 +22,12 @@ Here are some features:
 
 Contributions are welcome.
 
+**Our next major supported version will be `PHP 8.0` instead of `PHP 7.4`**
+
 ### See also
 
 * [Development Roadmap](https://github.com/iTXTech/SimpleFramework/issues/3)
-
-### Command Line
-
-`./sf -h`
-
-### Module HotPatch
-
-```json
-{
-  "name": "Example",
-  "version": "1.0",
-  "api": 6,
-  "description": "Just an example",
-  "author": "iTX Technologies",
-  "main": "Example\\Main",
-  "website": "https://itxtech.org",
-  "dependency": [
-    {
-      "name": "Example/ExampleModule",
-      "version": "1.0.0",
-      "optional": true
-    }
-  ],
-  "hotPatch": [
-    {
-      "class": "Example\\Main",
-      "method": "foo"
-    }
-  ]
-}
-```
-
-```php
-//only support this code style!
-public function foo(string $arg0, int $arg1) : int{
-    echo $arg0;
-    return $arg1++;
-}
-```
-
-```bash
-> module hotpatch Example
-
-HotPatch for Example took 0.001 s
-```
+* [SimpleFramework Wiki](https://github.com/iTXTech/SimpleFramework/wiki)
 
 ## Requirements
 
