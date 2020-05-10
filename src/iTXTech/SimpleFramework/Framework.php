@@ -42,8 +42,8 @@ use iTXTech\SimpleFramework\Util\Util;
 
 class Framework implements OnCompletionListener{
 	public const PROG_NAME = "SimpleFramework";
-	public const PROG_VERSION = "2.2.0";
-	public const API_LEVEL = 7;
+	public const PROG_VERSION = "2.2.1";
+	public const API_LEVEL = 8;
 	public const CODENAME = "Centaur";
 
 	/** @var Framework */
