@@ -36,7 +36,11 @@ abstract class Platform{
 
 	public static function init(){
 		if(extension_loaded("ffi")){
-			WindowsPlatform::init();
+			switch(Util::getOS()){
+				case Util::OS_WINDOWS:
+					WindowsPlatform::init();
+					break;
+			}
 		}
 	}
 
