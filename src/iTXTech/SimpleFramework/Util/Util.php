@@ -317,4 +317,26 @@ abstract class Util{
 	public static function resourceToPhp(string $res) : string{
 		return "<?php\nreturn <<<EOL\n$res\nEOL;\n";
 	}
+
+	public static function moduleToPeachPieModule(string $source, string $target, array $exclude = []){
+		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($p = $source)) as $file){
+			$path = ltrim(str_replace(["\\", $p], ["/", ""], $file), "/");
+			if($path[0] === "." or strpos($path, "/.") !== false){
+				continue;
+			}
+			foreach($exclude as $e){
+				if(StringUtil::contains($file, $e)){
+					continue 2;
+				}
+			}
+			$a = explode("/", $path = "$target/$path");
+			unset($a[count($a) - 1]);
+			@mkdir(implode("/", $a), 666, true);
+			if(StringUtil::endsWith($file, ".json")){
+				file_put_contents($path . ".php", Util::resourceToPhp(file_get_contents($file)));
+			}else{
+				copy($file, $path);
+			}
+		}
+	}
 }
