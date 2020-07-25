@@ -257,7 +257,7 @@ abstract class Util{
 			if(!in_array($dep, $resolved)){
 				if(!in_array($dep, $unresolved)){
 					array_push($unresolved, $dep);
-					list($resolved, $unresolved) = self::depResolve($dep, $items, $resolved, $unresolved);
+					[$resolved, $unresolved] = self::depResolve($dep, $items, $resolved, $unresolved);
 				}else{
 					throw new \RuntimeException("Circular dependency: $item -> $dep");
 				}
@@ -312,5 +312,9 @@ abstract class Util{
 			throw new \RuntimeException("Current runtime environment cannot run " . ($file ?? "the script") . ".");
 		}
 		return $result;
+	}
+
+	public static function resourceToPhp(string $res) : string{
+		return "<?php\nreturn <<<EOL\n$res\nEOL;\n";
 	}
 }

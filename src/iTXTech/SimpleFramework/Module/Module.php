@@ -169,10 +169,12 @@ abstract class Module{
 
 	public function getResourceAsText(string $file){
 		$file = rtrim(str_replace("\\", "/", $file), "/");
-		if(file_exists($this->file . "resources/" . $file)){
-			return file_get_contents($this->file . "resources/" . $file);
+		if(file_exists($f = $this->file . "resources/" . $file)){
+			return file_get_contents($f);
 		}
-
+		if(file_exists($f = $this->file . "resources/" . $file . ".php")){
+			return require($f);
+		}
 		return null;
 	}
 
@@ -249,7 +251,7 @@ abstract class Module{
 	}
 
 	public function pack(int $variant, string $path, string $filename = null,
-	                     bool $includeGitInfo = true, bool $compress = true, bool $log = false) : bool{
+						 bool $includeGitInfo = true, bool $compress = true, bool $log = false) : bool{
 		$info = $this->getInfo();
 		$packer = $info->getPacker();
 		if($packer != null){
