@@ -94,4 +94,12 @@ abstract class Module{
 	public function getFile() : string{
 		return $this->file;
 	}
+
+	public function getResourceAsText(string $file){
+		$file = rtrim(str_replace("\\", "/", $file), "/");
+		if(file_exists($f = $this->file . "resources/" . $file . ".php")){
+			return require($f);
+		}
+		return null;
+	}
 }
