@@ -98,6 +98,13 @@ class ModuleManager{
 		$this->loadModule($module);
 	}
 
+	public function readModule(string $file){
+		$file = $this->getModulePath() . $file;
+		if(file_exists($json = $file . DIRECTORY_SEPARATOR . "sf.json.php")){
+			$this->loadModuleDirectly(require($json), $file);
+		}
+	}
+
 	public function getClassLoader() : \ClassLoader{
 		return $this->classLoader;
 	}

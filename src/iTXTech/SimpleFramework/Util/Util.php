@@ -175,7 +175,7 @@ abstract class Util{
 		return false;
 	}
 
-	public static function stripLeadingHyphens(string $str) : string{
+	public static function stripLeadingHyphens(string $str) : ?string{
 		if($str == null){
 			return null;
 		}
@@ -253,7 +253,7 @@ abstract class Util{
 			if(!in_array($dep, $resolved)){
 				if(!in_array($dep, $unresolved)){
 					array_push($unresolved, $dep);
-					list($resolved, $unresolved) = self::depResolve($dep, $items, $resolved, $unresolved);
+					[$resolved, $unresolved] = self::depResolve($dep, $items, $resolved, $unresolved);
 				}else{
 					throw new \RuntimeException("Circular dependency: $item -> $dep");
 				}
