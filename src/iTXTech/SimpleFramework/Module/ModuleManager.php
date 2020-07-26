@@ -101,7 +101,7 @@ class ModuleManager{
 	public function readModule(string $file){
 		$file = $this->getModulePath() . $file;
 		if(file_exists($json = $file . DIRECTORY_SEPARATOR . "sf.json.php")){
-			$this->loadModuleDirectly(require($json), $file);
+			$this->loadModuleDirectly(str_replace("\\", "\\\\", require($file . "/sf.json.php")), $file);
 		}
 	}
 

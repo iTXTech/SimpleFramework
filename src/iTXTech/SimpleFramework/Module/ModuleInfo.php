@@ -26,9 +26,6 @@ namespace iTXTech\SimpleFramework\Module;
 class ModuleInfo{
 	const ACCEPTABLE_MANIFEST_FILENAME = ["sf.php", "info.json"];
 
-	const LOAD_METHOD_PACKAGE = 0;
-	const LOAD_METHOD_SOURCE = 1;
-
 	private $name;
 	private $main;
 	private $api;
@@ -37,13 +34,6 @@ class ModuleInfo{
 	private $authors = [];
 	private $website = null;
 	private $loadMethod;
-	private $dependencies = [];
-	private $extensions = [];
-	private $hotPatch = [];
-	private $stub;
-	private $sfloader;
-	private $packer;
-	private $composer;
 
 	public function __construct(string $info, int $loadMethod){
 		$this->loadMethod = $loadMethod;
@@ -56,7 +46,6 @@ class ModuleInfo{
 		$this->version = $info["version"];
 		$this->main = $info["main"] ?? "";
 		$this->api = $info["api"];
-		$this->hotPatch = $info["hotPatch"] ?? [];
 
 		$this->description = $info["description"] ?? "";
 		$this->authors = [];
@@ -67,25 +56,6 @@ class ModuleInfo{
 			}
 		}
 		$this->website = $info["website"] ?? null;
-
-		$this->dependencies = $info["dependencies"] ?? [];
-		if($this->dependencies === []){
-			$this->dependencies = $info["dependency"] ?? [];//backward compatibility
-		}
-
-		$this->extensions = $info["extensions"] ?? [];
-		$this->stub = $info["stub"] ?? null;
-		$this->sfloader = $info["sfloader"] ?? false;
-		$this->packer = $info["packer"] ?? null;
-		$this->composer = $info["composer"] ?? false;
-	}
-
-	public function composer() : bool{
-		return $this->composer;
-	}
-
-	public function getDependencies() : array{
-		return $this->dependencies;
 	}
 
 	public function getLoadMethod() : int{
@@ -118,25 +88,5 @@ class ModuleInfo{
 
 	public function getWebsite() : string{
 		return $this->website;
-	}
-
-	public function getExtensions() : array{
-		return $this->extensions;
-	}
-
-	public function getHotPatch() : array{
-		return $this->hotPatch;
-	}
-
-	public function getStub() : ?string{
-		return $this->stub;
-	}
-
-	public function bundleSfLoader() : bool{
-		return $this->sfloader;
-	}
-
-	public function getPacker() : ?string{
-		return $this->packer;
 	}
 }
