@@ -318,8 +318,9 @@ abstract class Util{
 		return "<?php\nreturn <<<EOL\n$res\nEOL;\n";
 	}
 
-	public static function moduleToPeachPieModule(string $source, string $target, array $exclude = []){
-		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($p = $source)) as $file){
+	public static function moduleToPeachPieModule(string $source, string $target, array $exclude = [], array $res = ["json"]){
+		$p = rtrim(str_replace("\\", "/", $source), "/") . "/";
+		foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($p)) as $file){
 			$path = ltrim(str_replace(["\\", $p], ["/", ""], $file), "/");
 			if($path[0] === "." or strpos($path, "/.") !== false){
 				continue;
@@ -332,7 +333,15 @@ abstract class Util{
 			$a = explode("/", $path = "$target/$path");
 			unset($a[count($a) - 1]);
 			@mkdir(implode("/", $a), 666, true);
-			if(StringUtil::endsWith($file, ".json")){
+
+			$resource = false;
+			foreach($res as $r){
+				if(StringUtil::endsWith($file, "." . $r)){
+					$resource = true;
+					break;
+				}
+			}
+			if($resource){
 				file_put_contents($path . ".php", Util::resourceToPhp(file_get_contents($file)));
 			}else{
 				copy($file, $path);

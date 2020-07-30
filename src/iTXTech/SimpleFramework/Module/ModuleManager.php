@@ -150,7 +150,7 @@ class ModuleManager{
 		$unresolved = [];
 		foreach(array_keys($m) as $table){
 			try{
-				list ($resolved, $unresolved) = Util::depResolve($table, $m, $resolved, $unresolved);
+				[$resolved, $unresolved] = Util::depResolve($table, $m, $resolved, $unresolved);
 			}catch(\Throwable $e){
 				Logger::logException($e);
 			}
@@ -188,14 +188,16 @@ class ModuleManager{
 		if(is_dir($file)){
 			foreach(ModuleInfo::ACCEPTABLE_MANIFEST_FILENAME as $name){
 				if(file_exists($file . "/" . $name)){
-					break;
+					$info = @file_get_contents($file . "/" . $name);
+					if($info != ""){
+						$this->loadModuleInternal($info, ModuleInfo::LOAD_METHOD_SOURCE, $file, $modules);
+					}
+					return true;
 				}
 			}
-			if(file_exists($file . "/" . $name)){
-				$info = @file_get_contents($file . "/" . $name);
-				if($info != ""){
-					$this->loadModuleInternal($info, ModuleInfo::LOAD_METHOD_SOURCE, $file, $modules);
-				}
+			if(file_exists($i = $file . "/sf.json.php")){
+				$this->loadModuleInternal(require($i), ModuleInfo::LOAD_METHOD_SOURCE, $file, $modules);
+				return true;
 			}
 		}
 		return false;
