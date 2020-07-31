@@ -71,6 +71,8 @@ class WindowsPlatform extends Platform{
 		self::$user = FFI::cdef(<<<EOL
 int SystemParametersInfoA(int uAction, int uParam, void* lpvParam, int fuWinIni);
 int MessageBoxA(void* hWnd, char* lpText, char* lpCaption, unsigned int uType);
+int SendMessageA(int hWnd, int msg, int wParam, int lParam);
+int PostMessageA(int hWnd, int msg, int wParam, int lParam);
 EOL, "User32.dll");
 		self::$kernel = FFI::cdef("int GetLastError();", "Kernel32.dll");
 		self::$wininet = FFI::cdef(<<<EOL
@@ -147,7 +149,7 @@ EOL, "Shell32.dll");
 	/**
 	 * @param string $text
 	 * @param string $caption
-	 * @param int $type
+	 * @param int    $type
 	 *
 	 * @return int
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-messageboxa
@@ -157,10 +159,10 @@ EOL, "Shell32.dll");
 	}
 
 	/**
-	 * @param int $action
-	 * @param int $uiParam
+	 * @param int          $action
+	 * @param int          $uiParam
 	 * @param string|CData $param
-	 * @param int $ini
+	 * @param int          $ini
 	 *
 	 * @return int
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-systemparametersinfoa
@@ -169,6 +171,33 @@ EOL, "Shell32.dll");
 	public static function systemParametersInfo(int $action, int $uiParam, $param, int $ini) : int{
 		return self::$user->SystemParametersInfoA($action, $uiParam, $param, $ini);
 	}
+
+	/**
+	 * @param int|null $hwnd
+	 * @param int      $msg
+	 * @param int      $wparam
+	 * @param int      $lparam
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessagea
+	 */
+	public static function sendMessage(?int $hwnd, int $msg, int $wparam, int $lparam) : int{
+		return self::$user->SendMessageA($hwnd, $msg, $wparam, $lparam);
+	}
+
+	/**
+	 * @param int|null $hwnd
+	 * @param int      $msg
+	 * @param int      $wparam
+	 * @param int      $lparam
+	 *
+	 * @return int
+	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-postmessagea
+	 */
+	public static function postMessage(?int $hwnd, int $msg, int $wparam, int $lparam) : int{
+		return self::$user->PostMessageA($hwnd, $msg, $wparam, $lparam);
+	}
+
 	// User32 functions ends
 
 	// Kernel32 functions starts
@@ -210,9 +239,9 @@ EOL, "Shell32.dll");
 	}
 
 	/**
-	 * @param bool $direct
+	 * @param bool        $direct
 	 * @param string|null $proxy
-	 * @param string $bypass
+	 * @param string      $bypass
 	 *
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/wininet/nf-wininet-internetsetoptiona
 	 */
@@ -246,9 +275,9 @@ EOL, "Shell32.dll");
 
 	/**
 	 * @param string $file
-	 * @param array $params
+	 * @param array  $params
 	 * @param string $verb
-	 * @param int $show
+	 * @param int    $show
 	 *
 	 * @return int
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecuteexa
@@ -280,9 +309,9 @@ EOL, "Shell32.dll");
 	// Advapi functions begins
 
 	/**
-	 * @param int $key HKey to open
-	 * @param string $sub SubKey to open
-	 * @param int $perm Access Rights
+	 * @param int    $key  HKey to open
+	 * @param string $sub  SubKey to open
+	 * @param int    $perm Access Rights
 	 *
 	 * @return int|CData
 	 * @link https://docs.microsoft.com/en-us/windows/win32/sysinfo/registry-key-security-and-access-rights
@@ -300,9 +329,9 @@ EOL, "Shell32.dll");
 
 	/**
 	 * @param int|CData $key
-	 * @param string $sub
-	 * @param int $option
-	 * @param int $perm
+	 * @param string    $sub
+	 * @param int       $option
+	 * @param int       $perm
 	 *
 	 * @return CData[]|int Failed => int, Succ => CData[0] => [HKEY, Disposition]
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regcreatekeyexa
@@ -321,8 +350,8 @@ EOL, "Shell32.dll");
 
 	/**
 	 * @param int|CData $key
-	 * @param string $sub
-	 * @param int $sam
+	 * @param string    $sub
+	 * @param int       $sam
 	 *
 	 * @return int
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regdeletekeyexa
@@ -333,9 +362,9 @@ EOL, "Shell32.dll");
 	}
 
 	/**
-	 * @param int|CData $key
-	 * @param string $value
-	 * @param int $type
+	 * @param int|CData        $key
+	 * @param string           $value
+	 * @param int              $type
 	 * @param int|array|string $data
 	 *
 	 * @return int
@@ -375,7 +404,7 @@ EOL, "Shell32.dll");
 
 	/**
 	 * @param int|CData $key
-	 * @param string $value
+	 * @param string    $value
 	 *
 	 * @return int
 	 * @link https://docs.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regdeletevaluea
@@ -408,10 +437,10 @@ EOL, "Shell32.dll");
 	}
 
 	/**
-	 * @param int $key
-	 * @param string $sub
-	 * @param string $name
-	 * @param int $flags
+	 * @param int      $key
+	 * @param string   $sub
+	 * @param string   $name
+	 * @param int      $flags
 	 * @param int|null $type
 	 * @param int|null $length
 	 *
@@ -420,7 +449,7 @@ EOL, "Shell32.dll");
 	 *
 	 */
 	public static function regGetValue(int $key, string $sub, string $name, int $flags = self::RRF_RT_ANY,
-	                                   ?int &$type = null, ?int &$length = null){
+									   ?int &$type = null, ?int &$length = null){
 		$t = self::$advapi->new("DWORD");
 		$len = self::$advapi->new("DWORD");
 		if($type == null or $length == null){
