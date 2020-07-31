@@ -39,7 +39,7 @@ class LoggerSwitches extends CmdLineOpt{
 		$options->addOption((new OptionBuilder("f"))->longOpt("disable-logger-class")
 			->desc("Disable Logger Class detection")->build());
 		$options->addOption((new OptionBuilder("g"))->longOpt("without-prefix")
-			->desc("Do not print prefix when printing log")->build());
+			->desc("Print log without prefix")->build());
 	}
 
 	public static function process(CommandLine $cmd, Options $options){
