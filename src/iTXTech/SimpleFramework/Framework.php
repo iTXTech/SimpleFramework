@@ -272,7 +272,7 @@ class Framework implements OnCompletionListener{
 		return $this->commandProcessor;
 	}
 
-	private function tick(){
+	public function tick(){
 		while(!$this->shutdown){
 			$this->update();
 			usleep(self::$tickInterval);
