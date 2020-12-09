@@ -29,7 +29,7 @@ use iTXTech\SimpleFramework\Scheduler\Scheduler;
 use iTXTech\SimpleFramework\Util\Util;
 use Swoole\Runtime;
 
-class Curl{
+class Curl {
 	public static $GLOBAL_PROXY = "";
 
 	protected $curl;
@@ -45,48 +45,48 @@ class Curl{
 
 	private static $CURL_CLASS = Curl::class;
 
-	public static function newInstance() : Curl{
+	public static function newInstance(): Curl {
 		return new self::$CURL_CLASS;
 	}
 
 	//require Swoole 4.4+
-	public static function enableSwooleCoroutine(){
+	public static function enableSwooleCoroutine() {
 		Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 		Runtime::enableCoroutine(SWOOLE_HOOK_CURL);
 	}
 
-	public static function setCurlClass(string $class) : bool{
-		if(is_a($class, Curl::class, true)){
+	public static function setCurlClass(string $class): bool {
+		if (is_a($class, Curl::class, true)) {
 			self::$CURL_CLASS = $class;
 			return true;
 		}
 		return false;
 	}
 
-	public function __construct(){
+	public function __construct() {
 		$this->reload();
-		if(self::$GLOBAL_PROXY !== ""){
+		if (self::$GLOBAL_PROXY !== "") {
 			$url = parse_url(self::$GLOBAL_PROXY);
 			$schemes = [
-                "http" => CURLPROXY_HTTP,
-                "https" => CURLPROXY_HTTPS,
-                "socks4" => CURLPROXY_SOCKS4,
-                "socks5" => CURLPROXY_SOCKS5,
-                "socks4a" => CURLPROXY_SOCKS4A
-            ];
+				"http" => CURLPROXY_HTTP,
+				"https" => CURLPROXY_HTTPS,
+				"socks4" => CURLPROXY_SOCKS4,
+				"socks5" => CURLPROXY_SOCKS5,
+				"socks4a" => CURLPROXY_SOCKS4A
+			];
 			$this->setProxy($url["host"] . ":" . $url["port"], $schemes[$url["scheme"] ?? ""] ?? "",
 				$url["user"] ?? "", $url["pass"] ?? "");
 		}
 	}
 
-	public function reload(){
-		if(is_resource($this->curl)){
+	public function reload() {
+		if (is_resource($this->curl)) {
 			curl_close($this->curl);
 		}
 		$this->curl = curl_init();
 		$this->curlOpts = [];
 
-		if(Util::getOS() === Util::OS_WINDOWS){
+		if (Util::getOS() === Util::OS_WINDOWS) {
 			$this->verifyCert(false);
 		}
 		$this->setOpt(CURLOPT_RETURNTRANSFER, 1);
@@ -95,54 +95,54 @@ class Curl{
 		return $this;
 	}
 
-	public function setPreprocessor(Preprocessor $preprocessor){
+	public function setPreprocessor(Preprocessor $preprocessor) {
 		$this->preprocessor = $preprocessor;
 		return $this;
 	}
 
-	public function verifyCert(bool $enable){
+	public function verifyCert(bool $enable) {
 		$this->setOpt(CURLOPT_SSL_VERIFYHOST, $enable ? 1 : 0);
 		$this->setOpt(CURLOPT_SSL_VERIFYPEER, $enable ? 1 : 0);
 		return $this;
 	}
 
-	public function setProxy(string $address, int $type = CURLPROXY_HTTP, string $name = "", string $pass = ""){
+	public function setProxy(string $address, int $type = CURLPROXY_HTTP, string $name = "", string $pass = "") {
 		$this->setOpt(CURLOPT_PROXYTYPE, $type);
 		$this->setOpt(CURLOPT_PROXY, $address);
-		if($name !== ""){
+		if ($name !== "") {
 			$this->setOpt(CURLOPT_PROXYUSERNAME, $name);
 		}
-		if($pass !== ""){
+		if ($pass !== "") {
 			$this->setOpt(CURLOPT_PROXYUSERPWD, $pass);
 		}
 		return $this;
 	}
 
-	public function getUrl(){
+	public function getUrl() {
 		return $this->url;
 	}
 
-	public function getResponse() : Response{
+	public function getResponse(): Response {
 		return $this->response;
 	}
 
-	public function setUserAgent(string $ua){
+	public function setUserAgent(string $ua) {
 		$this->setOpt(CURLOPT_USERAGENT, $ua);
 		return $this;
 	}
 
-	public function setUrl(string $url){
+	public function setUrl(string $url) {
 		$this->url = $url;
 		return $this;
 	}
 
-	public function setHeaders(array $arr){
+	public function setHeaders(array $arr) {
 		$this->headers = $arr;
 		return $this;
 	}
 
-	public function setHeader($k, string $v = ""){
-		if(is_string($k)){
+	public function setHeader($k, string $v = "") {
+		if (is_string($k)) {
 			$this->headers[$k] = $v;
 		}
 		return $this;
@@ -154,9 +154,9 @@ class Curl{
 	 *
 	 * @return $this
 	 */
-	public function setCookies(array $cookies){
+	public function setCookies(array $cookies) {
 		$payload = "";
-		foreach($cookies as $cookie){
+		foreach ($cookies as $cookie) {
 			$payload .= $cookie->getName() . "=" . $cookie->getValue() . "; ";
 		}
 		$payload = substr($payload, 0, strlen($payload) - 2);
@@ -164,23 +164,23 @@ class Curl{
 		return $this;
 	}
 
-	public function setReferer(string $referer){
+	public function setReferer(string $referer) {
 		$this->setOpt(CURLOPT_REFERER, $referer);
 		return $this;
 	}
 
-	public function setGet(array $get){
+	public function setGet(array $get) {
 		$payload = '?';
-		foreach($get as $key => $content){
+		foreach ($get as $key => $content) {
 			$payload .= urlencode($key) . '=' . urlencode($content) . '&';
 		}
 		$this->url .= substr($payload, 0, strlen($payload) - 1);
 		return $this;
 	}
 
-	public function setPost(array $post){
+	public function setPost(array $post) {
 		$payload = '';
-		foreach($post as $key => $content){
+		foreach ($post as $key => $content) {
 			$payload .= urlencode($key) . '=' . urlencode($content) . '&';
 		}
 		$this->setOpt(CURLOPT_POST, 1);
@@ -188,19 +188,19 @@ class Curl{
 		return $this;
 	}
 
-	public function setEncPost($post){
+	public function setEncPost($post) {
 		$this->setOpt(CURLOPT_POST, 1);
 		$this->setOpt(CURLOPT_POSTFIELDS, $post);
 		return $this;
 	}
 
-	public function setTimeout(int $timeout){
+	public function setTimeout(int $timeout) {
 		$this->setOpt(CURLOPT_CONNECTTIMEOUT, $timeout);
 		$this->setOpt(CURLOPT_TIMEOUT, $timeout);
 		return $this;
 	}
 
-	public function setOpt(int $option, $value){
+	public function setOpt(int $option, $value) {
 		$this->curlOpts[$option] = $value;
 		return $this;
 	}
@@ -208,27 +208,27 @@ class Curl{
 	/**
 	 * If you are experiencing incomplete response, try this.
 	 */
-	public function fixIncompleteResponse(){
+	public function fixIncompleteResponse() {
 		return $this->setOpt(CURLOPT_ENCODING, "");
 	}
 
-	protected function buildRequest(){
-		if($this->preprocessor !== null){
+	protected function buildRequest() {
+		if ($this->preprocessor !== null) {
 			$this->preprocessor->process($this);
 		}
 		$headers = [];
-		foreach($this->headers as $k => $v){
+		foreach ($this->headers as $k => $v) {
 			$headers[] = $k . ": " . $v;
 		}
 		$this->setOpt(CURLOPT_HTTPHEADER, $headers);
 		$this->setOpt(CURLOPT_URL, $this->url);
 
-		if(($interface = InterfaceSelector::select()) !== ""){
+		if (($interface = InterfaceSelector::select()) !== "") {
 			$this->setOpt(CURLOPT_INTERFACE, $interface);
 		}
 	}
 
-	public function exec(){
+	public function exec() {
 		$this->buildRequest();
 		curl_setopt_array($this->curl, $this->curlOpts);
 		$this->response = new Response(curl_exec($this->curl), curl_getinfo($this->curl), curl_errno($this->curl));
@@ -236,9 +236,9 @@ class Curl{
 		return $this->response;
 	}
 
-	public function execAsync(Scheduler $scheduler, Callback $callback){
+	public function execAsync(Scheduler $scheduler, Callback $callback) {
 		$this->buildRequest();
-		$scheduler->scheduleAsyncTask(new class($this->curlOpts, $callback) extends AsyncTask{
+		$scheduler->scheduleAsyncTask(new class($this->curlOpts, $callback) extends AsyncTask {
 			private const CALLBACK = "cb";
 
 			private $opts;
@@ -246,12 +246,12 @@ class Curl{
 			private $info;
 			private $errno;
 
-			public function __construct(array $opts, Callback $callback){
+			public function __construct(array $opts, Callback $callback) {
 				$this->opts = serialize($opts);
 				$this->saveToThreadStore(self::CALLBACK, $callback);
 			}
 
-			public function onRun(){
+			public function onRun() {
 				$curl = curl_init();
 				curl_setopt_array($curl, unserialize($this->opts));
 				$this->buffer = curl_exec($curl);
@@ -259,7 +259,7 @@ class Curl{
 				$this->errno = curl_errno($curl);
 			}
 
-			public function onCompletion(OnCompletionListener $listener){
+			public function onCompletion(OnCompletionListener $listener) {
 				$this->getFromThreadStore(self::CALLBACK)
 					->onResponse(new Response($this->buffer, unserialize($this->info), $this->errno));
 			}
@@ -267,13 +267,13 @@ class Curl{
 	}
 
 	public function uploadFile(array $assoc = [], array $files = [],
-	                           string $fileType = "application/octet-stream"){
+							   string $fileType = "application/octet-stream") {
 		$body = [];
 		// invalid characters for "name" and "filename"
 		$disallow = ["\0", "\"", "\r", "\n"];
 
 		// build normal parameters
-		foreach($assoc as $k => $v){
+		foreach ($assoc as $k => $v) {
 			$k = str_replace($disallow, "_", $k);
 			$body[] = implode("\r\n", [
 				"Content-Disposition: form-data; name=\"{$k}\"",
@@ -282,8 +282,8 @@ class Curl{
 			]);
 		}
 
-		foreach($files as $k => $v){
-			switch(true){
+		foreach ($files as $k => $v) {
+			switch (true) {
 				case false === $v = realpath(filter_var($v)):
 				case !is_file($v):
 				case !is_readable($v):
@@ -303,12 +303,12 @@ class Curl{
 		}
 
 		// generate safe boundary
-		do{
+		do {
 			$boundary = "---------------------" . md5(mt_rand() . microtime());
-		}while(preg_grep("/{$boundary}/", $body));
+		} while (preg_grep("/{$boundary}/", $body));
 
 		// add boundary for each parameters
-		array_walk($body, function(&$part) use ($boundary){
+		array_walk($body, function (&$part) use ($boundary) {
 			$part = "--{$boundary}\r\n{$part}";
 		});
 
