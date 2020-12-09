@@ -68,11 +68,12 @@ class Curl{
 		if(self::$GLOBAL_PROXY !== ""){
 			$url = parse_url(self::$GLOBAL_PROXY);
 			$schemes = [
-				"http" => CURLPROXY_HTTP,
-				"https" => CURLPROXY_HTTPS,
-				"socks4" => CURLPROXY_SOCKS4,
-				"socks5" => CURLPROXY_SOCKS5
-			];
+                "http" => CURLPROXY_HTTP,
+                "https" => CURLPROXY_HTTPS,
+                "socks4" => CURLPROXY_SOCKS4,
+                "socks5" => CURLPROXY_SOCKS5,
+                "socks4a" => CURLPROXY_SOCKS4A
+            ];
 			$this->setProxy($url["host"] . ":" . $url["port"], $schemes[$url["scheme"] ?? ""] ?? "",
 				$url["user"] ?? "", $url["pass"] ?? "");
 		}
