@@ -35,8 +35,8 @@ abstract class Thread{
 	protected $thread;
 
 	public function __construct(){
-		$this->thread = new \System\Threading\Thread(fn() => $this->run());
-	}
+        //	$this->thread = new \System\Threading\Thread(\System\Func<void>(fn() => $this->run()));
+    }
 
 	public function getClassLoader(){
 		return $this->classLoader;
@@ -46,25 +46,34 @@ abstract class Thread{
 		$this->classLoader = $loader;
 	}
 
-	public function registerClassLoader(){
-	}
+    public function registerClassLoader()
+    {
+    }
 
-	public function start(?int $options = \PTHREADS_INHERIT_ALL){
-		ThreadManager::getInstance()->add($this);
-		$this->thread->start();
-	}
+    public function start(?int $options = \PTHREADS_INHERIT_ALL)
+    {
+        ThreadManager::getInstance()->add($this);
+        $this->thread->start();
+    }
 
-	public abstract function run();
+    public abstract function run();
 
-	public function synchronized(callable $block){
+    public function isRunning(): bool
+    {
+        return $this->thread->ThreadState->Equals(\System\Threading\ThreadState::Running);
+    }
 
-	}
+    public function synchronized(callable $block)
+    {
 
-	public function wait(int $ms){
+    }
 
-	}
+    public function wait(int $ms)
+    {
 
-	/**
+    }
+
+    /**
 	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
 	 */
 	public function quit(){
