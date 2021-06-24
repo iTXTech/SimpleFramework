@@ -4,7 +4,7 @@
  *
  * SimpleFramework
  *
- * Copyright (C) 2016-2020 iTX Technologies
+ * Copyright (C) 2016-2021 iTX Technologies
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ class FrameworkInfo extends CmdLineOpt{
 			Util::println($info);
 			Util::println("Built: " . $built);
 			Util::println("Revision: " . $git);
-			Util::println("Copyright (C) 2016-2020 iTX Technologies");
+			Util::println("Copyright (C) 2016-2021 iTX Technologies");
 			Util::println("https://github.com/iTXTech/SimpleFramework");
 			Util::println(str_repeat("-", 50));
 			Util::println("OS => " . PHP_OS_FAMILY . " " . php_uname("r"));

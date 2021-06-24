@@ -42,7 +42,6 @@ Contributions are welcome.
 ### Integrated support
 
 * [php-yaml](https://github.com/php/pecl-file_formats-yaml) - `Config`
-* [swoole](https://github.com/swoole/swoole-src) - `SwooleLoggerHandler`
 
 ## Get SimpleFramework
 
@@ -54,7 +53,7 @@ or
 
 ## License
 
-    Copyright (C) 2016-2020 iTX Technologies
+    Copyright (C) 2016-2021 iTX Technologies
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
