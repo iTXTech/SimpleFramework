@@ -8,21 +8,19 @@ __Powerful, lightweight and extensible php command line framework.__
 
 ## Introduction
 
-Here are some features:
+Features:
 
-* Module Dependency Resolver (`composer` is also compatible)
+* Module Dependency Resolver (Compatible with `composer`)
 * Built-in Console and Commands
 * AsyncTask Scheduler and Multi-threading
 * Network and Configuration Utilities
 * All APIs can be used in a single script - *See examples*
 * Module HotPatch (Requires `runkit7`)
 * Command Line Options
-* Coroutine Swoole Logger (Requires `Swoole 4.4+`)
-* OS Integrations (Some Requires `PHP 7.4` and `FFI`)
+* OS Integrations (Requires `PHP 7.4` and `FFI`)
+* Ultra lightweight PHAR (< 100KB)
 
 Contributions are welcome.
-
-**Our next major supported version will be `PHP 8.0` instead of `PHP 7.4`**
 
 ### See also
 
@@ -33,9 +31,13 @@ Contributions are welcome.
 
 [Build PHP for SimpleFramework](https://github.com/iTXTech/php-build-scripts)
 
-* [PHP](https://secure.php.net/) >= 7.2
-* [pthreads](https://github.com/krakjoe/pthreads) - *Multi-threading library for PHP. Highly Recommended*
+* [PHP](https://www.php.net/) >= 7.2
+* [pthreads](https://github.com/krakjoe/pthreads) - *Multi-threading library for PHP*
 * [runkit7](https://github.com/runkit7/runkit7) - *Module HotPatch*
+
+Fully support: PHP 7.2, PHP 7.3
+
+Partially support: PHP 7.4, PHP 8.0, PeachPie
 
 **Note that now swoole will break pthreads, do not use them together.**
 
@@ -45,11 +47,11 @@ Contributions are welcome.
 
 ## Get SimpleFramework
 
-* __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__ - Stable release, PHAR packed
+* __[Releases](https://github.com/iTXTech/SimpleFramework/releases)__ - Stable release, PHAR format
 
 or
 
-* `$ git clone https://github.com/iTXTech/SimpleFramework.git` - Get latest development environment for **FUN**
+* `$ git clone https://github.com/iTXTech/SimpleFramework.git` - Get the latest development environment for **FUN**
 
 ## License
 
