@@ -4,7 +4,7 @@
  *
  * SimpleFramework
  *
- * Copyright (C) 2016-2021 iTX Technologies
+ * Copyright (C) 2016-2022 iTX Technologies
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ use iTXTech\SimpleFramework\Util\Util;
 
 class Framework implements OnCompletionListener{
 	public const PROG_NAME = "SimpleFramework";
-	public const PROG_VERSION = "2.2.1";
+	public const PROG_VERSION = "2.3.0";
 	public const API_LEVEL = 8;
 	public const CODENAME = "Centaur";
 

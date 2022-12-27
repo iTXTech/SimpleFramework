@@ -1,8 +1,7 @@
-# SimpleFramework
+# SimpleFramework [DEPRECATED]
 
 [![License](https://img.shields.io/github/license/iTXTech/SimpleFramework.svg)](https://github.com/iTXTech/SimpleFramework/blob/master/LICENSE)
-[![Stable](https://img.shields.io/badge/stable-2.2.1(8)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/releases/tag/v2.2.1)
-[![Developing](https://img.shields.io/badge/dev-3.0.0(9)-blue.svg)]()
+[![Stable](https://img.shields.io/badge/stable-2.3.0(8)-brightgreen.svg)](https://github.com/iTXTech/SimpleFramework/releases/tag/v2.3.0)
 
 __Powerful, lightweight and extensible php command line framework.__
 
@@ -37,7 +36,7 @@ Contributions are welcome.
 
 Fully support: PHP 7.2, PHP 7.3
 
-Partially support: PHP 7.4, PHP 8.0, PeachPie
+Partially support: PHP 7.4, PHP 8.x, PeachPie
 
 **Note that now swoole will break pthreads, do not use them together.**
 
@@ -55,7 +54,7 @@ or
 
 ## License
 
-    Copyright (C) 2016-2021 iTX Technologies
+    Copyright (C) 2016-2022 iTX Technologies
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
